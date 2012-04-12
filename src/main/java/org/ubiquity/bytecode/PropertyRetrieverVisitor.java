@@ -18,6 +18,13 @@ import org.objectweb.asm.MethodVisitor;
  *
  */
 public final class PropertyRetrieverVisitor extends ClassVisitor {
+	
+	private static final String EMPTY_SIGNATURE = "()";
+	private static final String BOOLEAN_GETTER_SIGNATURE = "()Z";
+	private static final String VOID = "V";
+	private static final String GET = "get";
+	private static final String SET = "set";
+	private static final String IS = "is";
 
 	private final Map<String, Property> properties;
 
@@ -35,14 +42,14 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		if(isGetterOrSetter(name)) {
+		if(isGetterOrSetter(name, desc)) {
 			Property property = getProperty(getPropertyName(name));
 			char start = name.charAt(0);
-			if(start == 'g') {
-				property.setGetter(name);
+			if(start == 's') {
+				property.setSetter(name);
 			}
 			else {
-				property.setSetter(name);
+				property.setGetter(name);
 			}
 			return new MethodReader(property);
 		}
@@ -64,25 +71,73 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 			build.append(functionName.substring(4));
 		}
 		return build.toString();
-		
 	}
-
-	private static boolean isGetterOrSetter(String name) {
+	
+	private static boolean isSingleParameter(String signature) {
+		int start = 1;
+		int end = signature.indexOf(")");
+		if(signature.charAt(start) == '[') {
+			start ++;
+		}
+		if(signature.charAt(start) == 'L') {
+			start = signature.indexOf(';');
+		}
+		start ++;
+		return start == end;
+	}
+	
+	private static boolean isSetter(String name, String signature) {
+		if(name == null || signature == null) {
+			return false;
+		}
+		if(!signature.endsWith(VOID)) {
+			return false;
+		}
+		if(!name.startsWith(SET)) {
+			return false;
+		}
 		if(name.length() < 4) {
 			return false;
 		}
-		if(name.charAt(1) != 'e') {
+		if(!isUppercase(name.charAt(3))) {
 			return false;
 		}
-		if(name.charAt(2) != 't') {
+		// last test : test if the function only accepts one parameter
+		return isSingleParameter(signature);
+	}
+
+	private static boolean isGetter(String name, String signature) {
+		if(name == null || signature == null) {
 			return false;
 		}
-		char start = name.charAt(0);
-		if(start != 'g' && start != 's') {
+		if(!signature.startsWith(EMPTY_SIGNATURE)) {
 			return false;
 		}
-		char propertyStart = name.charAt(3);
-		return propertyStart >= 'A' && propertyStart <= 'Z';
+		if(signature.endsWith(VOID)) {
+			return false;
+		}
+		// case for boolean, and not Boolean
+		if(name.startsWith(IS) && BOOLEAN_GETTER_SIGNATURE.equals(signature)) {
+			if(name.length() < 3) {
+				return false;
+			}
+			return isUppercase(name.charAt(2));
+		}
+		if(name.startsWith(GET)) {
+			if(name.length() < 4) {
+				return false;
+			}
+			return isUppercase(name.charAt(3));
+		}
+		return false;
+	}
+	
+	private static boolean isUppercase(char c) {
+		return c >= 'A' && c <= 'Z';
+	}
+
+	private static boolean isGetterOrSetter(String name, String signature) {
+		return isGetter(name, signature) || isSetter(name, signature);
 	}
 
 	private static class FieldReader extends FieldVisitor {

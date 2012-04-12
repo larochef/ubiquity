@@ -21,6 +21,7 @@ public class PropertyRetrieverVisitorTest {
 		PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
 		reader.accept(visitor, 0);
 		long stop = System.currentTimeMillis();
+		System.out.println(visitor.toString());
 		System.out.println("ASM parsing took " + (stop - start) + "ms.");
 		
 	}
