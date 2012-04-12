@@ -135,5 +135,9 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 		builder.append('}');
 		return builder.toString();
 	}
-	
+
+	public Map<String, Property> getProperties() {
+		return properties;
+	}
+
 }
