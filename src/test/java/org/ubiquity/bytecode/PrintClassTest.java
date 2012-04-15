@@ -11,11 +11,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * Created with IntelliJ IDEA.
- * User: famille
- * Date: 14/04/12
- * Time: 22:01
- * To change this template use File | Settings | File Templates.
+ * @author François LAROCHE
  */
 public class PrintClassTest {
     @Test
@@ -25,11 +21,9 @@ public class PrintClassTest {
     }
 
     private static class MyVisitor extends ClassVisitor {
-        private ClassVisitor v;
 
         private MyVisitor(ClassVisitor v) {
             super(Constants.ASM_LEVEL, v);
-            this.v = v;
         }
 
         @Override
