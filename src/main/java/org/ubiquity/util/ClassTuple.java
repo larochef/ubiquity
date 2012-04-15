@@ -7,13 +7,13 @@ package org.ubiquity.util;
  * Utility class, serving as keys for maps
  * @author François LAROCHE
  */
-public final class Tuple<T, U> {
+public final class ClassTuple<T, U> {
 
 	private final Class<T> tClass;
 	private final Class<U> uClass;
 	private final int hashcode;
 	
-	public Tuple(Class<T> tClass, Class<U> uClass) {
+	public ClassTuple(Class<T> tClass, Class<U> uClass) {
 		if(tClass == null || uClass == null) {
 			throw new IllegalStateException("Provided classes musn't be null !");
 		}
@@ -33,8 +33,8 @@ public final class Tuple<T, U> {
 	public boolean equals(Object obj) {
 		if (this == obj) {return true;}
 		if (obj == null) {return false;}
-		if (!(obj instanceof Tuple)) {return false;}
-		Tuple<?,?> other = (Tuple<?,?>) obj;
+		if (!(obj instanceof ClassTuple)) {return false;}
+		ClassTuple<?,?> other = (ClassTuple<?,?>) obj;
 		return this.tClass == other.tClass && this.uClass == other.uClass;
 	}
 	

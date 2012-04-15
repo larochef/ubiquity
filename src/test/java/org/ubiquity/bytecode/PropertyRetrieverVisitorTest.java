@@ -6,6 +6,8 @@ package org.ubiquity.bytecode;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
+import org.ubiquity.Copier;
+import static junit.framework.Assert.*;
 
 /**
  * Test for class {@link PropertyRetrieverVisitor}
@@ -33,4 +35,16 @@ public class PropertyRetrieverVisitorTest {
 		long stop = System.currentTimeMillis();
 		System.out.println("beanutils parsing took " + (stop - start) + "ms.");
 	}
+
+    @Test
+    public void testCopierCreation() throws Exception {
+        Copier<SimpleTestClass, SimpleTestClass> copier = CopierGenerator.createCopier(SimpleTestClass.class);
+        assertNotNull(copier);
+        SimpleTestClass testObject = new SimpleTestClass();
+        String value = "This is a test";
+        testObject.setProperty1("This is a test");
+        SimpleTestClass result = copier.map(testObject);
+        assertNotNull(result);
+        assertEquals(value, result.getProperty1());
+    }
 }

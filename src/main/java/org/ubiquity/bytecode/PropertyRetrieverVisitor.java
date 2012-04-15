@@ -30,19 +30,24 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
 		Property property = getProperty(name);
 		property.setName(name);
+        property.setTypeField(parseType(desc));
 		return new FieldReader(property);
 	}
 
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		if(isGetterOrSetter(name)) {
+            System.out.println("desc = " + desc);
+            System.out.println("signature = " + signature);
 			Property property = getProperty(getPropertyName(name));
 			char start = name.charAt(0);
 			if(start == 'g') {
 				property.setGetter(name);
+                property.setTypeGetter(parseReturnTypeFromDesc(desc));
 			}
 			else {
 				property.setSetter(name);
+                property.setTypeSetter(parseParameterFromDesc(desc));
 			}
 			return new MethodReader(property);
 		}
@@ -51,7 +56,7 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 	
 	private Property getProperty(String name) {
 		if(!this.properties.containsKey(name)) {
-			this.properties.put(name, new Property());
+			this.properties.put(name, new Property(name));
 		}
 		return this.properties.get(name);
 	}
@@ -140,4 +145,22 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 		return properties;
 	}
 
+    private static String parseType(String value) {
+        if(value.startsWith("L")) {
+            return value.substring(1, value.indexOf(';'));
+        }
+        else {
+            return value;
+        }
+    }
+
+    private static String parseParameterFromDesc(String desc) {
+        String value = desc.substring(desc.indexOf('(') + 1, desc.indexOf(')'));
+        return parseType(value);
+    }
+
+
+    private static String parseReturnTypeFromDesc(String desc) {
+        return parseType(desc.substring(desc.indexOf(')') + 1));
+    }
 }
