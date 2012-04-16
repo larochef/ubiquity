@@ -1,5 +1,7 @@
 package org.ubiquity.bytecode;
 
+import org.ubiquity.annotation.CopyIgnore;
+
 /**
  * Simple java bean for testing utilities
  * 
@@ -18,6 +20,8 @@ public class SimpleTestClass {
 	public void setProperty1(String property1) {
 		this.property1 = property1;
 	}
+
+    @CopyIgnore
 	public String getProperty2() {
 		return property2;
 	}

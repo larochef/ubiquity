@@ -12,6 +12,7 @@ import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.FieldVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.ubiquity.util.Constants;
 
 /**
  * @author François LAROCHE
@@ -31,7 +32,8 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 		Property property = getProperty(name);
 		property.setName(name);
         property.setTypeField(parseType(desc));
-		return new FieldReader(property);
+		return super.visitField(access, name, desc, signature, value);
+//        new FieldReader(property);
 	}
 
 	@Override
@@ -88,7 +90,7 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 		return propertyStart >= 'A' && propertyStart <= 'Z';
 	}
 
-	private static class FieldReader extends FieldVisitor {
+/*	private static class FieldReader extends FieldVisitor {
 		private final Property property;
 		
 		private FieldReader(Property property) {
@@ -103,11 +105,12 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 			}
 			return super.visitAnnotation(desc, visible);
 		}
-	}
+	}*/
 	
 	private final class MethodReader extends MethodVisitor {
 		
 		private final Property property;
+        private static final String UBIQUITY_ANNOTATION = "Lorg/ubiquity/annotation/";
 		
 		private MethodReader(Property property) {
 			super(ASM_LEVEL);
@@ -117,12 +120,41 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 		@Override
 		public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
 			if(visible) {
-				this.property.getAnnotations().add(desc);
+                if(Constants.IGNORE_ANNOTATION.equals(desc)) {
+                    this.property.getAnnotations().add(desc);
+                }
+                if(desc != null && desc.startsWith(UBIQUITY_ANNOTATION)) {
+                    System.out.println("Encountered annotation " + desc);
+                    return new AnnotationReader(this.property, desc);
+                }
 			}
 			return super.visitAnnotation(desc, visible);
 		}
 
 	}
+
+    private final class AnnotationReader extends AnnotationVisitor {
+
+        private final Property property;
+        private final String desc;
+
+        private AnnotationReader(Property property, String desc) {
+            super(ASM_LEVEL);
+            this.property = property;
+            this.desc = desc;
+        }
+
+        @Override
+        public void visit(String name, Object value) {
+            System.out.println("Visiting annotation, name=" + name + " value=" + String.valueOf(value));
+        }
+
+        @Override
+        public AnnotationVisitor visitAnnotation(String name, String desc) {
+            System.out.print("Visiting annotation, name=" + name + " desc=" + desc);
+            return super.visitAnnotation(name, desc);
+        }
+    }
 	
 	@Override public String toString() {
 		StringBuilder builder = new StringBuilder();

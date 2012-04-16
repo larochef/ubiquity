@@ -3,6 +3,8 @@
  */
 package org.ubiquity.bytecode;
 
+import org.ubiquity.util.Constants;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,11 +28,11 @@ public class Property {
 	}
 	
 	public boolean isReadable() {
-		return getter != null;
+		return getter != null && !this.isIgnored();
 	}
 	
 	public boolean isWritable() {
-		return this.setter != null;
+		return this.setter != null && !this.isIgnored();
 	}
 
 	public String getGetter() {
@@ -83,6 +85,10 @@ public class Property {
 
     public void setTypeField(String typeField) {
         this.typeField = typeField;
+    }
+
+    private boolean isIgnored() {
+        return this.annotations != null && this.annotations.contains(Constants.IGNORE_ANNOTATION);
     }
 
     @Override
