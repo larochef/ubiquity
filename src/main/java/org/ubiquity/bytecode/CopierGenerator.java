@@ -4,6 +4,8 @@
 package org.ubiquity.bytecode;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import org.objectweb.asm.*;
@@ -31,13 +33,12 @@ public class CopierGenerator {
 	}
 	
 	public static <T, U> Copier<T, U> createCopier(Class<T> src, Class<U> destination) throws IllegalAccessException, InstantiationException {
-        Map<String, Property> properties = findProperties(src);
-        // TODO : find all compatible properties
+        List<Property> properties = listCompatibelProperties(src, destination);
         String srcName = byteCodeName(src);
         String destinationName = byteCodeName(destination);
         String className = "org/ubiquity/bytecode/generated/Copier" + src.getSimpleName() + destination.getSimpleName();
 
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        ClassWriter writer = new ClassWriter(0);
         writer.visit(V1_5, ACC_PUBLIC + ACC_FINAL, className,
                 "Lorg/ubiquity/util/SimpleCopier<" + getDescription(srcName) + getDescription(destinationName) + ">;",
                 "org/ubiquity/util/SimpleCopier", null);
@@ -63,18 +64,15 @@ public class CopierGenerator {
         visitor.visitVarInsn(ASTORE, 2);
         // End of init
 
-        for(Property p : properties.values()) {
-            if(p.isReadable() && p.isWritable()) {
-                visitor.visitVarInsn(ALOAD, 2);
-                visitor.visitVarInsn(ALOAD, 1);
-                // TODO : use actual property type !
-                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.getGetter(), "()" + getDescription(p.getTypeGetter()));
-                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.getSetter(), "(" + getDescription(p.getTypeSetter()) + ")V");
-            }
+        for(Property p : properties) {
+            visitor.visitVarInsn(ALOAD, 2);
+            visitor.visitVarInsn(ALOAD, 1);
+            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.getGetter(), "()" + getDescription(p.getTypeGetter()));
+            visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.getSetter(), "(" + getDescription(p.getTypeSetter()) + ")V");
         }
         visitor.visitVarInsn(ALOAD, 2);
         visitor.visitInsn(ARETURN);
-        visitor.visitMaxs(0,0);
+        visitor.visitMaxs(2,3);
         visitor.visitEnd();
 
         visitor = writer.visitMethod(ACC_PUBLIC + ACC_VOLATILE + ACC_BRIDGE, "map", "(Ljava/lang/Object;)Ljava/lang/Object;", null, null);
@@ -95,7 +93,39 @@ public class CopierGenerator {
         return createCopier(clazz, clazz);
 
     }
-	
+
+    private static List<Property> listCompatibelProperties(Class<?> source, Class<?> destination) {
+        List<Property> compatibleProperties = new ArrayList<Property>();
+        Map<String, Property> srcProperties = findProperties(source);
+        Map<String, Property> targetProperties = findProperties(destination);
+
+        for(String name : srcProperties.keySet()) {
+            Property property = srcProperties.get(name);
+            if(!property.isReadable()) {
+                continue;
+            }
+            Property dest = targetProperties.get(name);
+            if(dest != null && dest.isWritable()) {
+                Property p = new Property(dest.getTypeGetter());
+                p.setGetter(property.getGetter());
+                p.setSetter(dest.getSetter());
+                compatibleProperties.add(p);
+                continue;
+            }
+            for(Property targetProperty : targetProperties.values()) {
+                if(!targetProperty.isWritable()) {
+//                    if()) {
+//
+//                    }
+                    continue;
+                }
+                // TODO : check compatibility
+            }
+        }
+
+        return compatibleProperties;
+    }
+
 	private static String byteCodeName(Class<?> c) {
 		return c.getName().replaceAll("[\\.]", "/");
 	}
@@ -107,7 +137,7 @@ public class CopierGenerator {
     }
 
     private static String getDescription(String className){
-        if(className.indexOf('/') > 0) {
+        if(className.indexOf('/') < 0) {
             return className;
         }
         return 'L' + className + ';';

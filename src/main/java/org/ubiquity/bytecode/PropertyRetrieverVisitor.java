@@ -37,8 +37,6 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
 		if(isGetterOrSetter(name)) {
-            System.out.println("desc = " + desc);
-            System.out.println("signature = " + signature);
 			Property property = getProperty(getPropertyName(name));
 			char start = name.charAt(0);
 			if(start == 'g') {
