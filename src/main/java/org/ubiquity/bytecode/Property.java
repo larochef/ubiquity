@@ -15,10 +15,13 @@ public class Property {
 	private String name;
 	private String getter;
 	private String setter;
+    private String typeGetter;
+    private String typeSetter;
+    private String typeField;
 	
 	private List<String> annotations;
 	
-	public Property() {
+	public Property(String type) {
 		this.annotations = new ArrayList<String>();
 	}
 	
@@ -58,7 +61,31 @@ public class Property {
 		this.name = name;
 	}
 
-	@Override
+    public String getTypeGetter() {
+        return typeGetter;
+    }
+
+    public void setTypeGetter(String typeGetter) {
+        this.typeGetter = typeGetter;
+    }
+
+    public String getTypeSetter() {
+        return typeSetter;
+    }
+
+    public void setTypeSetter(String typeSetter) {
+        this.typeSetter = typeSetter;
+    }
+
+    public String getTypeField() {
+        return typeField;
+    }
+
+    public void setTypeField(String typeField) {
+        this.typeField = typeField;
+    }
+
+    @Override
 	public String toString() {
 		return "Property [name=" + String.valueOf(name) + ", getter=" + String.valueOf(getter) + ", setter="
 				+ String.valueOf(setter) + ", annotations=" + annotations + "]";

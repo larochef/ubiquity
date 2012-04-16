@@ -18,13 +18,6 @@ import org.objectweb.asm.MethodVisitor;
  *
  */
 public final class PropertyRetrieverVisitor extends ClassVisitor {
-	
-	private static final String EMPTY_SIGNATURE = "()";
-	private static final String BOOLEAN_GETTER_SIGNATURE = "()Z";
-	private static final String VOID = "V";
-	private static final String GET = "get";
-	private static final String SET = "set";
-	private static final String IS = "is";
 
 	private final Map<String, Property> properties;
 
@@ -37,19 +30,24 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
 		Property property = getProperty(name);
 		property.setName(name);
+        property.setTypeField(parseType(desc));
 		return new FieldReader(property);
 	}
 
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-		if(isGetterOrSetter(name, desc)) {
+		if(isGetterOrSetter(name)) {
+            System.out.println("desc = " + desc);
+            System.out.println("signature = " + signature);
 			Property property = getProperty(getPropertyName(name));
 			char start = name.charAt(0);
-			if(start == 's') {
-				property.setSetter(name);
+			if(start == 'g') {
+				property.setGetter(name);
+                property.setTypeGetter(parseReturnTypeFromDesc(desc));
 			}
 			else {
-				property.setGetter(name);
+				property.setSetter(name);
+                property.setTypeSetter(parseParameterFromDesc(desc));
 			}
 			return new MethodReader(property);
 		}
@@ -58,7 +56,7 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 	
 	private Property getProperty(String name) {
 		if(!this.properties.containsKey(name)) {
-			this.properties.put(name, new Property());
+			this.properties.put(name, new Property(name));
 		}
 		return this.properties.get(name);
 	}
@@ -71,73 +69,25 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 			build.append(functionName.substring(4));
 		}
 		return build.toString();
+		
 	}
-	
-	private static boolean isSingleParameter(String signature) {
-		int start = 1;
-		int end = signature.indexOf(")");
-		if(signature.charAt(start) == '[') {
-			start ++;
-		}
-		if(signature.charAt(start) == 'L') {
-			start = signature.indexOf(';');
-		}
-		start ++;
-		return start == end;
-	}
-	
-	private static boolean isSetter(String name, String signature) {
-		if(name == null || signature == null) {
-			return false;
-		}
-		if(!signature.endsWith(VOID)) {
-			return false;
-		}
-		if(!name.startsWith(SET)) {
-			return false;
-		}
+
+	private static boolean isGetterOrSetter(String name) {
 		if(name.length() < 4) {
 			return false;
 		}
-		if(!isUppercase(name.charAt(3))) {
+		if(name.charAt(1) != 'e') {
 			return false;
 		}
-		// last test : test if the function only accepts one parameter
-		return isSingleParameter(signature);
-	}
-
-	private static boolean isGetter(String name, String signature) {
-		if(name == null || signature == null) {
+		if(name.charAt(2) != 't') {
 			return false;
 		}
-		if(!signature.startsWith(EMPTY_SIGNATURE)) {
+		char start = name.charAt(0);
+		if(start != 'g' && start != 's') {
 			return false;
 		}
-		if(signature.endsWith(VOID)) {
-			return false;
-		}
-		// case for boolean, and not Boolean
-		if(name.startsWith(IS) && BOOLEAN_GETTER_SIGNATURE.equals(signature)) {
-			if(name.length() < 3) {
-				return false;
-			}
-			return isUppercase(name.charAt(2));
-		}
-		if(name.startsWith(GET)) {
-			if(name.length() < 4) {
-				return false;
-			}
-			return isUppercase(name.charAt(3));
-		}
-		return false;
-	}
-	
-	private static boolean isUppercase(char c) {
-		return c >= 'A' && c <= 'Z';
-	}
-
-	private static boolean isGetterOrSetter(String name, String signature) {
-		return isGetter(name, signature) || isSetter(name, signature);
+		char propertyStart = name.charAt(3);
+		return propertyStart >= 'A' && propertyStart <= 'Z';
 	}
 
 	private static class FieldReader extends FieldVisitor {
@@ -195,4 +145,22 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 		return properties;
 	}
 
+    private static String parseType(String value) {
+        if(value.startsWith("L")) {
+            return value.substring(1, value.indexOf(';'));
+        }
+        else {
+            return value;
+        }
+    }
+
+    private static String parseParameterFromDesc(String desc) {
+        String value = desc.substring(desc.indexOf('(') + 1, desc.indexOf(')'));
+        return parseType(value);
+    }
+
+
+    private static String parseReturnTypeFromDesc(String desc) {
+        return parseType(desc.substring(desc.indexOf(')') + 1));
+    }
 }
