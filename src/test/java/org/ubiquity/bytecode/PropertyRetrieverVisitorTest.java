@@ -17,16 +17,28 @@ import static junit.framework.Assert.*;
 public class PropertyRetrieverVisitorTest {
 
 	@Test
-	public void test() throws Exception {
-		long start = System.currentTimeMillis();
-		ClassReader reader = new ClassReader("org/ubiquity/bytecode/SimpleTestClass");
-		PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
-		reader.accept(visitor, 0);
-		long stop = System.currentTimeMillis();
-		System.out.println(visitor.toString());
-		System.out.println("ASM parsing took " + (stop - start) + "ms.");
-		
-	}
+     public void test() throws Exception {
+        long start = System.currentTimeMillis();
+        ClassReader reader = new ClassReader("org/ubiquity/bytecode/SimpleTestClass");
+        PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
+        reader.accept(visitor, 0);
+        long stop = System.currentTimeMillis();
+        System.out.println(visitor.toString());
+        System.out.println("ASM parsing took " + (stop - start) + "ms.");
+
+    }
+
+    @Test
+    public void testInheritance() throws Exception {
+        long start = System.currentTimeMillis();
+        ClassReader reader = new ClassReader("org/ubiquity/bytecode/InheritingClass");
+        PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
+        reader.accept(visitor, 0);
+        long stop = System.currentTimeMillis();
+        System.out.println(visitor.toString());
+        System.out.println("ASM parsing took " + (stop - start) + "ms.");
+
+    }
 	
 	@Test
 	public void testBeanutils() throws Exception{

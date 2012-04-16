@@ -5,13 +5,11 @@ package org.ubiquity.bytecode;
 
 import static org.ubiquity.util.Constants.ASM_LEVEL;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.objectweb.asm.AnnotationVisitor;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.FieldVisitor;
-import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.*;
 import org.ubiquity.util.Constants;
 
 /**
@@ -21,13 +19,28 @@ import org.ubiquity.util.Constants;
 public final class PropertyRetrieverVisitor extends ClassVisitor {
 
 	private final Map<String, Property> properties;
+    private PropertyRetrieverVisitor parent;
 
 	public PropertyRetrieverVisitor() {
 		super(ASM_LEVEL);
 		this.properties = new HashMap<String, Property>();
 	}
 
-	@Override
+    @Override
+    public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
+        if(!"java/lang/Object".equals(superName)) {
+            try {
+                this.parent = new PropertyRetrieverVisitor();
+                ClassReader r = new ClassReader(superName);
+                r.accept(this.parent, 0);
+            } catch (IOException e) {
+                throw new IllegalStateException("Unable to find class " + superName, e);
+            }
+        }
+        super.visit(version, access, name, signature, superName, interfaces);
+    }
+
+    @Override
 	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
 		Property property = getProperty(name);
 		property.setName(name);
@@ -147,12 +160,13 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 	@Override public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("PropertyRetrieverVisitor {");
-		for(String key : this.properties.keySet()) {
+        Map<String, Property> props = getProperties();
+		for(String key : props.keySet()) {
 			builder.append('\n')
 			.append("\t- Property ")
 			.append(key)
 			.append(" : ")
-			.append(this.properties.get(key))
+			.append(props.get(key))
 			;
 		}
 		builder.append('}');
@@ -160,7 +174,12 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
 	}
 
 	public Map<String, Property> getProperties() {
-		return properties;
+        Map<String, Property> mergedProperties = new HashMap<String, Property>();
+        if(this.parent != null) {
+            mergedProperties.putAll(parent.getProperties());
+        }
+        mergedProperties.putAll(this.properties);
+		return mergedProperties;
 	}
 
     private static String parseType(String value) {
