@@ -108,7 +108,9 @@ public class CopierGenerator {
             if(dest != null && dest.isWritable()) {
                 Property p = new Property(dest.getTypeGetter());
                 p.setGetter(property.getGetter());
+                p.setTypeGetter(property.getTypeGetter());
                 p.setSetter(dest.getSetter());
+                p.setTypeSetter(dest.getTypeSetter());
                 compatibleProperties.add(p);
                 continue;
             }
