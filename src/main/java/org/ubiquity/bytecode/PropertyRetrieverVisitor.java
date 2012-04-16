@@ -124,7 +124,6 @@ public final class PropertyRetrieverVisitor extends ClassVisitor {
                     this.property.getAnnotations().add(desc);
                 }
                 if(desc != null && desc.startsWith(UBIQUITY_ANNOTATION)) {
-                    System.out.println("Encountered annotation " + desc);
                     return new AnnotationReader(this.property, desc);
                 }
 			}
