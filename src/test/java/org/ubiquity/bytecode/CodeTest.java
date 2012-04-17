@@ -1,7 +1,5 @@
 package org.ubiquity.bytecode;
 
-import org.ubiquity.util.SimpleCopier;
-
 /**
  * Created with IntelliJ IDEA.
  * User: famille

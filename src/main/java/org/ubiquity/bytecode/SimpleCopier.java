@@ -1,4 +1,4 @@
-package org.ubiquity.util;
+package org.ubiquity.bytecode;
 
 import org.ubiquity.Copier;
 
