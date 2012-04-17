@@ -9,6 +9,9 @@ import java.util.List;
  * @author François LAROCHE
  */
 public abstract class SimpleCopier <T, U> implements Copier<T, U>{
+
+//    protected final
+
     @Override
     public List<U> map(List<T> elements) {
         List<U> result = new ArrayList<U>(elements.size());
@@ -17,4 +20,13 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
         }
         return result;
     }
+
+    @Override
+    public U map(T element) {
+        U target = newInstance();
+        copy(element, target);
+        return target;
+    }
+
+    protected abstract U newInstance();
 }

@@ -13,4 +13,6 @@ public interface Copier<T, U> {
 	U map(T element);
 	
 	List<U> map(List<T> elements);
+
+    void copy(T source, U destination);
 }

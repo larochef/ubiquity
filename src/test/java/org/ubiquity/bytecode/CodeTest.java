@@ -12,9 +12,12 @@ import org.ubiquity.util.SimpleCopier;
 public class CodeTest extends SimpleCopier<SimpleTestClass, SimpleTestClass> {
 
     @Override
-    public SimpleTestClass map(SimpleTestClass element) {
-        SimpleTestClass result = new SimpleTestClass();
-        result.setProperty1(element.getProperty1());
-        return result;
+    public void copy(SimpleTestClass src, SimpleTestClass target) {
+        target.setProperty1(src.getProperty1());
+    }
+
+    @Override
+    protected SimpleTestClass newInstance() {
+        return new SimpleTestClass();
     }
 }
