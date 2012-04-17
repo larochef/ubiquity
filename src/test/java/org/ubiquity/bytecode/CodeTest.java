@@ -9,6 +9,10 @@ package org.ubiquity.bytecode;
  */
 public class CodeTest extends SimpleCopier<SimpleTestClass, SimpleTestClass> {
 
+    public CodeTest(CopyContext context) {
+        super(context);
+    }
+
     @Override
     public void copy(SimpleTestClass src, SimpleTestClass target) {
         target.setProperty1(src.getProperty1());

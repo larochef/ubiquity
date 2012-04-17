@@ -10,7 +10,11 @@ import java.util.List;
  */
 public abstract class SimpleCopier <T, U> implements Copier<T, U>{
 
-//    protected final
+    protected final CopyContext context;
+
+    protected SimpleCopier(CopyContext context) {
+        this.context = context;
+    }
 
     @Override
     public List<U> map(List<T> elements) {
