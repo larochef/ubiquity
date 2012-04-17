@@ -4,6 +4,7 @@
 package org.ubiquity.bytecode;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ public class CopierGenerator {
 	}
 	
 	public static <T, U> Copier<T, U> createCopier(Class<T> src, Class<U> destination, CopyContext ctx)
-            throws IllegalAccessException, InstantiationException {
+            throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         List<Property> properties = listCompatibelProperties(src, destination);
         String srcName = byteCodeName(src);
         String destinationName = byteCodeName(destination);
@@ -41,30 +42,26 @@ public class CopierGenerator {
 
         ClassWriter writer = new ClassWriter(0);
         writer.visit(V1_5, ACC_PUBLIC + ACC_FINAL, className,
-                "Lorg/ubiquity/util/SimpleCopier<" + getDescription(srcName) + getDescription(destinationName) + ">;",
-                "org/ubiquity/util/SimpleCopier", null);
+                "Lorg/ubiquity/bytecode/SimpleCopier<" + getDescription(srcName) + getDescription(destinationName) + ">;",
+                "org/ubiquity/bytecode/SimpleCopier", null);
 
-        MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC, "<init>", "(Lorg/ubiquity/bytecode/CopyContext;)V", null, null);
         Label label1 = new Label();
         visitor.visitLabel(label1);
         visitor.visitVarInsn(ALOAD, 0);
-        visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/util/SimpleCopier", "<init>", "()V");
-        visitor.visitInsn(RETURN);
+        visitor.visitVarInsn(ALOAD, 1);
+        visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/bytecode/SimpleCopier", "<init>", "(Lorg/ubiquity/bytecode/CopyContext;)V");
         Label label2 = new Label();
         visitor.visitLabel(label2);
-        visitor.visitLocalVariable("this", getDescription(className), null, label1, label2, 0);
-        visitor.visitMaxs(1, 1);
+        visitor.visitInsn(RETURN);
+        Label label3 = new Label();
+        visitor.visitLabel(label3);
+        visitor.visitLocalVariable("this", getDescription(className), null, label1, label3, 0);
+        visitor.visitLocalVariable("context", getDescription(className), null, label1, label3, 1);
+        visitor.visitMaxs(2, 2);
         visitor.visitEnd();
 
-        visitor = writer.visitMethod(ACC_PUBLIC + ACC_FINAL, "map", '(' + getDescription(srcName) + ')' + getDescription(destinationName), null, null);
-        // Construct result
-        visitor.visitTypeInsn(NEW, destinationName);
-        visitor.visitInsn(DUP);
-        visitor.visitMethodInsn(INVOKESPECIAL, destinationName, "<init>", "()V");
-        // Load it in a frame
-        visitor.visitVarInsn(ASTORE, 2);
-        // End of init
-
+        visitor = writer.visitMethod(ACC_PUBLIC + ACC_FINAL, "copy", '(' + getDescription(srcName) + getDescription(destinationName) + ")V", null, null);
         for(Property p : properties) {
             visitor.visitVarInsn(ALOAD, 2);
             visitor.visitVarInsn(ALOAD, 1);
@@ -72,28 +69,50 @@ public class CopierGenerator {
             visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.getSetter(), "(" + getDescription(p.getTypeSetter()) + ")V");
         }
         visitor.visitVarInsn(ALOAD, 2);
-        visitor.visitInsn(ARETURN);
-        visitor.visitMaxs(2,3);
+        visitor.visitInsn(RETURN);
+        visitor.visitMaxs(3,3);
         visitor.visitEnd();
 
-        visitor = writer.visitMethod(ACC_PUBLIC + ACC_VOLATILE + ACC_BRIDGE, "map", "(Ljava/lang/Object;)Ljava/lang/Object;", null, null);
+        visitor = writer.visitMethod(ACC_PUBLIC + ACC_VOLATILE + ACC_BRIDGE, "copy", "(Ljava/lang/Object;Ljava/lang/Object;)V", null, null);
         visitor.visitVarInsn(ALOAD, 0);
         visitor.visitVarInsn(ALOAD, 1);
         visitor.visitTypeInsn(CHECKCAST, srcName);
-        visitor.visitMethodInsn(INVOKEVIRTUAL, className, "map", '(' + getDescription(srcName) + ')' + getDescription(destinationName));
+        visitor.visitVarInsn(ALOAD, 2);
+        visitor.visitTypeInsn(CHECKCAST, destinationName);
+        visitor.visitMethodInsn(INVOKEVIRTUAL, className, "copy", '(' + getDescription(srcName) + getDescription(destinationName) + ")V");
+        visitor.visitInsn(RETURN);
+        visitor.visitMaxs(3, 3);
+        visitor.visitEnd();
+
+        visitor = writer.visitMethod(ACC_PROTECTED + ACC_VOLATILE + ACC_BRIDGE, "newInstance", "()Ljava/lang/Object;", null, null);
+        visitor.visitVarInsn(ALOAD, 0);
+        visitor.visitMethodInsn(INVOKEVIRTUAL, className, "newInstance", "()" + getDescription(destinationName));
         visitor.visitInsn(ARETURN);
-        visitor.visitMaxs(2, 2);
+        visitor.visitMaxs(1, 1);
+        visitor.visitEnd();
+
+        visitor = writer.visitMethod(ACC_PROTECTED, "newInstance", "()" + getDescription(destinationName), null, null);
+        visitor.visitTypeInsn(NEW, destinationName);
+        visitor.visitInsn(DUP);
+        visitor.visitMethodInsn(INVOKESPECIAL, destinationName, "<init>", "()V");
+        visitor.visitInsn(ARETURN);
+        visitor.visitMaxs(2, 1);
+        visitor.visitEnd();
+
         writer.visitEnd();
 
+
+
         Class<?> resultClass = loader.defineClass(className.replaceAll("[/]", "."), writer.toByteArray());
-        Copier<T,U> instance = (Copier<T,U>) resultClass.newInstance();
+        @SuppressWarnings("unchecked")
+        Copier<T,U> instance =  (Copier<T,U>) resultClass.getConstructor(CopyContext.class).newInstance(ctx);
         ctx.registerCopier(src, destination, instance);
         ctx.createRequiredCopiers();
         return instance;
 	}
 
     public static <T> Copier<T, T> createCopier(Class<T> clazz, CopyContext ctx)
-            throws IllegalAccessException, InstantiationException {
+            throws IllegalAccessException, InstantiationException, InvocationTargetException, NoSuchMethodException {
         return createCopier(clazz, clazz, ctx);
 
     }
@@ -118,7 +137,7 @@ public class CopierGenerator {
                 compatibleProperties.add(p);
                 continue;
             }
-            for(Property targetProperty : targetProperties.values()) {
+            /*for(Property targetProperty : targetProperties.values()) {
                 if(!targetProperty.isWritable()) {
 //                    if()) {
 //
@@ -126,7 +145,7 @@ public class CopierGenerator {
                     continue;
                 }
                 // TODO : check compatibility
-            }
+            }*/
         }
 
         return compatibleProperties;

@@ -3,6 +3,7 @@ package org.ubiquity.bytecode;
 import org.ubiquity.Copier;
 import org.ubiquity.util.ClassTuple;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,7 +48,7 @@ public class CopyContext {
         }
     }
 
-    <T, U> void createRequiredCopiers() throws InstantiationException, IllegalAccessException {
+    <T, U> void createRequiredCopiers() throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         while(!this.requiredTuples.isEmpty()) {
             ClassTuple<T,U> tuple;
             synchronized (this.requiredTuples) {
