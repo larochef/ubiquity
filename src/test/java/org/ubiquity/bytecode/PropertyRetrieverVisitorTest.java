@@ -51,7 +51,8 @@ public class PropertyRetrieverVisitorTest {
 
     @Test
     public void testCopierCreation() throws Exception {
-        Copier<SimpleTestClass, SimpleTestClass> copier = CopierGenerator.createCopier(SimpleTestClass.class);
+        CopyContext ctx = new CopyContext();
+        Copier<SimpleTestClass, SimpleTestClass> copier = CopierGenerator.createCopier(SimpleTestClass.class, ctx);
         assertNotNull(copier);
         SimpleTestClass testObject = new SimpleTestClass();
         String value = "This is a test";

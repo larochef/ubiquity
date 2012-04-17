@@ -32,7 +32,8 @@ public class CopierGenerator {
 		}
 	}
 	
-	public static <T, U> Copier<T, U> createCopier(Class<T> src, Class<U> destination) throws IllegalAccessException, InstantiationException {
+	public static <T, U> Copier<T, U> createCopier(Class<T> src, Class<U> destination, CopyContext ctx)
+            throws IllegalAccessException, InstantiationException {
         List<Property> properties = listCompatibelProperties(src, destination);
         String srcName = byteCodeName(src);
         String destinationName = byteCodeName(destination);
@@ -85,12 +86,15 @@ public class CopierGenerator {
         writer.visitEnd();
 
         Class<?> resultClass = loader.defineClass(className.replaceAll("[/]", "."), writer.toByteArray());
-
-        return (Copier<T,U>) resultClass.newInstance();
+        Copier<T,U> instance = (Copier<T,U>) resultClass.newInstance();
+        ctx.registerCopier(src, destination, instance);
+        ctx.createRequiredCopiers();
+        return instance;
 	}
 
-    public static <T> Copier<T, T> createCopier(Class<T> clazz) throws IllegalAccessException, InstantiationException {
-        return createCopier(clazz, clazz);
+    public static <T> Copier<T, T> createCopier(Class<T> clazz, CopyContext ctx)
+            throws IllegalAccessException, InstantiationException {
+        return createCopier(clazz, clazz, ctx);
 
     }
 

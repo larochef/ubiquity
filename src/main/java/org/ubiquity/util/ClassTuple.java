@@ -29,7 +29,15 @@ public final class ClassTuple<T, U> {
 		return hashcode;
 	}
 
-	@Override
+    public Class<T> gettClass() {
+        return tClass;
+    }
+
+    public Class<U> getuClass() {
+        return uClass;
+    }
+
+    @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {return true;}
 		if (obj == null) {return false;}
