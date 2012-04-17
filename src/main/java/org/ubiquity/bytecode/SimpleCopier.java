@@ -33,4 +33,53 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
     }
 
     protected abstract U newInstance();
+
+    protected int objectToPrimitive(Integer value) {
+        if(value != null) {
+            return value.intValue();
+        }
+        return 0;
+    }
+
+    protected boolean objectToPrimitive(Boolean value) {
+        if(value != null) {
+            return value.booleanValue();
+        }
+        return false;
+    }
+
+    protected long objectToPrimitive(Long value) {
+        if(value != null) {
+            return value.longValue();
+        }
+        return 0l;
+    }
+
+    protected double objectToPrimitive(Double value) {
+        if(value != null) {
+            return value.doubleValue();
+        }
+        return 0d;
+    }
+
+    protected float objectToPrimitive(Float value) {
+        if(value != null) {
+            return value.floatValue();
+        }
+        return 0f;
+    }
+
+    protected char objectToPrimitive(Character value) {
+        if(value != null) {
+            return value.charValue();
+        }
+        return (char)0;
+    }
+
+    protected byte objectToPrimitive(Byte value) {
+        if(value != null) {
+            return value.byteValue();
+        }
+        return 0x0;
+    }
 }
