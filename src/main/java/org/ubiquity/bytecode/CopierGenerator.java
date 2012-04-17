@@ -21,7 +21,8 @@ public class CopierGenerator {
 	
 	private CopierGenerator() {}
 
-    private static MyClassLoader loader = new MyClassLoader();
+    private static final MyClassLoader loader = new MyClassLoader();
+
 	public static Map<String, Property> findProperties(Class<?> clazz) {
 		try {
 			ClassReader reader = new ClassReader(byteCodeName(clazz));
@@ -111,8 +112,6 @@ public class CopierGenerator {
 
         writer.visitEnd();
 
-
-
         Class<?> resultClass = loader.defineClass(className.replaceAll("[/]", "."), writer.toByteArray());
         @SuppressWarnings("unchecked")
         Copier<T,U> instance =  (Copier<T,U>) resultClass.getConstructor(CopyContext.class).newInstance(ctx);
@@ -166,7 +165,7 @@ public class CopierGenerator {
 	}
 
     private static class MyClassLoader extends ClassLoader {
-        public Class defineClass(String name, byte[] b) {
+        public Class<?> defineClass(String name, byte[] b) {
             return defineClass(name, b, 0, b.length);
         }
     }
