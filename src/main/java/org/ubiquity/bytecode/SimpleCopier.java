@@ -58,13 +58,27 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
     protected abstract U newInstance();
 
     /**
+     * converts a java.lang.Short to a short.
+     * Of the given parameter is null, this method will return 0.
+     *
+     * @param value the java.lang.Short to convert
+     * @return the converted short
+     */
+    protected short convert(Short value) {
+        if(value != null) {
+            return value.shortValue();
+        }
+        return 0;
+    }
+
+    /**
      * converts a java.lang.Integer to an int.
      * Of the given parameter is null, this method will return 0.
      *
      * @param value the java.lang.Integer to convert
      * @return the converted int
      */
-    protected int objectToPrimitive(Integer value) {
+    protected int convert(Integer value) {
         if(value != null) {
             return value.intValue();
         }
@@ -78,7 +92,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Boolean to convert
      * @return the converted boolean
      */
-    protected boolean objectToPrimitive(Boolean value) {
+    protected boolean convert(Boolean value) {
         if(value != null) {
             return value.booleanValue();
         }
@@ -92,7 +106,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Long to convert
      * @return the converted long
      */
-    protected long objectToPrimitive(Long value) {
+    protected long convert(Long value) {
         if(value != null) {
             return value.longValue();
         }
@@ -106,7 +120,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Double to convert
      * @return the converted double
      */
-    protected double objectToPrimitive(Double value) {
+    protected double convert(Double value) {
         if(value != null) {
             return value.doubleValue();
         }
@@ -120,7 +134,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Float to convert
      * @return the converted float
      */
-    protected float objectToPrimitive(Float value) {
+    protected float convert(Float value) {
         if(value != null) {
             return value.floatValue();
         }
@@ -134,7 +148,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Character to convert
      * @return the converted char
      */
-    protected char objectToPrimitive(Character value) {
+    protected char convert(Character value) {
         if(value != null) {
             return value.charValue();
         }
@@ -148,10 +162,101 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Bte to convert
      * @return the converted byte
      */
-    protected byte objectToPrimitive(Byte value) {
+    protected byte convert(Byte value) {
         if(value != null) {
             return value.byteValue();
         }
         return 0x0;
     }
+
+    /**
+     * converts a short to a  java.lang.Short
+     *
+     * @param value the short to convert
+     * @return the converted java.lang.Short
+     */
+    protected Short convert(short value) {
+        return Short.valueOf(value);
+    }
+
+    /**
+     * converts an int to a  java.lang.Integer
+     *
+     * @param value the int to convert
+     * @return the converted java.lang.Integer
+     */
+    protected Integer convert(int value) {
+        return Integer.valueOf(value);
+    }
+
+    /**
+     * converts a boolean to a java.lang.Boolean.
+     *
+     * @param value the boolean to convert
+     * @return the converted java.lang.Boolean
+     */
+    protected Boolean convert(boolean value) {
+        return Boolean.valueOf(value);
+    }
+
+    /**
+     * converts a long to a java.lang.Long.
+     *
+     * @param value the long to convert
+     * @return the converted java.lang.Long
+     */
+    protected Long convert(long value) {
+        return Long.valueOf(value);
+    }
+
+    /**
+     * converts a double to a java.lang.Double.
+     *
+     * @param value the double to convert
+     * @return the converted java.lang.Double
+     */
+    protected Double convert(double value) {
+        return Double.valueOf(value);
+    }
+
+    /**
+     * converts a float to a java.lang.Float.
+     *
+     * @param value the float to convert
+     * @return the converted java.lang.Float
+     */
+    protected Float convert(float value) {
+        return Float.valueOf(value);
+    }
+
+    /**
+     * converts a char to a java.lang.Character.
+     *
+     * @param value the char to convert
+     * @return the converted java.lang.Character
+     */
+    protected Character convert(char value) {
+        return Character.valueOf(value);
+    }
+
+    /**
+     * converts a byte to a java.lang.Byte.
+     *
+     * @param value the byte to convert
+     * @return the converted java.lang.Byte
+     */
+    protected Byte convert(byte value) {
+        return Byte.valueOf(value);
+    }
+
+
+
+
+
+
+    protected <T,U> U[] copyArray(T[] src) {
+//        System.arraycopy();
+        return null;
+    }
+
 }

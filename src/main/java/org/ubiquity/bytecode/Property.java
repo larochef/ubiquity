@@ -6,6 +6,7 @@ package org.ubiquity.bytecode;
 import org.ubiquity.util.Constants;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -13,6 +14,8 @@ import java.util.List;
  *
  */
 public class Property {
+
+    private static final List<String> SIMPLE_PROPERTIES = Arrays.asList("Z", "I", "F", "J", "D", "C", "S");
 
 	private String name;
 	private String getter;
@@ -91,12 +94,28 @@ public class Property {
         return this.annotations != null && this.annotations.contains(Constants.IGNORE_ANNOTATION);
     }
 
+    public boolean isArray(PropertyType type) {
+        String property = type == PropertyType.GETTER ? this.typeGetter : this.typeSetter;
+        return this.name.charAt(0) == '[';
+    }
+
+    public boolean isSimpleType(PropertyType type) {
+        String property = type == PropertyType.GETTER ? this.typeGetter : this.typeSetter;
+        if(property.startsWith("[")) {
+            property = property.substring(1);
+        }
+        return SIMPLE_PROPERTIES.contains(property);
+    }
+
     @Override
 	public String toString() {
 		return "Property [name=" + String.valueOf(name) + ", getter=" + String.valueOf(getter) + ", setter="
 				+ String.valueOf(setter) + ", annotations=" + annotations + "]";
 	}
-	
+
+    public enum PropertyType {
+        GETTER, SETTER
+    }
 	
 	
 }

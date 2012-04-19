@@ -6,6 +6,7 @@ package org.ubiquity.bytecode;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -18,6 +19,26 @@ import static  org.objectweb.asm.Opcodes.*;
  *
  */
 public class CopierGenerator {
+
+    private static final Map<String, String> SIMPLE_PROPERTIES = new HashMap<String, String>();
+    static {
+        SIMPLE_PROPERTIES.put("Z", "Ljava/lang/Boolean;");
+        SIMPLE_PROPERTIES.put("Ljava/lang/Boolean;", "Z");
+        SIMPLE_PROPERTIES.put("C", "Ljava/lang/Character;");
+        SIMPLE_PROPERTIES.put("Ljava/lang/Character;", "C");
+        SIMPLE_PROPERTIES.put("B", "Ljava/lang/Byte;");
+        SIMPLE_PROPERTIES.put("Ljava/lang/Byte;", "B");
+        SIMPLE_PROPERTIES.put("S", "Ljava/lang/Short;");
+        SIMPLE_PROPERTIES.put("Ljava/lang/Short;", "S");
+        SIMPLE_PROPERTIES.put("I", "Ljava/lang/Integer;");
+        SIMPLE_PROPERTIES.put("Ljava/lang/Integer;", "I");
+        SIMPLE_PROPERTIES.put("F", "Ljava/lang/Float;");
+        SIMPLE_PROPERTIES.put("Ljava/lang/Floats;", "F");
+        SIMPLE_PROPERTIES.put("J", "Ljava/lang/Long;");
+        SIMPLE_PROPERTIES.put("Ljava/lang/Long;", "J");
+        SIMPLE_PROPERTIES.put("D", "Ljava/lang/Double;");
+        SIMPLE_PROPERTIES.put("Ljava/lang/Double;", "D");
+    }
 	
 	private CopierGenerator() {}
 
@@ -100,10 +121,28 @@ public class CopierGenerator {
 
         MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC + ACC_FINAL, "copy", '(' + getDescription(srcName) + getDescription(destinationName) + ")V", null, null);
         for(Property p : properties) {
-            visitor.visitVarInsn(ALOAD, 2);
-            visitor.visitVarInsn(ALOAD, 1);
-            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.getGetter(), "()" + getDescription(p.getTypeGetter()));
-            visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.getSetter(), "(" + getDescription(p.getTypeSetter()) + ")V");
+            String descriptionGetter = getDescription(p.getTypeGetter());
+            String descriptionSetter = getDescription(p.getTypeSetter());
+            // Handle simple properties, like String, Integer
+            if(SIMPLE_PROPERTIES.containsKey(descriptionGetter)
+                    && SIMPLE_PROPERTIES.get(descriptionGetter).equals(descriptionSetter)
+                    || descriptionGetter.equals(descriptionSetter)) {
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitVarInsn(ALOAD, 1);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.getGetter(), "()" + descriptionGetter);
+                if(!descriptionGetter.equals(descriptionSetter)) {
+                    visitor.visitVarInsn(ALOAD, 0);
+                    visitor.visitMethodInsn(INVOKEVIRTUAL, className, "convert", "(" + descriptionGetter + ")" + descriptionSetter);
+                }
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.getSetter(), "(" + descriptionSetter + ")V");
+            }
+            // Handle complex properties, ie possibly needing conversion
+            else {
+                // Get the U.class
+                Type.getType(descriptionSetter);
+                // TODO : copy object, or map it if null !
+                // TODO : handle collections
+            }
         }
         visitor.visitVarInsn(ALOAD, 2);
         visitor.visitInsn(RETURN);
@@ -136,7 +175,7 @@ public class CopierGenerator {
             if(!property.isReadable()) {
                 continue;
             }
-            Property dest = targetProperties.get(name);
+            Property dest = resolveTargetProperty(property, targetProperties);
             if(dest != null && dest.isWritable()) {
                 Property p = new Property(dest.getTypeGetter());
                 p.setGetter(property.getGetter());
@@ -144,20 +183,14 @@ public class CopierGenerator {
                 p.setSetter(dest.getSetter());
                 p.setTypeSetter(dest.getTypeSetter());
                 compatibleProperties.add(p);
-                continue;
             }
-            /*for(Property targetProperty : targetProperties.values()) {
-                if(!targetProperty.isWritable()) {
-//                    if()) {
-//
-//                    }
-                    continue;
-                }
-                // TODO : check compatibility
-            }*/
         }
 
         return compatibleProperties;
+    }
+
+    private static Property resolveTargetProperty(Property src, Map<String, Property> targetProperties) {
+        return targetProperties.get(src.getName());
     }
 
 	private static String byteCodeName(Class<?> c) {
@@ -166,7 +199,11 @@ public class CopierGenerator {
 
     private static class MyClassLoader extends ClassLoader {
         public Class<?> defineClass(String name, byte[] b) {
-            return defineClass(name, b, 0, b.length);
+            Class result = this.findLoadedClass(name);
+            if(result == null) {
+                result = defineClass(name, b, 0, b.length);
+            }
+            return result;
         }
     }
 

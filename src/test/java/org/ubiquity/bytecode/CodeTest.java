@@ -15,6 +15,7 @@ public class CodeTest extends SimpleCopier<SimpleTestClass, SimpleTestClass> {
 
     @Override
     public void copy(SimpleTestClass src, SimpleTestClass target) {
+        Class<?> test = SimpleTestClass.class;
         target.setProperty1(src.getProperty1());
     }
 
@@ -22,4 +23,5 @@ public class CodeTest extends SimpleCopier<SimpleTestClass, SimpleTestClass> {
     protected SimpleTestClass newInstance() {
         return new SimpleTestClass();
     }
+
 }
