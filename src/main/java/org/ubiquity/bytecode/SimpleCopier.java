@@ -77,11 +77,11 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
     protected abstract U newInstance();
 
     /**
-     * Instanciate an object of the U class.
+     * Instanciate an array of U.
      * This method is needed, because instanciating U from reflexion is slow.
      * Implementors are expected to implement it with a "new".
      *
-     * @return a newly instanciated object of class U
+     * @return a newly instanciated array of U
      */
     protected abstract U[] newArray(int capacity);
 
@@ -92,7 +92,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Short to convert
      * @return the converted short
      */
-    protected short convert(Short value) {
+    protected final short convert(Short value) {
         if(value != null) {
             return value.shortValue();
         }
@@ -106,7 +106,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Integer to convert
      * @return the converted int
      */
-    protected int convert(Integer value) {
+    protected final int convert(Integer value) {
         if(value != null) {
             return value.intValue();
         }
@@ -120,7 +120,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Boolean to convert
      * @return the converted boolean
      */
-    protected boolean convert(Boolean value) {
+    protected final boolean convert(Boolean value) {
         if(value != null) {
             return value.booleanValue();
         }
@@ -134,7 +134,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Long to convert
      * @return the converted long
      */
-    protected long convert(Long value) {
+    protected final long convert(Long value) {
         if(value != null) {
             return value.longValue();
         }
@@ -148,7 +148,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Double to convert
      * @return the converted double
      */
-    protected double convert(Double value) {
+    protected final double convert(Double value) {
         if(value != null) {
             return value.doubleValue();
         }
@@ -162,7 +162,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Float to convert
      * @return the converted float
      */
-    protected float convert(Float value) {
+    protected final float convert(Float value) {
         if(value != null) {
             return value.floatValue();
         }
@@ -176,7 +176,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Character to convert
      * @return the converted char
      */
-    protected char convert(Character value) {
+    protected final char convert(Character value) {
         if(value != null) {
             return value.charValue();
         }
@@ -190,7 +190,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the java.lang.Bte to convert
      * @return the converted byte
      */
-    protected byte convert(Byte value) {
+    protected final byte convert(Byte value) {
         if(value != null) {
             return value.byteValue();
         }
@@ -203,7 +203,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the short to convert
      * @return the converted java.lang.Short
      */
-    protected Short convert(short value) {
+    protected final Short convert(short value) {
         return Short.valueOf(value);
     }
 
@@ -213,7 +213,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the int to convert
      * @return the converted java.lang.Integer
      */
-    protected Integer convert(int value) {
+    protected final Integer convert(int value) {
         return Integer.valueOf(value);
     }
 
@@ -223,7 +223,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the boolean to convert
      * @return the converted java.lang.Boolean
      */
-    protected Boolean convert(boolean value) {
+    protected final Boolean convert(boolean value) {
         return Boolean.valueOf(value);
     }
 
@@ -233,7 +233,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the long to convert
      * @return the converted java.lang.Long
      */
-    protected Long convert(long value) {
+    protected final Long convert(long value) {
         return Long.valueOf(value);
     }
 
@@ -243,7 +243,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the double to convert
      * @return the converted java.lang.Double
      */
-    protected Double convert(double value) {
+    protected final Double convert(double value) {
         return Double.valueOf(value);
     }
 
@@ -253,7 +253,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the float to convert
      * @return the converted java.lang.Float
      */
-    protected Float convert(float value) {
+    protected final Float convert(float value) {
         return Float.valueOf(value);
     }
 
@@ -263,7 +263,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the char to convert
      * @return the converted java.lang.Character
      */
-    protected Character convert(char value) {
+    protected final Character convert(char value) {
         return Character.valueOf(value);
     }
 
@@ -273,7 +273,7 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @param value the byte to convert
      * @return the converted java.lang.Byte
      */
-    protected Byte convert(byte value) {
+    protected final Byte convert(byte value) {
         return Byte.valueOf(value);
     }
 

@@ -103,23 +103,6 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 		return propertyStart >= 'A' && propertyStart <= 'Z';
 	}
 
-/*	private static class FieldReader extends FieldVisitor {
-		private final Property property;
-		
-		private FieldReader(Property property) {
-			super(ASM_LEVEL);
-			this.property = property;
-		}
-
-		@Override
-		public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-			if(visible) {
-				this.property.getAnnotations().add(desc);
-			}
-			return super.visitAnnotation(desc, visible);
-		}
-	}*/
-	
 	private final class MethodReader extends MethodVisitor {
 		
 		private final Property property;
