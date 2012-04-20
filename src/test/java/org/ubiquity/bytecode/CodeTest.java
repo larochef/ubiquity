@@ -24,4 +24,9 @@ public class CodeTest extends SimpleCopier<SimpleTestClass, SimpleTestClass> {
         return new SimpleTestClass();
     }
 
+    @Override
+    protected SimpleTestClass[] newArray(int capacity) {
+        return new SimpleTestClass[capacity];
+    }
+
 }

@@ -35,4 +35,14 @@ public interface Copier<T, U> {
      * @param destination the destination object, in which to write the properties
      */
     void copy(T source, U destination);
+
+    /**
+     *
+     *
+     * @param src
+     * @param target
+     * @return
+     */
+    U[] map (T[] src, U[] target);
+
 }

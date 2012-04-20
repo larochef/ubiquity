@@ -8,8 +8,8 @@ import java.util.List;
 /**
  * Copier stub, making implementations easier.
  *
- * @param <T></T> The source class
- * @param <U></U> the destination class
+ * @param <T> The source class
+ * @param <U> the destination class
  *
  * @author François LAROCHE
  */
@@ -48,6 +48,25 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
         return target;
     }
 
+    @Override
+    public U[] map(T[] src, U[] target) {
+        if(src == null) {
+            return null;
+        }
+        U[] result = this.newArray(src.length);
+
+        for(int i = 0; i < src.length; i++) {
+            if(target != null && target.length > i) {
+                this.copy(src[i], target[i]);
+                result[i] = target[i];
+            }
+            else {
+                result[i] = this.map(src[i]);
+            }
+        }
+        return result;
+    }
+
     /**
      * Instanciate an object of the U class.
      * This method is needed, because instanciating U from reflexion is slow.
@@ -56,6 +75,15 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @return a newly instanciated object of class U
      */
     protected abstract U newInstance();
+
+    /**
+     * Instanciate an object of the U class.
+     * This method is needed, because instanciating U from reflexion is slow.
+     * Implementors are expected to implement it with a "new".
+     *
+     * @return a newly instanciated object of class U
+     */
+    protected abstract U[] newArray(int capacity);
 
     /**
      * converts a java.lang.Short to a short.
@@ -247,16 +275,6 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      */
     protected Byte convert(byte value) {
         return Byte.valueOf(value);
-    }
-
-
-
-
-
-
-    protected <T,U> U[] copyArray(T[] src) {
-//        System.arraycopy();
-        return null;
     }
 
 }

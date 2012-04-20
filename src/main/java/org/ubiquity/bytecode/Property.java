@@ -15,8 +15,6 @@ import java.util.List;
  */
 public class Property {
 
-    private static final List<String> SIMPLE_PROPERTIES = Arrays.asList("Z", "I", "F", "J", "D", "C", "S");
-
 	private String name;
 	private String getter;
 	private String setter;
@@ -92,19 +90,6 @@ public class Property {
 
     private boolean isIgnored() {
         return this.annotations != null && this.annotations.contains(Constants.IGNORE_ANNOTATION);
-    }
-
-    public boolean isArray(PropertyType type) {
-        String property = type == PropertyType.GETTER ? this.typeGetter : this.typeSetter;
-        return this.name.charAt(0) == '[';
-    }
-
-    public boolean isSimpleType(PropertyType type) {
-        String property = type == PropertyType.GETTER ? this.typeGetter : this.typeSetter;
-        if(property.startsWith("[")) {
-            property = property.substring(1);
-        }
-        return SIMPLE_PROPERTIES.contains(property);
     }
 
     @Override

@@ -15,10 +15,13 @@ import org.ubiquity.Copier;
 import static  org.objectweb.asm.Opcodes.*;
 
 /**
+ *
+ * TODO : when copying arrays / list, don't expect the order to exactly match, find a way to configure matching !!!
+ *
  * @author François LAROCHE
  *
  */
-public class CopierGenerator {
+class CopierGenerator {
 
     private static final Map<String, String> SIMPLE_PROPERTIES = new HashMap<String, String>();
     static {
@@ -38,6 +41,7 @@ public class CopierGenerator {
         SIMPLE_PROPERTIES.put("Ljava/lang/Long;", "J");
         SIMPLE_PROPERTIES.put("D", "Ljava/lang/Double;");
         SIMPLE_PROPERTIES.put("Ljava/lang/Double;", "D");
+        SIMPLE_PROPERTIES.put("Ljava/lang/String;", "Ljava/lang/String;");
     }
 	
 	private CopierGenerator() {}
@@ -125,8 +129,8 @@ public class CopierGenerator {
             String descriptionSetter = getDescription(p.getTypeSetter());
             // Handle simple properties, like String, Integer
             if(SIMPLE_PROPERTIES.containsKey(descriptionGetter)
-                    && SIMPLE_PROPERTIES.get(descriptionGetter).equals(descriptionSetter)
-                    || descriptionGetter.equals(descriptionSetter)) {
+                    && (SIMPLE_PROPERTIES.get(descriptionGetter).equals(descriptionSetter)
+                    || descriptionGetter.equals(descriptionSetter))) {
                 visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitVarInsn(ALOAD, 1);
                 visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.getGetter(), "()" + descriptionGetter);
@@ -138,10 +142,24 @@ public class CopierGenerator {
             }
             // Handle complex properties, ie possibly needing conversion
             else {
+                // Load converter
+                // Handle cas of arrays
+                if(descriptionGetter.startsWith("[")) {
+                    visitor.visitVarInsn(ALOAD, 2);
+                    visitor.visitVarInsn(ALOAD, 0);
+                    visitor.visitVarInsn(ALOAD, 1);
+                    visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.getGetter(), "()" + descriptionGetter);
+                    visitor.visitMethodInsn(INVOKEVIRTUAL, className, "map", "([" + getDescription(srcName) + ",[" +  getDescription(destinationName)
+                            + ")[" + getDescription(destinationName));
+                    visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.getSetter(), "(" + descriptionSetter + ")V");
+                }
+                else {
+                // case of objects
                 // Get the U.class
-                Type.getType(descriptionSetter);
+//                visitor.visitLdcInsn(Type.getType(descriptionSetter));
                 // TODO : copy object, or map it if null !
                 // TODO : handle collections
+                }
             }
         }
         visitor.visitVarInsn(ALOAD, 2);
