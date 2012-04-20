@@ -97,10 +97,4 @@ class Property {
 		return "Property [name=" + String.valueOf(name) + ", getter=" + String.valueOf(getter) + ", setter="
 				+ String.valueOf(setter) + ", annotations=" + annotations + "]";
 	}
-
-    public enum PropertyType {
-        GETTER, SETTER
-    }
-	
-	
 }
