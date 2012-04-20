@@ -1,5 +1,6 @@
 package org.ubiquity.bytecode;
 
+import org.omg.CORBA.PUBLIC_MEMBER;
 import org.ubiquity.Copier;
 import org.ubiquity.util.ClassTuple;
 
@@ -21,16 +22,26 @@ public class CopyContext {
     private Map<ClassTuple<?,?>, Copier<?,?>> copiers;
     private List<ClassTuple<?,?>> requiredTuples;
 
-    CopyContext() {
+    public CopyContext() {
         this.copiers = new HashMap<ClassTuple<?, ?>, Copier<?, ?>>();
         this.requiredTuples = new ArrayList<ClassTuple<?, ?>>();
     }
 
-    <T, U> Copier<T,U> getCopier(Class<T> source, Class<U> destination) {
-        return (Copier<T,U>) copiers.get(new ClassTuple<T, U>(source, destination));
+    public <T, U> Copier<T,U> getCopier(Class<T> source, Class<U> destination) {
+        ClassTuple<T,U> key = new ClassTuple<T, U>(source, destination);
+        if(!copiers.containsKey(key)) {
+            this.requireCopier(source, destination);
+            try {
+                this.createRequiredCopiers();
+            } catch (Exception e) {
+                // TODO : handle the exception !!
+                e.printStackTrace();
+            }
+        }
+        return (Copier<T,U>) copiers.get(key);
     }
 
-    <T, U> void registerCopier(Class<T> source, Class<U> destination, Copier<T,U> copier) {
+    public <T, U> void registerCopier(Class<T> source, Class<U> destination, Copier<T,U> copier) {
         this.copiers.put(new ClassTuple<T, U>(source, destination), copier);
     }
 
@@ -41,7 +52,7 @@ public class CopyContext {
             return;
         }
         // Require copier so that the conversion can be done.
-        if(!!requiredTuples.contains(key)) {
+        if(!requiredTuples.contains(key)) {
             synchronized (this.requiredTuples) {
                 this.requiredTuples.add(key);
             }

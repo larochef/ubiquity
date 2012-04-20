@@ -16,7 +16,7 @@ import org.ubiquity.util.Constants;
  * @author François LAROCHE
  *
  */
-public final class PropertyRetrieverVisitor extends ClassVisitor {
+final class PropertyRetrieverVisitor extends ClassVisitor {
 
 	private final Map<String, Property> properties;
     private PropertyRetrieverVisitor parent;
