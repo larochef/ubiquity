@@ -16,4 +16,19 @@ public class InheritingClass extends SimpleTestClass {
     public void setMyProperty(String myProperty) {
         this.myProperty = myProperty;
     }
+
+    public static class InternalInheritingClass extends InheritingClass {
+
+        public InternalInheritingClass() {}
+
+        private Integer field;
+
+        public Integer getField() {
+            return field;
+        }
+
+        public void setField(Integer field) {
+            this.field = field;
+        }
+    }
 }

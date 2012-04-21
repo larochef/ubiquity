@@ -56,7 +56,7 @@ public class PropertyRetrieverVisitorTest {
         src.setProperty3("property3");
         long start = System.currentTimeMillis();
         CopyContext ctx = new CopyContext();
-        Copier<SimpleTestClass, SimpleTestClass> copier = new CopierGenerator().createCopier(SimpleTestClass.class, ctx);
+        Copier<SimpleTestClass, SimpleTestClass> copier = new CopierGenerator().createCopier(SimpleTestClass.class, SimpleTestClass.class, ctx);
         long start2 = System.currentTimeMillis();
         copier.copy(src, new SimpleTestClass());
         long end = System.currentTimeMillis();
@@ -71,7 +71,7 @@ public class PropertyRetrieverVisitorTest {
     @Test
     public void testCopierCreation() throws Exception {
         CopyContext ctx = new CopyContext();
-        Copier<SimpleTestClass, SimpleTestClass> copier = new CopierGenerator().createCopier(SimpleTestClass.class, ctx);
+        Copier<SimpleTestClass, SimpleTestClass> copier = new CopierGenerator().createCopier(SimpleTestClass.class, SimpleTestClass.class, ctx);
         assertNotNull(copier);
         SimpleTestClass testObject = new SimpleTestClass();
         String value = "This is a test";
@@ -79,5 +79,20 @@ public class PropertyRetrieverVisitorTest {
         SimpleTestClass result = copier.map(testObject);
         assertNotNull(result);
         assertEquals(value, result.getProperty1());
+    }
+
+    @Test
+    public void testInternalClasses() throws Exception {
+        long start = System.currentTimeMillis();
+        CopyContext ctx = new CopyContext();
+        Copier<InheritingClass.InternalInheritingClass, InheritingClass.InternalInheritingClass> copier =
+                new CopierGenerator().createCopier(InheritingClass.InternalInheritingClass.class, InheritingClass.InternalInheritingClass.class, ctx);
+        assertNotNull(copier);
+        InheritingClass.InternalInheritingClass testObject = new InheritingClass.InternalInheritingClass();
+        testObject.setField(2);
+        InheritingClass.InternalInheritingClass result = copier.map(testObject);
+        assertEquals(Integer.valueOf(2), result.getField());
+        long end = System.currentTimeMillis();
+        System.out.println("testInternalClasses took " + (end - start) + "ms");
     }
 }
