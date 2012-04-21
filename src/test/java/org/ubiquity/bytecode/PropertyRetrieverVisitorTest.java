@@ -16,7 +16,7 @@ import static junit.framework.Assert.*;
  */
 public class PropertyRetrieverVisitorTest {
 
-	@Test
+	 @Test
      public void test() throws Exception {
         long start = System.currentTimeMillis();
         ClassReader reader = new ClassReader("org/ubiquity/bytecode/SimpleTestClass");
