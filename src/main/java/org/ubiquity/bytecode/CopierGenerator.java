@@ -77,10 +77,10 @@ class CopierGenerator {
         visitor.visitEnd();
     }
 
-    private static  void createNewInstance(ClassWriter writer, String srcName, String destinationName) {
+    private static  void createNewInstance(ClassWriter writer, String className, String destinationName) {
         MethodVisitor visitor = writer.visitMethod(ACC_PROTECTED + ACC_VOLATILE + ACC_BRIDGE, "newInstance", "()Ljava/lang/Object;", null, null);
         visitor.visitVarInsn(ALOAD, 0);
-        visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, "newInstance", "()" + getDescription(destinationName));
+        visitor.visitMethodInsn(INVOKEVIRTUAL, className, "newInstance", "()" + getDescription(destinationName));
         visitor.visitInsn(ARETURN);
         visitor.visitMaxs(1, 1);
         visitor.visitEnd();
@@ -91,6 +91,35 @@ class CopierGenerator {
         visitor.visitMethodInsn(INVOKESPECIAL, destinationName, "<init>", "()V");
         visitor.visitInsn(ARETURN);
         visitor.visitMaxs(2, 1);
+        visitor.visitEnd();
+    }
+
+    private static void createNewArray(ClassWriter writer, String className, String destinationName) {
+        MethodVisitor visitor = writer.visitMethod(ACC_PROTECTED + ACC_VOLATILE + ACC_BRIDGE, "newArray", "(I)[Ljava/lang/Object;", null, null);
+        Label label1 = new Label();
+        Label label2 = new Label();
+        visitor.visitLabel(label1);
+        visitor.visitVarInsn(ALOAD, 0);
+        visitor.visitVarInsn(ILOAD, 1);
+        visitor.visitMethodInsn(INVOKEVIRTUAL, className, "newArray", "(I)[" + getDescription(destinationName));
+        visitor.visitInsn(ARETURN);
+        visitor.visitLabel(label2);
+        visitor.visitLocalVariable("this", getDescription(className), null, label1, label2, 0);
+        visitor.visitLocalVariable("x0", "I", null, label1, label2, 1);
+        visitor.visitMaxs(2, 2);
+        visitor.visitEnd();
+
+        visitor = writer.visitMethod(ACC_PROTECTED, "newArray", "(I)[" + getDescription(destinationName), null, null);
+        label1 = new Label();
+        label2 = new Label();
+        visitor.visitLabel(label1);
+        visitor.visitVarInsn(ILOAD, 1);
+        visitor.visitTypeInsn(ANEWARRAY, destinationName);
+        visitor.visitInsn(ARETURN);
+        visitor.visitLabel(label2);
+        visitor.visitLocalVariable("this", getDescription(className), null, label1, label2, 0);
+        visitor.visitLocalVariable("capacity", "I", null, label1, label2, 1);
+        visitor.visitMaxs(1, 2);
         visitor.visitEnd();
     }
 
@@ -122,6 +151,7 @@ class CopierGenerator {
         createConstructor(writer, className);
         createNewInstance(writer, className, destinationName);
         createCopyBridge(writer, className, srcName, destinationName);
+        createNewArray(writer, className, destinationName);
 
         MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC + ACC_FINAL, "copy", '(' + getDescription(srcName) + getDescription(destinationName) + ")V", null, null);
         for(Property p : properties) {
