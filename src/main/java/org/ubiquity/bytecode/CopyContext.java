@@ -7,6 +7,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -76,5 +77,29 @@ public class CopyContext {
             Class<U> destination = tuple.uObject;
             registerCopier(source, destination, this.generator.createCopier(source, destination, this));
         }
+    }
+
+    public Class<? extends List> getDefaultListImplementation() {
+        return generator.getDefaultListImplementation();
+    }
+
+    public void setDefaultListImplementation(Class<? extends List> defaultListImplementation) {
+        generator.setDefaultListImplementation(defaultListImplementation);
+    }
+
+    public Class<? extends Set> getDefaultSetImplementation() {
+        return generator.getDefaultSetImplementation();
+    }
+
+    public void setDefaultSetImplementation(Class<? extends Set> defaultSetImplementation) {
+        generator.setDefaultSetImplementation(defaultSetImplementation);
+    }
+
+    public Class<? extends Map> getDefaultMapImplementation() {
+        return generator.getDefaultMapImplementation();
+    }
+
+    public void setDefaultMapImplementation(Class<? extends Map> defaultMapImplementation) {
+        generator.setDefaultMapImplementation(defaultMapImplementation);
     }
 }
