@@ -197,13 +197,14 @@ class CopierGenerator {
                 // Load converter
                 // Handle cas of arrays
                 if(descriptionGetter.startsWith("[")) {
-                    // TODO : handle the case where array isn't empty
                     visitor.visitVarInsn(ALOAD, 2);
                     visitor.visitVarInsn(ALOAD, 0);
+                    visitor.visitVarInsn(ALOAD, 2);
                     visitor.visitVarInsn(ALOAD, 1);
                     visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
-                    visitor.visitMethodInsn(INVOKEVIRTUAL, className, "map", "([" + getDescription(srcName) + ",[" +  getDescription(destinationName)
-                            + ")[" + getDescription(destinationName));
+                    visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
+                    visitor.visitMethodInsn(INVOKEVIRTUAL, className, "map", "([" + getDescription(srcName) + ",[" +  getDescription(p.uObject.getTypeGetter())
+                            + ")[" + getDescription(p.uObject.getTypeGetter()));
                     visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
                 }
                 else {
