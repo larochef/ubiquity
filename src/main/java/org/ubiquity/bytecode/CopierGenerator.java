@@ -3,6 +3,13 @@
  */
 package org.ubiquity.bytecode;
 
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.Label;
+import org.objectweb.asm.MethodVisitor;
+import org.ubiquity.Copier;
+import org.ubiquity.util.Tuple;
+
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -10,11 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.objectweb.asm.*;
-import org.ubiquity.Copier;
-import org.ubiquity.util.Tuple;
-
-import static  org.objectweb.asm.Opcodes.*;
+import static org.objectweb.asm.Opcodes.*;
 
 /**
  *

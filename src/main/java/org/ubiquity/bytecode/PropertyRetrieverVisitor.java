@@ -3,14 +3,14 @@
  */
 package org.ubiquity.bytecode;
 
-import static org.ubiquity.util.Constants.ASM_LEVEL;
+import org.objectweb.asm.*;
+import org.ubiquity.util.Constants;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.objectweb.asm.*;
-import org.ubiquity.util.Constants;
+import static org.ubiquity.util.Constants.ASM_LEVEL;
 
 /**
  * @author François LAROCHE
