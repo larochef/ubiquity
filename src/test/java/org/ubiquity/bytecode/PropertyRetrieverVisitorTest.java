@@ -56,7 +56,7 @@ public class PropertyRetrieverVisitorTest {
         src.setProperty3("property3");
         long start = System.currentTimeMillis();
         CopyContext ctx = new CopyContext();
-        Copier<SimpleTestClass, SimpleTestClass> copier = CopierGenerator.createCopier(SimpleTestClass.class, ctx);
+        Copier<SimpleTestClass, SimpleTestClass> copier = new CopierGenerator().createCopier(SimpleTestClass.class, ctx);
         long start2 = System.currentTimeMillis();
         copier.copy(src, new SimpleTestClass());
         long end = System.currentTimeMillis();
@@ -71,7 +71,7 @@ public class PropertyRetrieverVisitorTest {
     @Test
     public void testCopierCreation() throws Exception {
         CopyContext ctx = new CopyContext();
-        Copier<SimpleTestClass, SimpleTestClass> copier = CopierGenerator.createCopier(SimpleTestClass.class, ctx);
+        Copier<SimpleTestClass, SimpleTestClass> copier = new CopierGenerator().createCopier(SimpleTestClass.class, ctx);
         assertNotNull(copier);
         SimpleTestClass testObject = new SimpleTestClass();
         String value = "This is a test";

@@ -20,10 +20,12 @@ public class CopyContext {
 
     private Map<Tuple<?,?>, Copier<?,?>> copiers;
     private final List<Tuple<?,?>> requiredTuples;
+    private final CopierGenerator generator;
 
     public CopyContext() {
         this.copiers = new ConcurrentHashMap<Tuple<?, ?>, Copier<?, ?>>();
         this.requiredTuples = new ArrayList<Tuple<?, ?>>();
+        this.generator = new CopierGenerator();
     }
 
     public <T, U> Copier<T,U> getCopier(Class<T> source, Class<U> destination) {
@@ -72,7 +74,7 @@ public class CopyContext {
             }
             Class<T> source = tuple.tObject;
             Class<U> destination = tuple.uObject;
-            registerCopier(source, destination, CopierGenerator.createCopier(source, destination, this));
+            registerCopier(source, destination, this.generator.createCopier(source, destination, this));
         }
     }
 }

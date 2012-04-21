@@ -2,8 +2,8 @@ package org.ubiquity.bytecode;
 
 import org.ubiquity.Copier;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 /**
  * Copier stub, making implementations easier.
