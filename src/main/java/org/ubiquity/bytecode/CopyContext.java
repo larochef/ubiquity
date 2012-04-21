@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class CopyContext {
 
     private Map<Tuple<?,?>, Copier<?,?>> copiers;
-    private List<Tuple<?,?>> requiredTuples;
+    private final List<Tuple<?,?>> requiredTuples;
 
     public CopyContext() {
         this.copiers = new ConcurrentHashMap<Tuple<?, ?>, Copier<?, ?>>();
@@ -37,7 +37,12 @@ public class CopyContext {
                 e.printStackTrace();
             }
         }
-        return (Copier<T,U>) copiers.get(key);
+        @SuppressWarnings("Unchecked")
+        Copier<T,U> result = (Copier<T,U>) copiers.get(key);
+        if(result == null) {
+            throw new IllegalStateException("Unable to find the builder, it was supposed to be built.");
+        }
+        return result;
     }
 
     public <T, U> void registerCopier(Class<T> source, Class<U> destination, Copier<T,U> copier) {
@@ -58,6 +63,7 @@ public class CopyContext {
         }
     }
 
+    @SuppressWarnings("Unchecked")
     <T, U> void createRequiredCopiers() throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         while(!this.requiredTuples.isEmpty()) {
             Tuple<Class<T>, Class<U>> tuple;
