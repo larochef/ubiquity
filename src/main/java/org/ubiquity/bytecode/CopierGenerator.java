@@ -12,6 +12,8 @@ import java.util.Map;
 
 import org.objectweb.asm.*;
 import org.ubiquity.Copier;
+import org.ubiquity.util.Tuple;
+
 import static  org.objectweb.asm.Opcodes.*;
 
 /**
@@ -155,7 +157,7 @@ class CopierGenerator {
 	
 	public static <T, U> Copier<T, U> createCopier(Class<T> src, Class<U> destination, CopyContext ctx)
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        List<Property> properties = listCompatibelProperties(src, destination);
+        List<Tuple<Property, Property>> properties = listCompatibelProperties(src, destination);
         String srcName = byteCodeName(src);
         String destinationName = byteCodeName(destination);
         String className = "org/ubiquity/bytecode/generated/Copier" + src.getSimpleName() + destination.getSimpleName();
@@ -171,34 +173,35 @@ class CopierGenerator {
         createNewArray(writer, className, destinationName);
 
         MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC + ACC_FINAL, "copy", '(' + getDescription(srcName) + getDescription(destinationName) + ")V", null, null);
-        for(Property p : properties) {
-            String descriptionGetter = getDescription(p.getTypeGetter());
-            String descriptionSetter = getDescription(p.getTypeSetter());
+        for(Tuple<Property, Property> p : properties) {
+            String descriptionGetter = getDescription(p.tObject.getTypeGetter());
+            String descriptionSetter = getDescription(p.uObject.getTypeSetter());
             // Handle simple properties, like String, Integer
             if(SIMPLE_PROPERTIES.containsKey(descriptionGetter)
                     && (SIMPLE_PROPERTIES.get(descriptionGetter).equals(descriptionSetter)
                     || descriptionGetter.equals(descriptionSetter))) {
                 visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitVarInsn(ALOAD, 1);
-                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.getGetter(), "()" + descriptionGetter);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
                 if(!descriptionGetter.equals(descriptionSetter)) {
                     visitor.visitVarInsn(ALOAD, 0);
                     visitor.visitMethodInsn(INVOKEVIRTUAL, className, "convert", "(" + descriptionGetter + ")" + descriptionSetter);
                 }
-                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.getSetter(), "(" + descriptionSetter + ")V");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
             }
             // Handle complex properties, ie possibly needing conversion
             else {
                 // Load converter
                 // Handle cas of arrays
                 if(descriptionGetter.startsWith("[")) {
+                    // TODO : handle the case where array isn't empty
                     visitor.visitVarInsn(ALOAD, 2);
                     visitor.visitVarInsn(ALOAD, 0);
                     visitor.visitVarInsn(ALOAD, 1);
-                    visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.getGetter(), "()" + descriptionGetter);
+                    visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
                     visitor.visitMethodInsn(INVOKEVIRTUAL, className, "map", "([" + getDescription(srcName) + ",[" +  getDescription(destinationName)
                             + ")[" + getDescription(destinationName));
-                    visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.getSetter(), "(" + descriptionSetter + ")V");
+                    visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
                 }
                 else {
                 // case of objects
@@ -230,8 +233,8 @@ class CopierGenerator {
 
     }
 
-    private static List<Property> listCompatibelProperties(Class<?> source, Class<?> destination) {
-        List<Property> compatibleProperties = new ArrayList<Property>();
+    private static List<Tuple<Property, Property>> listCompatibelProperties(Class<?> source, Class<?> destination) {
+        List<Tuple<Property, Property>> compatibleProperties = new ArrayList<Tuple<Property, Property>>();
         Map<String, Property> srcProperties = findProperties(source);
         Map<String, Property> targetProperties = findProperties(destination);
 
@@ -242,12 +245,7 @@ class CopierGenerator {
             }
             Property dest = resolveTargetProperty(property, targetProperties);
             if(dest != null && dest.isWritable()) {
-                Property p = new Property(dest.getTypeGetter());
-                p.setGetter(property.getGetter());
-                p.setTypeGetter(property.getTypeGetter());
-                p.setSetter(dest.getSetter());
-                p.setTypeSetter(dest.getTypeSetter());
-                compatibleProperties.add(p);
+                compatibleProperties.add(new Tuple<Property, Property>(property, dest));
             }
         }
 
