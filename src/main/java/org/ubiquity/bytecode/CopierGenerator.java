@@ -50,8 +50,6 @@ final class CopierGenerator {
 		}
 	}
 
-
-	
 	public <T, U> Copier<T, U> createCopier(Class<T> src, Class<U> destination, CopyContext ctx)
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         List<Tuple<Property, Property>> properties = listCompatibelProperties(src, destination);
@@ -78,37 +76,36 @@ final class CopierGenerator {
                     && (SIMPLE_PROPERTIES.get(descriptionGetter).equals(descriptionSetter)
                     || descriptionGetter.equals(descriptionSetter))) {
                 visitor.visitVarInsn(ALOAD, 2);
+                if(!descriptionGetter.equals(descriptionSetter)) {
+                    visitor.visitVarInsn(ALOAD, 0);
+                }
                 visitor.visitVarInsn(ALOAD, 1);
                 visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
                 if(!descriptionGetter.equals(descriptionSetter)) {
-                    visitor.visitVarInsn(ALOAD, 0);
                     visitor.visitMethodInsn(INVOKEVIRTUAL, className, "convert", "(" + descriptionGetter + ")" + descriptionSetter);
                 }
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
+                continue;
             }
             // Handle complex properties, ie possibly needing conversion
-            else {
-                // Load converter
-                // Handle cas of arrays
-                if(descriptionGetter.startsWith("[")) {
-                    visitor.visitVarInsn(ALOAD, 2);
-                    visitor.visitVarInsn(ALOAD, 0);
-                    visitor.visitVarInsn(ALOAD, 2);
-                    visitor.visitVarInsn(ALOAD, 1);
-                    visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
-                    visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
-                    visitor.visitMethodInsn(INVOKEVIRTUAL, className, "map", "([" + getDescription(srcName) + ",[" +  getDescription(p.uObject.getTypeGetter())
-                            + ")[" + getDescription(p.uObject.getTypeGetter()));
-                    visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
-                }
-                else {
-                // case of objects
-                // Get the U.class
-//                visitor.visitLdcInsn(Type.getType(descriptionSetter));
-                // TODO : copy object, or map it if null !
-                // TODO : handle collections
-                }
+            // Handle arrays
+            if(descriptionGetter.startsWith("[")) {
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitVarInsn(ALOAD, 0);
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitVarInsn(ALOAD, 1);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
+                visitor.visitMethodInsn(INVOKEVIRTUAL, className, "map", "([" + getDescription(srcName) + ",[" +  getDescription(p.uObject.getTypeGetter())
+                        + ")[" + getDescription(p.uObject.getTypeGetter()));
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
+                continue;
             }
+            // case of objects
+            // Get the U.class
+//                visitor.visitLdcInsn(Type.getType(descriptionSetter));
+            // TODO : copy object, or map it if null !
+            // TODO : handle collections
         }
         visitor.visitVarInsn(ALOAD, 2);
         visitor.visitInsn(RETURN);
