@@ -90,6 +90,14 @@ final class CopierGenerator {
             // Handle complex properties, ie possibly needing conversion
             // Handle arrays
             if(descriptionGetter.startsWith("[")) {
+                // TODO : handle simple properties
+                String typeDescriptionGetter = descriptionGetter.substring(1);
+                if(SIMPLE_PROPERTIES.containsKey(typeDescriptionGetter)) {
+                    // handle simple arrays
+                    String typeDescriptionSetter = descriptionSetter.substring(1);
+                    continue;
+                }
+                // TODO : correct.me : retrieve correct copier from the context, and require it.
                 visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitVarInsn(ALOAD, 0);
                 visitor.visitVarInsn(ALOAD, 2);
@@ -99,6 +107,15 @@ final class CopierGenerator {
                 visitor.visitMethodInsn(INVOKEVIRTUAL, className, "map", "([" + getDescription(srcName) + ",[" +  getDescription(p.uObject.getTypeGetter())
                         + ")[" + getDescription(p.uObject.getTypeGetter()));
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
+                continue;
+            }
+            if("Ljava/util/List;".equals(descriptionGetter)) {
+                continue;
+            }
+            if("Ljava/util/Set;".equals(descriptionGetter)) {
+                continue;
+            }
+            if("Ljava/util/Map;".equals(descriptionGetter)) {
                 continue;
             }
             // case of objects
