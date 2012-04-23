@@ -95,4 +95,23 @@ public class PropertyRetrieverVisitorTest {
         long end = System.currentTimeMillis();
         System.out.println("testInternalClasses took " + (end - start) + "ms");
     }
+
+    @Test
+    public void testMultipleImplementations() throws Exception {
+        CopyContext ctx = new CopyContext();
+        Copier<InheritingClass, InheritingClass2> copier =
+                new CopierGenerator().createCopier(InheritingClass.class, InheritingClass2.class, ctx);
+        InheritingClass src = new InheritingClass();
+        src.setMyProperty("My property");
+        src.setProperty1("property1");
+        InheritingClass parent = new InheritingClass();
+        parent.setProperty1("Parent property 1");
+        src.setParent(parent);
+
+        InheritingClass2 result = copier.map(src);
+        assertNotNull(result);
+        assertEquals("property1", result.getProperty1());
+        assertNotNull(result.getParent());
+        assertEquals("Parent property 1", result.getParent().getProperty1());
+    }
 }

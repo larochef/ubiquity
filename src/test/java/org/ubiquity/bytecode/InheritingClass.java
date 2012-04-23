@@ -8,13 +8,24 @@ package org.ubiquity.bytecode;
 public class InheritingClass extends SimpleTestClass {
 
     private String myProperty;
+    private InheritingClass parent;
 
     public String getMyProperty() {
         return myProperty;
     }
 
+
+
     public void setMyProperty(String myProperty) {
         this.myProperty = myProperty;
+    }
+
+    public InheritingClass getParent() {
+        return parent;
+    }
+
+    public void setParent(InheritingClass parent) {
+        this.parent = parent;
     }
 
     public static class InternalInheritingClass extends InheritingClass {
