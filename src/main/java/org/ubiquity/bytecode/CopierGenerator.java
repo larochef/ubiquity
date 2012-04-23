@@ -116,42 +116,8 @@ final class CopierGenerator {
             if("Ljava/util/Map;".equals(descriptionGetter)) {
                 continue;
             }
-            Label notNullLabel = new Label();
-            Label nullLabel = new Label();
-            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
-            visitor.visitJumpInsn(IFNONNULL, notNullLabel);
-            visitor.visitVarInsn(ALOAD, 2);
-            visitor.visitInsn(ACONST_NULL);
-            visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
-            visitor.visitJumpInsn(GOTO, nullLabel);
-            visitor.visitLabel(notNullLabel);
-            visitor.visitVarInsn(ALOAD, 0);
-            visitor.visitFieldInsn(GETFIELD, "org/ubiquity/bytecode/CopierTest", "context", "Lorg/ubiquity/bytecode/CopyContext;");
-            visitor.visitLdcInsn(Type.getType(descriptionGetter));
-            visitor.visitLdcInsn(Type.getType(descriptionSetter));
-            visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/Copier;");
-            visitor.visitVarInsn(ASTORE, 3);
-            visitor.visitVarInsn(ALOAD, 2);
-            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
-            Label notNull2 = new Label();
-            visitor.visitJumpInsn(IFNONNULL, notNull2);
-            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
-            visitor.visitVarInsn(ALOAD, 2);
-            visitor.visitVarInsn(ALOAD, 3);
-            visitor.visitVarInsn(ALOAD, 1);
-            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
-            visitor.visitMethodInsn(INVOKEINTERFACE, "org/ubiquity/Copier", "map", "(Ljava/lang/Object;)Ljava/lang/Object;");
-            visitor.visitTypeInsn(CHECKCAST, p.uObject.getTypeSetter());
-            visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
-            visitor.visitLabel(notNull2);
-            visitor.visitVarInsn(ALOAD, 3);
-            visitor.visitVarInsn(ALOAD, 1);
-            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
-            visitor.visitVarInsn(ALOAD, 2);
-            visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
-            visitor.visitMethodInsn(INVOKEINTERFACE, "org/ubiquity/Copier", "copy", "(Ljava/lang/Object;Ljava/lang/Object;)V");
-            visitor.visitLabel(nullLabel);
 
+            handleComplexObjects(visitor, className, srcName, destinationName, p);
 
             // case of objects
             // Get the U.class
@@ -159,9 +125,8 @@ final class CopierGenerator {
             // TODO : copy object, or map it if null !
             // TODO : handle collections
         }
-//        visitor.visitVarInsn(ALOAD, 2);
         visitor.visitInsn(RETURN);
-        visitor.visitMaxs(3,4);
+        visitor.visitMaxs(4,4);
         visitor.visitEnd();
 
         writer.visitEnd();

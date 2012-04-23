@@ -27,7 +27,7 @@ public class CopierTest extends SimpleCopier<InheritingClass, InheritingClass2> 
 
     @Override
     public void copy(InheritingClass source, InheritingClass2 destination) {
-        destination.setProperty1(source.getProperty1());
+//        destination.setProperty1(source.getProperty1());
         if(source.getParent() == null) {
             destination.setParent(null);
         }
