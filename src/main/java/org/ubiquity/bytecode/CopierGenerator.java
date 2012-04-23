@@ -126,7 +126,7 @@ final class CopierGenerator {
             // TODO : handle collections
         }
         visitor.visitInsn(RETURN);
-        visitor.visitMaxs(4,4);
+        visitor.visitMaxs(3,4);
         visitor.visitEnd();
 
         writer.visitEnd();
