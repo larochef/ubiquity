@@ -53,7 +53,7 @@ final class CopierGenerator {
         List<Tuple<Property, Property>> properties = listCompatibelProperties(src, destination);
         String srcName = byteCodeName(src);
         String destinationName = byteCodeName(destination);
-        String className = "org/ubiquity/bytecode/generated/Copier" + src.getSimpleName() + destination.getSimpleName();
+        String className = createCopierClassName(srcName, destinationName);
 
         ClassWriter writer = new ClassWriter(0);
         writer.visit(V1_5, ACC_PUBLIC + ACC_FINAL, className,
@@ -88,22 +88,31 @@ final class CopierGenerator {
             // Handle complex properties, ie possibly needing conversion
             // Handle arrays
             if(descriptionGetter.startsWith("[")) {
+
                 // TODO : handle simple properties
                 String typeDescriptionGetter = descriptionGetter.substring(1);
                 if(SIMPLE_PROPERTIES.containsKey(typeDescriptionGetter)) {
                     // handle simple arrays
+
                     String typeDescriptionSetter = descriptionSetter.substring(1);
+                    if("I".equals(typeDescriptionSetter))  {
+
+                    }
                     continue;
                 }
-                // TODO : correct.me : retrieve correct copier from the context, and require it.
                 visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitVarInsn(ALOAD, 0);
+                visitor.visitFieldInsn(GETFIELD, className, "context", "Lorg/ubiquity/bytecode/CopyContext;");
+                visitor.visitLdcInsn(Type.getType(descriptionGetter.substring(1)));
+                visitor.visitLdcInsn(Type.getType(descriptionSetter.substring(1)));
+                visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/Copier;");
                 visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitVarInsn(ALOAD, 1);
                 visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
-                visitor.visitMethodInsn(INVOKEVIRTUAL, className, "map", "([" + getDescription(srcName) + ",[" +  getDescription(p.uObject.getTypeGetter())
-                        + ")[" + getDescription(p.uObject.getTypeGetter()));
+                visitor.visitMethodInsn(INVOKEVIRTUAL, createCopierClassName(p.tObject.getTypeGetter().substring(1),p.uObject.getTypeSetter().substring(1)),
+                        "map", "(" + getDescription(p.tObject.getTypeGetter()) + "," +  getDescription(p.uObject.getTypeSetter())
+                        + ")" + getDescription(p.uObject.getTypeSetter()));
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
                 continue;
             }

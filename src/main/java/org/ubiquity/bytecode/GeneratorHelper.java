@@ -159,4 +159,8 @@ final class GeneratorHelper {
         }
         return 'L' + className + ';';
     }
+
+    static String createCopierClassName(String srcBytecodeName, String targetBytecodeName) {
+        return "org/ubiquity/bytecode/generated/Copier" + srcBytecodeName.replaceAll("[/]", "") + targetBytecodeName.replaceAll("[/]", "");
+    }
 }
