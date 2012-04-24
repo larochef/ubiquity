@@ -116,7 +116,20 @@ public class PropertyRetrieverVisitorTest {
     }
 
     @Test
-    public void testObjectArrayCopy() {
+    public void testObjectArrayCopy() throws Exception {
+        ObjectArrayTest src = new ObjectArrayTest();
+        ObjectArrayTest.ObjectArrayTest2 destination = new ObjectArrayTest.ObjectArrayTest2();
+        ObjectArrayTest[] objects = new ObjectArrayTest[1];
+        ObjectArrayTest obj = new ObjectArrayTest();
+        objects[0] = obj;
+        src.setObjects(objects);
 
+        CopyContext ctx = new CopyContext();
+        Copier<ObjectArrayTest, ObjectArrayTest.ObjectArrayTest2> copier =
+                new CopierGenerator().createCopier(ObjectArrayTest.class, ObjectArrayTest.ObjectArrayTest2.class, ctx);
+
+        copier.copy(src, destination);
+        assertNotNull(destination.getObjects());
+        assertEquals(1, destination.getObjects().length);
     }
 }

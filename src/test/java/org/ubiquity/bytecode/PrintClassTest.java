@@ -16,7 +16,7 @@ import java.io.PrintWriter;
 public class PrintClassTest {
     @Test
     public void printCodeTest() throws IOException {
-        ClassReader reader = new ClassReader("org/ubiquity/bytecode/CopierTest");
+        ClassReader reader = new ClassReader("org/ubiquity/bytecode/ObjectArrayCopier");
         reader.accept(new MyVisitor(new TraceClassVisitor(new PrintWriter(System.out))),0);
     }
 

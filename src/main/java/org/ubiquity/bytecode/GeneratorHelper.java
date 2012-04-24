@@ -157,10 +157,20 @@ final class GeneratorHelper {
         if(className.indexOf('/') < 0) {
             return className;
         }
+        if(className.startsWith("[")) {
+            return "[" + getDescription(className.substring(1));
+        }
+        if(className.startsWith("L") && className.endsWith(";")) {
+            return className;
+        }
         return 'L' + className + ';';
     }
 
     static String createCopierClassName(String srcBytecodeName, String targetBytecodeName) {
-        return "org/ubiquity/bytecode/generated/Copier" + srcBytecodeName.replaceAll("[/]", "") + targetBytecodeName.replaceAll("[/]", "");
+        int index = srcBytecodeName.startsWith("L") ? 1 : 0;
+        String rightPart = srcBytecodeName.substring(index);
+        index = targetBytecodeName.startsWith("L") ? 1 : 0;
+        rightPart += targetBytecodeName.substring(index);
+        return "org/ubiquity/bytecode/generated/Copier" + rightPart.replaceAll("[/]", "").replaceAll(";", "");
     }
 }

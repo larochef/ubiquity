@@ -55,7 +55,7 @@ final class CopierGenerator {
         String destinationName = byteCodeName(destination);
         String className = createCopierClassName(srcName, destinationName);
 
-        ClassWriter writer = new ClassWriter(0);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         writer.visit(V1_5, ACC_PUBLIC + ACC_FINAL, className,
                 "Lorg/ubiquity/bytecode/SimpleCopier<" + getDescription(srcName) + getDescription(destinationName) + ">;",
                 "org/ubiquity/bytecode/SimpleCopier", null);
@@ -103,16 +103,15 @@ final class CopierGenerator {
                 visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitVarInsn(ALOAD, 0);
                 visitor.visitFieldInsn(GETFIELD, className, "context", "Lorg/ubiquity/bytecode/CopyContext;");
-                visitor.visitLdcInsn(Type.getType(descriptionGetter.substring(1)));
-                visitor.visitLdcInsn(Type.getType(descriptionSetter.substring(1)));
+                visitor.visitLdcInsn(Type.getType(p.tObject.getTypeGetter().substring(1)));
+                visitor.visitLdcInsn(Type.getType(p.uObject.getTypeSetter().substring(1)));
                 visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/Copier;");
-                visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitVarInsn(ALOAD, 1);
                 visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
+                visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
-                visitor.visitMethodInsn(INVOKEVIRTUAL, createCopierClassName(p.tObject.getTypeGetter().substring(1),p.uObject.getTypeSetter().substring(1)),
-                        "map", "(" + getDescription(p.tObject.getTypeGetter()) + "," +  getDescription(p.uObject.getTypeSetter())
-                        + ")" + getDescription(p.uObject.getTypeSetter()));
+                visitor.visitMethodInsn(INVOKEINTERFACE, "org/ubiquity/Copier", "map", "([Ljava/lang/Object;[Ljava/lang/Object;)[Ljava/lang/Object;");
+                visitor.visitTypeInsn(CHECKCAST, getDescription(p.uObject.getTypeSetter()));
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
                 continue;
             }
@@ -135,7 +134,7 @@ final class CopierGenerator {
             // TODO : handle collections
         }
         visitor.visitInsn(RETURN);
-        visitor.visitMaxs(3,4);
+        visitor.visitMaxs(3,5);
         visitor.visitEnd();
 
         writer.visitEnd();
@@ -177,11 +176,8 @@ final class CopierGenerator {
 
     private static class MyClassLoader extends ClassLoader {
         public Class<?> defineClass(String name, byte[] b) {
-            Class result = this.findLoadedClass(name);
-            if(result == null) {
-                result = defineClass(name, b, 0, b.length);
-            }
-            return result;
+            System.out.println("Defining class : " + name);
+            return defineClass(name, b, 0, b.length);
         }
     }
 

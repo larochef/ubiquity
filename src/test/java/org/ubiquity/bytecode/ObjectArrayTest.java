@@ -8,24 +8,24 @@ package org.ubiquity.bytecode;
  * @Author françois LAROCHE
  */
 public class ObjectArrayTest {
-    private InheritingClass[] objects;
+    private ObjectArrayTest[] objects;
 
-    public InheritingClass[] getObjects() {
+    public ObjectArrayTest[] getObjects() {
         return objects;
     }
 
-    public void setObjects(InheritingClass[] objects) {
+    public void setObjects(ObjectArrayTest[] objects) {
         this.objects = objects;
     }
 
     public static class ObjectArrayTest2 {
-        InheritingClass2[] objects;
+        ObjectArrayTest2[] objects;
 
-        public InheritingClass2[] getObjects() {
+        public ObjectArrayTest2[] getObjects() {
             return objects;
         }
 
-        public void setObjects(InheritingClass2[] objects) {
+        public void setObjects(ObjectArrayTest2[] objects) {
             this.objects = objects;
         }
     }
