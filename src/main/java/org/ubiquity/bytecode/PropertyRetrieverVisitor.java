@@ -68,22 +68,22 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 		if(isGetterOrSetter(name)) {
 			Property property = getProperty(getPropertyName(name));
 			char start = name.charAt(0);
-			if(start == 'g') {
-				property.setGetter(name);
-                if(COLLECTIONS.contains(desc) && signature != null) {
-                    property.setTypeGetter(parseReturnTypeFromDesc(signature));
-                }
-                else {
-                    property.setTypeGetter(parseReturnTypeFromDesc(desc));
-                }
-			}
-			else {
-				property.setSetter(name);
+			if(start == 's') {
+                property.setSetter(name);
                 if(COLLECTIONS.contains(desc) && signature != null) {
                     property.setTypeSetter(parseParameterFromDesc(signature));
                 }
                 else {
                     property.setTypeSetter(parseParameterFromDesc(desc));
+                }
+			}
+			else {
+                property.setGetter(name);
+                if(COLLECTIONS.contains(desc) && signature != null) {
+                    property.setTypeGetter(parseReturnTypeFromDesc(signature));
+                }
+                else {
+                    property.setTypeGetter(parseReturnTypeFromDesc(desc));
                 }
 			}
 			return new MethodReader(property);
