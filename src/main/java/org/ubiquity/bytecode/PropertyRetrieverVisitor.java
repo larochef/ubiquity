@@ -7,7 +7,9 @@ import org.objectweb.asm.*;
 import org.ubiquity.util.Constants;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static org.ubiquity.util.Constants.ASM_LEVEL;
@@ -17,6 +19,18 @@ import static org.ubiquity.util.Constants.ASM_LEVEL;
  *
  */
 final class PropertyRetrieverVisitor extends ClassVisitor {
+
+    private static final List<String> COLLECTIONS;
+    static {
+        COLLECTIONS = new ArrayList<String>();
+        COLLECTIONS.add("()Ljava/util/List;");
+        COLLECTIONS.add("()Ljava/util/Set;");
+        COLLECTIONS.add("()Ljava/util/Map;");
+        COLLECTIONS.add("(Ljava/util/List;)V");
+        COLLECTIONS.add("(Ljava/util/Set;)V");
+        COLLECTIONS.add("(Ljava/util/Map;)V");
+
+    }
 
 	private final Map<String, Property> properties;
     private PropertyRetrieverVisitor parent;
@@ -56,11 +70,21 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 			char start = name.charAt(0);
 			if(start == 'g') {
 				property.setGetter(name);
-                property.setTypeGetter(parseReturnTypeFromDesc(desc));
+                if(COLLECTIONS.contains(desc) && signature != null) {
+                    property.setTypeGetter(parseReturnTypeFromDesc(signature));
+                }
+                else {
+                    property.setTypeGetter(parseReturnTypeFromDesc(desc));
+                }
 			}
 			else {
 				property.setSetter(name);
-                property.setTypeSetter(parseParameterFromDesc(desc));
+                if(COLLECTIONS.contains(desc) && signature != null) {
+                    property.setTypeSetter(parseParameterFromDesc(signature));
+                }
+                else {
+                    property.setTypeSetter(parseParameterFromDesc(desc));
+                }
 			}
 			return new MethodReader(property);
 		}
