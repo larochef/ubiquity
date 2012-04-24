@@ -114,4 +114,9 @@ public class PropertyRetrieverVisitorTest {
         assertNotNull(result.getParent());
         assertEquals("Parent property 1", result.getParent().getProperty1());
     }
+
+    @Test
+    public void testObjectArrayCopy() {
+
+    }
 }
