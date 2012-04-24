@@ -277,4 +277,284 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
         return Byte.valueOf(value);
     }
 
+    /**
+     * converts a java.lang.Short to a short.
+     * Of the given parameter is null, this method will return 0.
+     *
+     * @param value the java.lang.Short to convert
+     * @return the converted short
+     */
+    protected final short[] convert(Short[] value) {
+        if(value == null) {
+            return null;
+        }
+        short [] result = new short[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a java.lang.Integer to an int.
+     * Of the given parameter is null, this method will return 0.
+     *
+     * @param value the java.lang.Integer to convert
+     * @return the converted int
+     */
+    protected final int[] convert(Integer[] value) {
+        if(value == null) {
+            return null;
+        }
+        int[] result = new int[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a java.lang.Boolean to a boolean.
+     * Of the given parameter is null, this method will return false.
+     *
+     * @param value the java.lang.Boolean to convert
+     * @return the converted boolean
+     */
+    protected final boolean[] convert(Boolean[] value) {
+        if(value == null) {
+            return null;
+        }
+        boolean[] result = new boolean[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a java.lang.Long to a long.
+     * Of the given parameter is null, this method will return 0.
+     *
+     * @param value the java.lang.Long to convert
+     * @return the converted long
+     */
+    protected final long[] convert(Long[] value) {
+        if(value == null) {
+            return null;
+        }
+        long[] result = new long[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a java.lang.Double to a double.
+     * Of the given parameter is null, this method will return 0.
+     *
+     * @param value the java.lang.Double to convert
+     * @return the converted double
+     */
+    protected final double[] convert(Double[] value) {
+        if(value == null) {
+            return null;
+        }
+        double[] result = new double[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a java.lang.Float to a float.
+     * Of the given parameter is null, this method will return 0.
+     *
+     * @param value the java.lang.Float to convert
+     * @return the converted float
+     */
+    protected final float[] convert(Float[] value) {
+        if(value == null) {
+            return null;
+        }
+        float[] result = new float[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a java.lang.Character to a char.
+     * Of the given parameter is null, this method will return the char wielding the 0 value.
+     *
+     * @param value the java.lang.Character to convert
+     * @return the converted char
+     */
+    protected final char[] convert(Character[] value) {
+        if(value == null) {
+            return null;
+        }
+        char[] result = new char[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a java.lang.Byte to a byte.
+     * Of the given parameter is null, this method will return 0.
+     *
+     * @param value the java.lang.Bte to convert
+     * @return the converted byte
+     */
+    protected final byte[] convert(Byte[] value) {
+        if(value == null) {
+            return null;
+        }
+        byte[] result = new byte[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a short to a  java.lang.Short
+     *
+     * @param value the short to convert
+     * @return the converted java.lang.Short
+     */
+    protected final Short[] convert(short[] value) {
+        if(value == null) {
+            return null;
+        }
+        Short[] result = new Short[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts an int to a  java.lang.Integer
+     *
+     * @param value the int to convert
+     * @return the converted java.lang.Integer
+     */
+    protected final Integer[] convert(int[] value) {
+        if(value == null) {
+            return null;
+        }
+        Integer[] result = new Integer[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a boolean to a java.lang.Boolean.
+     *
+     * @param value the boolean to convert
+     * @return the converted java.lang.Boolean
+     */
+    protected final Boolean[] convert(boolean[] value) {
+        if(value == null) {
+            return null;
+        }
+        Boolean[] result = new Boolean[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a long to a java.lang.Long.
+     *
+     * @param value the long to convert
+     * @return the converted java.lang.Long
+     */
+    protected final Long[] convert(long[] value) {
+        if(value == null) {
+            return null;
+        }
+        Long[] result = new Long[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a double to a java.lang.Double.
+     *
+     * @param value the double to convert
+     * @return the converted java.lang.Double
+     */
+    protected final Double[] convert(double[] value) {
+        if(value == null) {
+            return null;
+        }
+        Double[] result = new Double[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a float to a java.lang.Float.
+     *
+     * @param value the float to convert
+     * @return the converted java.lang.Float
+     */
+    protected final Float[] convert(float[] value) {
+        if(value == null) {
+            return null;
+        }
+        Float[] result = new Float[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a char to a java.lang.Character.
+     *
+     * @param value the char to convert
+     * @return the converted java.lang.Character
+     */
+    protected final Character[] convert(char[] value) {
+        if(value == null) {
+            return null;
+        }
+        Character[] result = new Character[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
+    /**
+     * converts a byte to a java.lang.Byte.
+     *
+     * @param value the byte to convert
+     * @return the converted java.lang.Byte
+     */
+    protected final Byte[] convert(byte[] value) {
+        if(value == null) {
+            return null;
+        }
+        Byte[] result = new Byte[value.length];
+        for(int i = 0; i < value.length; i++) {
+            result[i] = convert(value[i]);
+        }
+        return result;
+    }
+
 }
