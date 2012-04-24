@@ -32,27 +32,11 @@ public class Ubiquity {
         this.context.registerCopier(src, target, copier);
     }
 
-    public Class<? extends List> getDefaultListImplementation() {
-        return context.getDefaultListImplementation();
+    public CollectionFactory getFactory() {
+        return context.getFactory();
     }
 
-    public void setDefaultListImplementation(Class<? extends List> defaultListImplementation) {
-        context.setDefaultListImplementation(defaultListImplementation);
-    }
-
-    public Class<? extends Set> getDefaultSetImplementation() {
-        return context.getDefaultSetImplementation();
-    }
-
-    public void setDefaultSetImplementation(Class<? extends Set> defaultSetImplementation) {
-        context.setDefaultSetImplementation(defaultSetImplementation);
-    }
-
-    public Class<? extends Map> getDefaultMapImplementation() {
-        return context.getDefaultMapImplementation();
-    }
-
-    public void setDefaultMapImplementation(Class<? extends Map> defaultMapImplementation) {
-        context.setDefaultMapImplementation(defaultMapImplementation);
+    public void setFactory(CollectionFactory factory) {
+        context.setFactory(factory);
     }
 }

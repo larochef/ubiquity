@@ -1,6 +1,8 @@
 package org.ubiquity.bytecode;
 
+import org.ubiquity.CollectionFactory;
 import org.ubiquity.Copier;
+import org.ubiquity.util.DefaultCollectionFactory;
 import org.ubiquity.util.Tuple;
 
 import java.lang.reflect.InvocationTargetException;
@@ -22,11 +24,13 @@ public class CopyContext {
     private Map<Tuple<?,?>, Copier<?,?>> copiers;
     private final List<Tuple<?,?>> requiredTuples;
     private final CopierGenerator generator;
+    private CollectionFactory factory;
 
     public CopyContext() {
         this.copiers = new ConcurrentHashMap<Tuple<?, ?>, Copier<?, ?>>();
         this.requiredTuples = new ArrayList<Tuple<?, ?>>();
         this.generator = new CopierGenerator();
+        this.factory = new DefaultCollectionFactory();
     }
 
     public <T, U> Copier<T,U> getCopier(Class<T> source, Class<U> destination) {
@@ -79,27 +83,11 @@ public class CopyContext {
         }
     }
 
-    public Class<? extends List> getDefaultListImplementation() {
-        return generator.getDefaultListImplementation();
+    public CollectionFactory getFactory() {
+        return factory;
     }
 
-    public void setDefaultListImplementation(Class<? extends List> defaultListImplementation) {
-        generator.setDefaultListImplementation(defaultListImplementation);
-    }
-
-    public Class<? extends Set> getDefaultSetImplementation() {
-        return generator.getDefaultSetImplementation();
-    }
-
-    public void setDefaultSetImplementation(Class<? extends Set> defaultSetImplementation) {
-        generator.setDefaultSetImplementation(defaultSetImplementation);
-    }
-
-    public Class<? extends Map> getDefaultMapImplementation() {
-        return generator.getDefaultMapImplementation();
-    }
-
-    public void setDefaultMapImplementation(Class<? extends Map> defaultMapImplementation) {
-        generator.setDefaultMapImplementation(defaultMapImplementation);
+    public void setFactory(CollectionFactory factory) {
+        this.factory = factory;
     }
 }

@@ -25,15 +25,7 @@ import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
  */
 final class CopierGenerator {
 
-    private Class<? extends List> defaultListImplementation;
-    private Class<? extends Set> defaultSetImplementation;
-    private Class<? extends Map> defaultMapImplementation;
-	
-	CopierGenerator() {
-        this.defaultListImplementation = ArrayList.class;
-        this.defaultSetImplementation = HashSet.class;
-        this.defaultMapImplementation = HashMap.class;
-    }
+	CopierGenerator() {}
 
     private final MyClassLoader loader = new MyClassLoader();
 
@@ -179,38 +171,5 @@ final class CopierGenerator {
             System.out.println("Defining class : " + name);
             return defineClass(name, b, 0, b.length);
         }
-    }
-
-    public Class<? extends List> getDefaultListImplementation() {
-        return defaultListImplementation;
-    }
-
-    public void setDefaultListImplementation(Class<? extends List> defaultListImplementation) {
-        if(Modifier.isAbstract(defaultListImplementation.getModifiers()) || defaultListImplementation.isInterface()) {
-            throw new IllegalArgumentException("The given class cannot create lists ! (" + defaultListImplementation.getName() + ")");
-        }
-        this.defaultListImplementation = defaultListImplementation;
-    }
-
-    public Class<? extends Set> getDefaultSetImplementation() {
-        return defaultSetImplementation;
-    }
-
-    public void setDefaultSetImplementation(Class<? extends Set> defaultSetImplementation) {
-        if(Modifier.isAbstract(defaultSetImplementation.getModifiers()) || defaultSetImplementation.isInterface()) {
-            throw new IllegalArgumentException("The given class cannot create sets ! (" + defaultSetImplementation.getName() + ")");
-        }
-        this.defaultSetImplementation = defaultSetImplementation;
-    }
-
-    public Class<? extends Map> getDefaultMapImplementation() {
-        return defaultMapImplementation;
-    }
-
-    public void setDefaultMapImplementation(Class<? extends Map> defaultMapImplementation) {
-        if(Modifier.isAbstract(defaultMapImplementation.getModifiers()) || defaultMapImplementation.isInterface()) {
-            throw new IllegalArgumentException("The given class cannot create maps ! (" + defaultMapImplementation.getName() + ")");
-        }
-        this.defaultMapImplementation = defaultMapImplementation;
     }
 }
