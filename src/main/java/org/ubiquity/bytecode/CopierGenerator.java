@@ -9,12 +9,10 @@ import org.ubiquity.util.Tuple;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
 import static org.ubiquity.bytecode.GeneratorHelper.*;
-import static org.ubiquity.util.Constants.ASM_LEVEL;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
 
 /**
@@ -48,7 +46,7 @@ final class CopierGenerator {
         String destinationName = byteCodeName(destination);
         String className = createCopierClassName(srcName, destinationName);
 
-        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
+        ClassWriter writer = new ClassWriter(0);
         writer.visit(V1_5, ACC_PUBLIC + ACC_FINAL, className,
                 "Lorg/ubiquity/bytecode/SimpleCopier<" + getDescription(srcName) + getDescription(destinationName) + ">;",
                 "org/ubiquity/bytecode/SimpleCopier", null);
@@ -83,6 +81,7 @@ final class CopierGenerator {
                 continue;
             }
             // TODO : handle collections
+            // TODO : handle enums ?
             if("Ljava/util/List;".equals(descriptionGetter)) {
                 continue;
             }
@@ -96,7 +95,7 @@ final class CopierGenerator {
             handleComplexObjects(visitor, className, srcName, destinationName, p);
         }
         visitor.visitInsn(RETURN);
-        visitor.visitMaxs(3,5);
+        visitor.visitMaxs(4,4);
         visitor.visitEnd();
 
         writer.visitEnd();
