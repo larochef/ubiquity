@@ -8,6 +8,7 @@ import org.ubiquity.util.Tuple;
 
 import static org.objectweb.asm.Opcodes.*;
 import static org.objectweb.asm.Opcodes.RETURN;
+import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
 
 /**
  * Date: 21/04/12
@@ -151,6 +152,58 @@ final class GeneratorHelper {
         visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
         visitor.visitMethodInsn(INVOKEINTERFACE, "org/ubiquity/Copier", "copy", "(Ljava/lang/Object;Ljava/lang/Object;)V");
         visitor.visitLabel(nullLabel);
+    }
+
+    static void handeArrays(MethodVisitor visitor, String className, String srcName, String destinationName, Tuple<Property, Property> p) {
+        String descriptionGetter = getDescription(p.tObject.getTypeGetter());
+        String descriptionSetter = getDescription(p.uObject.getTypeSetter());
+        String typeDescriptionGetter = descriptionGetter.substring(1);
+        // arrays needing unchecked conversion
+        if(SIMPLE_PROPERTIES.containsKey(typeDescriptionGetter)) {
+            if(!descriptionGetter.equals(descriptionSetter)) {
+                // handle simple arrays
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitVarInsn(ALOAD, 0);
+                visitor.visitVarInsn(ALOAD, 1);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
+                visitor.visitMethodInsn(INVOKEVIRTUAL, className, "convert",
+                        "(" + getDescription(p.tObject.getGetter()) + ")" + getDescription(p.uObject.getTypeSetter()));
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + getDescription(p.uObject.getTypeSetter()) + ")V");
+                return;
+            }
+            // Simple arrays cloned from a to b
+            visitor.visitVarInsn(ALOAD, 1);
+            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getTypeGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
+            Label arrayNotNull = new Label();
+            visitor.visitJumpInsn(IFNONNULL, arrayNotNull);
+            visitor.visitVarInsn(ALOAD, 2);
+            visitor.visitInsn(ACONST_NULL);
+            visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "()" + getDescription(p.uObject.getTypeSetter()));
+            Label arrayNullEnd = new Label();
+            visitor.visitJumpInsn(GOTO, arrayNullEnd);
+            visitor.visitLabel(arrayNotNull);
+            visitor.visitVarInsn(ALOAD, 2);
+            visitor.visitVarInsn(ALOAD, 1);
+            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getTypeGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
+            visitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "clone", "()Ljava/lang/Object;");
+            visitor.visitTypeInsn(CHECKCAST, getDescription(p.uObject.getTypeSetter()));
+            visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
+            return;
+        }
+        // Arrays of complex types
+        visitor.visitVarInsn(ALOAD, 2);
+        visitor.visitVarInsn(ALOAD, 0);
+        visitor.visitFieldInsn(GETFIELD, className, "context", "Lorg/ubiquity/bytecode/CopyContext;");
+        visitor.visitLdcInsn(Type.getType(p.tObject.getTypeGetter().substring(1)));
+        visitor.visitLdcInsn(Type.getType(p.uObject.getTypeSetter().substring(1)));
+        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/Copier;");
+        visitor.visitVarInsn(ALOAD, 1);
+        visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
+        visitor.visitVarInsn(ALOAD, 2);
+        visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
+        visitor.visitMethodInsn(INVOKEINTERFACE, "org/ubiquity/Copier", "map", "([Ljava/lang/Object;[Ljava/lang/Object;)[Ljava/lang/Object;");
+        visitor.visitTypeInsn(CHECKCAST, getDescription(p.uObject.getTypeSetter()));
+        visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
     }
 
     static String getDescription(String className){

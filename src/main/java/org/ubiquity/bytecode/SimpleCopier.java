@@ -2,6 +2,7 @@ package org.ubiquity.bytecode;
 
 import org.ubiquity.Copier;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Modifier;
 import java.util.*;
 

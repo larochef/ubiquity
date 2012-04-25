@@ -78,47 +78,11 @@ final class CopierGenerator {
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
                 continue;
             }
-            // Handle complex properties, ie possibly needing conversion
-            // Handle arrays
             if(descriptionGetter.startsWith("[")) {
-
-                // TODO : handle simple properties
-                String typeDescriptionGetter = descriptionGetter.substring(1);
-                if(SIMPLE_PROPERTIES.containsKey(typeDescriptionGetter)) {
-                    if(!descriptionGetter.equals(descriptionSetter)) {
-                        // handle simple arrays
-                        visitor.visitVarInsn(ALOAD, 2);
-                        visitor.visitVarInsn(ALOAD, 0);
-                        visitor.visitVarInsn(ALOAD, 1);
-                        visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
-                        visitor.visitVarInsn(ALOAD, 2);
-                        visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
-                        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/SimpleCopier", "convert",
-                                "(" + getDescription(p.tObject.getGetter()) + ")" + getDescription(p.uObject.getGetter()));
-                        visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + getDescription(p.uObject.getTypeSetter()) + ")V");
-                        continue;
-                    }
-                    String typeDescriptionSetter = descriptionSetter.substring(1);
-                    if("I".equals(typeDescriptionSetter))  {
-
-                    }
-                    continue;
-                }
-                visitor.visitVarInsn(ALOAD, 2);
-                visitor.visitVarInsn(ALOAD, 0);
-                visitor.visitFieldInsn(GETFIELD, className, "context", "Lorg/ubiquity/bytecode/CopyContext;");
-                visitor.visitLdcInsn(Type.getType(p.tObject.getTypeGetter().substring(1)));
-                visitor.visitLdcInsn(Type.getType(p.uObject.getTypeSetter().substring(1)));
-                visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/Copier;");
-                visitor.visitVarInsn(ALOAD, 1);
-                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
-                visitor.visitVarInsn(ALOAD, 2);
-                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
-                visitor.visitMethodInsn(INVOKEINTERFACE, "org/ubiquity/Copier", "map", "([Ljava/lang/Object;[Ljava/lang/Object;)[Ljava/lang/Object;");
-                visitor.visitTypeInsn(CHECKCAST, getDescription(p.uObject.getTypeSetter()));
-                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
+                handeArrays(visitor, className, srcName, destinationName, p);
                 continue;
             }
+            // TODO : handle collections
             if("Ljava/util/List;".equals(descriptionGetter)) {
                 continue;
             }
@@ -130,12 +94,6 @@ final class CopierGenerator {
             }
 
             handleComplexObjects(visitor, className, srcName, destinationName, p);
-
-            // case of objects
-            // Get the U.class
-//                visitor.visitLdcInsn(Type.getType(descriptionSetter));
-            // TODO : copy object, or map it if null !
-            // TODO : handle collections
         }
         visitor.visitInsn(RETURN);
         visitor.visitMaxs(3,5);
@@ -180,7 +138,6 @@ final class CopierGenerator {
 
     private static class MyClassLoader extends ClassLoader {
         public Class<?> defineClass(String name, byte[] b) {
-            System.out.println("Defining class : " + name);
             return defineClass(name, b, 0, b.length);
         }
     }

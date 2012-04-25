@@ -18,8 +18,5 @@ public class UbiquityTest {
     @Test
     public void testUbiquity() {
         Ubiquity ubiquity = new Ubiquity();
-        assertEquals(ArrayList.class, ubiquity.getDefaultListImplementation());
-        assertEquals(HashSet.class, ubiquity.getDefaultSetImplementation());
-        assertEquals(HashMap.class, ubiquity.getDefaultMapImplementation());
     }
 }
