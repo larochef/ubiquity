@@ -82,13 +82,13 @@ final class CopierGenerator {
             }
             // TODO : handle collections
             // TODO : handle enums ?
-            if("Ljava/util/List;".equals(descriptionGetter)) {
+            if(descriptionGetter.startsWith("Ljava/util/List;")) {
                 continue;
             }
-            if("Ljava/util/Set;".equals(descriptionGetter)) {
+            if(descriptionGetter.startsWith("Ljava/util/Set;")) {
                 continue;
             }
-            if("Ljava/util/Map;".equals(descriptionGetter)) {
+            if(descriptionGetter.startsWith("Ljava/util/Map;")) {
                 continue;
             }
 
