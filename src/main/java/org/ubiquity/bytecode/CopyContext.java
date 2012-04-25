@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Date: 17/04/12
  * Time: 09:33
  *
- * @Author françois LAROCHE
+ * @author françois LAROCHE
  */
 public class CopyContext {
 
