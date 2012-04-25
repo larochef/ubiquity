@@ -20,9 +20,9 @@ public class PrintClassTest {
         reader.accept(new MyVisitor(new TraceClassVisitor(new PrintWriter(System.out))),0);
     }
 
-    private static class MyVisitor extends ClassVisitor {
+    protected static class MyVisitor extends ClassVisitor {
 
-        private MyVisitor(ClassVisitor v) {
+        protected MyVisitor(ClassVisitor v) {
             super(Constants.ASM_LEVEL, v);
         }
 

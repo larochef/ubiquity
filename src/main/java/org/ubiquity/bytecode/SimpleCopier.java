@@ -38,6 +38,31 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
         return result;
     }
 
+    public List<U> map(List<T>source, List<U> destination) {
+        List<U> result;
+        if(destination != null) {
+            result = destination;
+        }
+        else {
+            result = this.context.getFactory().newList();
+        }
+        if(source.size() != result.size()) {
+            result.clear();
+        }
+        if(result.isEmpty()) {
+            for(T obj : source) {
+                result.add(map(obj));
+            }
+        }
+        else {
+            Iterator<U> us = result.iterator();
+            for(T obj : source) {
+                copy(obj, us.next());
+            }
+        }
+        return result;
+    }
+
     /**
      * @inheritdoc
      */

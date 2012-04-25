@@ -6,7 +6,12 @@ package org.ubiquity.bytecode;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.util.TraceClassVisitor;
 import org.ubiquity.Copier;
+
+import java.io.PrintWriter;
+
 import static junit.framework.Assert.*;
 
 /**
@@ -131,5 +136,11 @@ public class PropertyRetrieverVisitorTest {
         copier.copy(src, destination);
         assertNotNull(destination.getObjects());
         assertEquals(1, destination.getObjects().length);
+    }
+
+    @Test
+    public void testGenerics() throws Exception {
+        ClassReader reader = new ClassReader("org/ubiquity/bytecode/ListObject");
+        reader.accept(new PrintClassTest.MyVisitor(new TraceClassVisitor(new PrintWriter(System.out))), 0);
     }
 }

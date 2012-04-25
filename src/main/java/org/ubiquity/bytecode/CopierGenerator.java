@@ -14,6 +14,7 @@ import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
 import static org.ubiquity.bytecode.GeneratorHelper.*;
+import static org.ubiquity.util.Constants.ASM_LEVEL;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
 
 /**
@@ -84,8 +85,19 @@ final class CopierGenerator {
                 // TODO : handle simple properties
                 String typeDescriptionGetter = descriptionGetter.substring(1);
                 if(SIMPLE_PROPERTIES.containsKey(typeDescriptionGetter)) {
-                    // handle simple arrays
-
+                    if(!descriptionGetter.equals(descriptionSetter)) {
+                        // handle simple arrays
+                        visitor.visitVarInsn(ALOAD, 2);
+                        visitor.visitVarInsn(ALOAD, 0);
+                        visitor.visitVarInsn(ALOAD, 1);
+                        visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
+                        visitor.visitVarInsn(ALOAD, 2);
+                        visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
+                        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/SimpleCopier", "convert",
+                                "(" + getDescription(p.tObject.getGetter()) + ")" + getDescription(p.uObject.getGetter()));
+                        visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + getDescription(p.uObject.getTypeSetter()) + ")V");
+                        continue;
+                    }
                     String typeDescriptionSetter = descriptionSetter.substring(1);
                     if("I".equals(typeDescriptionSetter))  {
 
