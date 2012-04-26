@@ -2,8 +2,6 @@ package org.ubiquity.bytecode;
 
 import org.ubiquity.Copier;
 
-import java.lang.reflect.Array;
-import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -110,6 +108,81 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @return a newly instanciated array of U
      */
     protected abstract U[] newArray(int capacity);
+
+    protected List<U> handleList(List<T> src, List<U> destination) {
+        if(src == null) {
+            return null;
+        }
+        List<U> result = destination;
+        if(result == null) {
+            result = this.context.getFactory().newList();
+        }
+        if(src.size() != result.size()) {
+            result.clear();
+            for(T elem : src) {
+                result.add(map(elem));
+            }
+        }
+        else {
+            Iterator<U> us = result.iterator();
+            for(T elem : src) {
+                copy(elem, us.next());
+            }
+        }
+        return result;
+    }
+
+    protected Set<U> handleSet(Set<T> src, Set<U> destination) {
+        if(src == null) {
+            return null;
+        }
+        Set<U> result = destination;
+        if(result == null) {
+            result = this.context.getFactory().newSet();
+        }
+        if(src.size() != result.size()) {
+            result.clear();
+            for(T elem : src) {
+                result.add(map(elem));
+            }
+        }
+        else {
+            Iterator<U> us = result.iterator();
+            for(T elem : src) {
+                copy(elem, us.next());
+            }
+        }
+        return result;
+    }
+
+    protected <K> Map<K, U> handleMap(Map<K,T> src, Map<K,U> destination) {
+        if(src == null) {
+            return null;
+        }
+        Map<K, U> result = destination;
+        if(result == null) {
+            result = this.context.getFactory().newMap();
+        }
+        for(K elem : src.keySet()) {
+            U target = destination.get(elem);
+            if(target == null) {
+                target = newInstance();
+                destination.put(elem, target);
+            }
+            copy(src.get(elem), target);
+        }
+
+        if(src.size() != destination.size()) {
+            Set<K> destinationKeys = Collections.unmodifiableSet(destination.keySet());
+            for(K key : destinationKeys) {
+                if(!destination.containsKey(key)) {
+                    destination.remove(key);
+                }
+            }
+        }
+
+        return result;
+    }
 
     /**
      * converts a java.lang.Short to a short.
