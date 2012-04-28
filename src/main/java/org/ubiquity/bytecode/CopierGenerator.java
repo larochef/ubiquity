@@ -83,12 +83,33 @@ final class CopierGenerator {
             // TODO : handle collections
             // TODO : handle enums ?
             if(descriptionGetter.startsWith("Ljava/util/List;")) {
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitVarInsn(ALOAD, 1);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()Ljava/util/List;");
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()Ljava/util/List;");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, "Lorg/ubiquity/bytecode/SimpleCopier", "handleList", "(Ljava/util/List;Ljava/util/List)Ljava/util/List;");
+                visitor.visitMethodInsn(INVOKEDYNAMIC, destinationName, p.uObject.getSetter(), "(Ljava/util/List;)V");
                 continue;
             }
             if(descriptionGetter.startsWith("Ljava/util/Set;")) {
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitVarInsn(ALOAD, 1);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()Ljava/util/Set;");
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()Ljava/util/Set;");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, "Lorg/ubiquity/bytecode/SimpleCopier", "handleSet", "(Ljava/util/Set;Ljava/util/Set)Ljava/util/Set;");
+                visitor.visitMethodInsn(INVOKEDYNAMIC, destinationName, p.uObject.getSetter(), "(Ljava/util/Set;)V");
                 continue;
             }
             if(descriptionGetter.startsWith("Ljava/util/Map;")) {
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitVarInsn(ALOAD, 1);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()Ljava/util/Map;");
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()Ljava/util/Map;");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, "Lorg/ubiquity/bytecode/SimpleCopier", "handleMap", "(Ljava/util/Map;Ljava/util/Map)Ljava/util/Map;");
+                visitor.visitMethodInsn(INVOKEDYNAMIC, destinationName, p.uObject.getSetter(), "(Ljava/util/Map;)V");
                 continue;
             }
 

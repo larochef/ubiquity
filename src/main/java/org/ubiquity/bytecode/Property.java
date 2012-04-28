@@ -12,7 +12,7 @@ import java.util.List;
  * @author François LAROCHE
  *
  */
-class Property {
+class  Property {
 
 	private String name;
 	private String getter;
