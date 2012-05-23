@@ -71,7 +71,8 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 			if(start == 's') {
                 property.setSetter(name);
                 if(COLLECTIONS.contains(desc) && signature != null) {
-                    property.setTypeSetter(parseParameterFromDesc(signature));
+                    property.setTypeSetter(parseParameterFromDesc(desc));
+                    property.setGenericSetter(parsegenericsFronSignature(signature));
                 }
                 else {
                     property.setTypeSetter(parseParameterFromDesc(desc));
@@ -80,7 +81,8 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 			else {
                 property.setGetter(name);
                 if(COLLECTIONS.contains(desc) && signature != null) {
-                    property.setTypeGetter(parseReturnTypeFromDesc(signature));
+                    property.setTypeGetter(parseReturnTypeFromDesc(desc));
+                    property.setGenericGetter(parsegenericsFronSignature(signature));
                 }
                 else {
                     property.setTypeGetter(parseReturnTypeFromDesc(desc));
@@ -206,5 +208,9 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 
     private static String parseReturnTypeFromDesc(String desc) {
         return parseType(desc.substring(desc.indexOf(')') + 1));
+    }
+
+    private String parsegenericsFronSignature(String signature) {
+        return "";
     }
 }
