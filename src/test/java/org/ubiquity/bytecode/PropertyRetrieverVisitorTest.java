@@ -13,6 +13,7 @@ import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Test for class {@link PropertyRetrieverVisitor}
@@ -154,6 +155,40 @@ public class PropertyRetrieverVisitorTest {
         assertNotNull(dest);
         assertNotNull(dest.getObjects());
         assertEquals(1, dest.getObjects().size());
+    }
+
+    @Test
+    public void testSimpleLists1() throws Exception {
+        CollectionClass object = new CollectionClass();
+        List<String> objects = new ArrayList<String>();
+        objects.add("ubiquity");
+        object.setObjects(objects);
+
+        CopyContext ctx = new CopyContext();
+        Copier<CollectionClass, CollectionClass> copier =
+                new CopierGenerator().createCopier(CollectionClass.class, CollectionClass.class, ctx);
+
+        CollectionClass dest = copier.map(object);
+        assertNotNull(dest);
+        assertNotNull(dest.getObjects());
+        assertEquals(1, object.getObjects().size());
+        assertEquals("ubiquity", object.getObjects().iterator().next());
+
+    }
+
+    @Test
+    public void testSimpleLists2() throws Exception {
+        CollectionClass object = new CollectionClass();
+        object.setObjects(null);
+
+        CopyContext ctx = new CopyContext();
+        Copier<CollectionClass, CollectionClass> copier =
+                new CopierGenerator().createCopier(CollectionClass.class, CollectionClass.class, ctx);
+
+        CollectionClass dest = copier.map(object);
+        assertNotNull(dest);
+        assertNull(dest.getObjects());
+
     }
 
 }

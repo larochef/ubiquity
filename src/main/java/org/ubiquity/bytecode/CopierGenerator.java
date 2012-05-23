@@ -104,7 +104,7 @@ final class CopierGenerator {
             handleComplexObjects(visitor, className, srcName, destinationName, p);
         }
         visitor.visitInsn(RETURN);
-        visitor.visitMaxs(7,3);
+        visitor.visitMaxs(7,4);
         visitor.visitEnd();
 
         writer.visitEnd();

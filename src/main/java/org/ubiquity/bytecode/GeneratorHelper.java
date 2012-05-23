@@ -211,11 +211,44 @@ final class GeneratorHelper {
         String uGeneric = p.uObject.getGenericSetter();
         if(SIMPLE_PROPERTIES.containsKey(tGeneric)) {
             // TODO : handle simple properties !!!!!
+            // TODO : handle null lists
             if(tGeneric.equals(uGeneric)) {
-
-            }
-            else if(SIMPLE_PROPERTIES.get(tGeneric).equals(uGeneric)) {
-
+                Label l0 = new Label();
+                visitor.visitVarInsn(ALOAD, 1);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
+                visitor.visitJumpInsn(IFNONNULL, l0);
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitInsn(ACONST_NULL);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + getDescription(p.uObject.getTypeSetter()) + ")V");
+                Label l2 = new Label();
+                visitor.visitJumpInsn(GOTO, l2);
+                visitor.visitLabel(l0);
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
+                Label l1 = new Label();
+                visitor.visitJumpInsn(IFNONNULL, l1);
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitVarInsn(ALOAD, 0);
+                visitor.visitFieldInsn(GETFIELD, "org/ubiquity/bytecode/SimpleCopier", "context", "Lorg/ubiquity/bytecode/CopyContext;");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getFactory", "()Lorg/ubiquity/CollectionFactory;");
+                visitor.visitMethodInsn(INVOKEINTERFACE, "org/ubiquity/CollectionFactory", "new" + collectionType, "()Ljava/util/" + collectionType + ";");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + getDescription(p.uObject.getTypeSetter()) + ")V");
+                visitor.visitLabel(l1);
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
+                visitor.visitMethodInsn(INVOKEINTERFACE, "java/util/Collection", "clear", "()V");
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
+                visitor.visitVarInsn(ALOAD, 1);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
+                if("Map".equals(collectionType)) {
+                    visitor.visitMethodInsn(INVOKEINTERFACE, "java/util/Map", "putAll", "(Ljava/util/Map;)V");
+                }
+                else {
+                    visitor.visitMethodInsn(INVOKEINTERFACE, "java/util/Collection", "addAll", "(Ljava/util/Collection;)Z");
+                    visitor.visitInsn(POP);
+                }
+                visitor.visitLabel(l2);
             }
             else {
                 // List from T is of a simple type but not of U !!
