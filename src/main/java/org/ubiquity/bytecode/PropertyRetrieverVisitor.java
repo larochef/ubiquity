@@ -95,7 +95,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 	
 	private Property getProperty(String name) {
 		if(!this.properties.containsKey(name)) {
-			this.properties.put(name, new Property());
+			this.properties.put(name, new Property(name));
 		}
 		return this.properties.get(name);
 	}
@@ -211,6 +211,25 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
     }
 
     private String parsegenericsFronSignature(String signature) {
-        return "";
+        if(signature == null || !signature.contains("<") || !signature.contains(">")) {
+            return null;
+        }
+        String generics = signature.substring(signature.indexOf('<') + 1, signature.indexOf('>'));
+        return parseGenericsInternal(generics);
+    }
+
+    private String parseGenericsInternal(String generics) {
+        if(generics.length() == 1) {
+            return generics;
+        }
+        if(generics.charAt(0) == 'L' && generics.indexOf(';') == generics.length() - 1) {
+            return generics.substring(1, generics.length() - 1);
+        }
+        int index = generics.indexOf(';');
+        // If no complex objects, return the last simple one
+        if(index == -1) {
+            return generics.substring(generics.length() - 1);
+        }
+        return parseGenericsInternal(generics.substring(index + 1));
     }
 }

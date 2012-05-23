@@ -14,7 +14,7 @@ import java.util.List;
  */
 class  Property {
 
-	private String name;
+	final private String name;
 	private String getter;
 	private String setter;
     private String typeGetter;
@@ -24,8 +24,9 @@ class  Property {
 
 	private List<String> annotations;
 	
-	public Property() {
+	public Property(String name) {
 		this.annotations = new ArrayList<String>();
+        this.name = name;
 	}
 	
 	public boolean isReadable() {
@@ -58,10 +59,6 @@ class  Property {
 
 	public List<String> getAnnotations() {
 		return annotations;
-	}
-
-	public void setName(String name) {
-		this.name = name;
 	}
 
     public String getTypeGetter() {

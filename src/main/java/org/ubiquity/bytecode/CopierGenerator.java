@@ -82,7 +82,6 @@ final class CopierGenerator {
                 handeArrays(visitor, className, srcName, destinationName, p);
                 continue;
             }
-
             // Handle collections
             if(descriptionGetter.startsWith("Ljava/util/Collection;")) {
                 handleCollection(visitor, p, "Collection", srcName, destinationName);
@@ -105,7 +104,7 @@ final class CopierGenerator {
             handleComplexObjects(visitor, className, srcName, destinationName, p);
         }
         visitor.visitInsn(RETURN);
-        visitor.visitMaxs(4,4);
+        visitor.visitMaxs(7,3);
         visitor.visitEnd();
 
         writer.visitEnd();

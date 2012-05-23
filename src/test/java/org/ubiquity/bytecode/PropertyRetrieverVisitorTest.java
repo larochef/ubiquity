@@ -6,13 +6,13 @@ package org.ubiquity.bytecode;
 import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassVisitor;
-import org.objectweb.asm.util.TraceClassVisitor;
 import org.ubiquity.Copier;
 
-import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * Test for class {@link PropertyRetrieverVisitor}
@@ -136,6 +136,24 @@ public class PropertyRetrieverVisitorTest {
         copier.copy(src, destination);
         assertNotNull(destination.getObjects());
         assertEquals(1, destination.getObjects().length);
+    }
+
+    @Test
+    public void testLists() throws Exception {
+        ListObject src = new ListObject();
+        List<SimpleTestClass> objects = new ArrayList<SimpleTestClass>();
+        SimpleTestClass elem = new SimpleTestClass();
+        objects.add(elem);
+        src.setObjects(objects);
+
+        CopyContext ctx = new CopyContext();
+        Copier<ListObject, ListObject> copier =
+                new CopierGenerator().createCopier(ListObject.class, ListObject.class, ctx);
+
+        ListObject dest = copier.map(src);
+        assertNotNull(dest);
+        assertNotNull(dest.getObjects());
+        assertEquals(1, dest.getObjects().size());
     }
 
 }
