@@ -158,6 +158,20 @@ public class PropertyRetrieverVisitorTest {
     }
 
     @Test
+    public void testLists2() throws Exception {
+        ListObject src = new ListObject();
+        src.setObjects(null);
+
+        CopyContext ctx = new CopyContext();
+        Copier<ListObject, ListObject> copier =
+                new CopierGenerator().createCopier(ListObject.class, ListObject.class, ctx);
+
+        ListObject dest = copier.map(src);
+        assertNotNull(dest);
+        assertNull(dest.getObjects());
+    }
+
+    @Test
     public void testSimpleLists1() throws Exception {
         CollectionClass object = new CollectionClass();
         List<String> objects = new ArrayList<String>();
