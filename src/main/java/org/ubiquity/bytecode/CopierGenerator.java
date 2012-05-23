@@ -76,11 +76,14 @@ final class CopierGenerator {
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
                 continue;
             }
+
+            // Handle arrays
             if(descriptionGetter.startsWith("[")) {
                 handeArrays(visitor, className, srcName, destinationName, p);
                 continue;
             }
 
+            // Handle collections
             if(descriptionGetter.startsWith("Ljava/util/Collection;")) {
                 handleCollection(visitor, p, "Collection", srcName, destinationName);
                 continue;
@@ -98,6 +101,7 @@ final class CopierGenerator {
                 continue;
             }
 
+            // Handle other objects
             handleComplexObjects(visitor, className, srcName, destinationName, p);
         }
         visitor.visitInsn(RETURN);
