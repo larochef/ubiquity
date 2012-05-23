@@ -80,8 +80,18 @@ final class CopierGenerator {
                 handeArrays(visitor, className, srcName, destinationName, p);
                 continue;
             }
-            // TODO : handle collections
-            // TODO : handle enums ?
+
+            // TODO : use generics to map correctly
+            if(descriptionGetter.startsWith("Ljava/util/Collection;")) {
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitVarInsn(ALOAD, 1);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()Ljava/util/Collection;");
+                visitor.visitVarInsn(ALOAD, 2);
+                visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()Ljava/util/Collection;");
+                visitor.visitMethodInsn(INVOKEVIRTUAL, "Lorg/ubiquity/bytecode/SimpleCopier", "handleCollection", "(Ljava/util/Collection;Ljava/util/Collection)Ljava/util/Collection;");
+                visitor.visitMethodInsn(INVOKEDYNAMIC, destinationName, p.uObject.getSetter(), "(Ljava/util/Collection;)V");
+                continue;
+            }
             if(descriptionGetter.startsWith("Ljava/util/List;")) {
                 visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitVarInsn(ALOAD, 1);

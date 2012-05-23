@@ -1,5 +1,6 @@
 package org.ubiquity.bytecode;
 
+import org.ubiquity.CollectionFactory;
 import org.ubiquity.Copier;
 
 import java.util.*;
@@ -12,7 +13,107 @@ import java.util.*;
  *
  * @author François LAROCHE
  */
-public abstract class SimpleCopier <T, U> implements Copier<T, U>{
+public abstract class SimpleCopier <T, U> implements Copier<T, U> {
+
+    protected static <A, B> List<B> handleList(List<A> src, List<B> destination, CollectionFactory factory, Copier<A,B> copier) {
+        if(src == null) {
+            return null;
+        }
+        List<B> result = destination;
+        if(result == null) {
+            result = factory.newList();
+        }
+        if(src.size() != result.size()) {
+            result.clear();
+            for(A elem : src) {
+                result.add(copier.map(elem));
+            }
+        }
+        else {
+            Iterator<B> us = result.iterator();
+            for(A elem : src) {
+                copier.copy(elem, us.next());
+            }
+        }
+        return result;
+    }
+
+    protected static <A, B> Set<B> handleSet(Set<A> src, Set<B> destination, CollectionFactory factory, Copier<A,B> copier) {
+        if(src == null) {
+            return null;
+        }
+        Set<B> result = destination;
+        if(result == null) {
+            result = factory.newSet();
+        }
+        if(src.size() != result.size()) {
+            result.clear();
+            for(A elem : src) {
+                result.add(copier.map(elem));
+            }
+        }
+        else {
+            Iterator<B> us = result.iterator();
+            for(A elem : src) {
+                copier.copy(elem, us.next());
+            }
+        }
+        return result;
+    }
+
+    protected static <K, A, B> Map<K, B> handleMap(Map<K,A> src, Map<K,B> destination, CollectionFactory factory, Copier<A,B> copier) {
+        if(src == null) {
+            return null;
+        }
+        Map<K, B> result = destination;
+        if(result == null) {
+            result = factory.newMap();
+        }
+        for(K elem : src.keySet()) {
+            B target = result.get(elem);
+            if(target == null) {
+                target = copier.map(src.get(elem));
+                result.put(elem, target);
+            }
+            else {
+                copier.copy(src.get(elem), target);
+            }
+        }
+
+        if(src.size() != result.size()) {
+            Set<K> destinationKeys = Collections.unmodifiableSet(result.keySet());
+            for(K key : destinationKeys) {
+                if(!result.containsKey(key)) {
+                    result.remove(key);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    protected static <A, B> Collection<B> handleCollection(Collection<A> src, Collection<B> destination, CollectionFactory factory, Copier<A,B> copier) {
+        if(src == null) {
+            return null;
+        }
+        Collection<B> result = destination;
+        if(result == null) {
+            result = factory.newCollection();
+        }
+        if(src.size() != result.size()) {
+            result.clear();
+            for(A elem : src) {
+                result.add(copier.map(elem));
+            }
+        }
+        else {
+            Iterator<B> us = result.iterator();
+            for(A elem : src) {
+                copier.copy(elem, us.next());
+            }
+        }
+        return result;
+    }
 
     protected final CopyContext context;
 
@@ -108,81 +209,6 @@ public abstract class SimpleCopier <T, U> implements Copier<T, U>{
      * @return a newly instanciated array of U
      */
     protected abstract U[] newArray(int capacity);
-
-    protected List<U> handleList(List<T> src, List<U> destination) {
-        if(src == null) {
-            return null;
-        }
-        List<U> result = destination;
-        if(result == null) {
-            result = this.context.getFactory().newList();
-        }
-        if(src.size() != result.size()) {
-            result.clear();
-            for(T elem : src) {
-                result.add(map(elem));
-            }
-        }
-        else {
-            Iterator<U> us = result.iterator();
-            for(T elem : src) {
-                copy(elem, us.next());
-            }
-        }
-        return result;
-    }
-
-    protected Set<U> handleSet(Set<T> src, Set<U> destination) {
-        if(src == null) {
-            return null;
-        }
-        Set<U> result = destination;
-        if(result == null) {
-            result = this.context.getFactory().newSet();
-        }
-        if(src.size() != result.size()) {
-            result.clear();
-            for(T elem : src) {
-                result.add(map(elem));
-            }
-        }
-        else {
-            Iterator<U> us = result.iterator();
-            for(T elem : src) {
-                copy(elem, us.next());
-            }
-        }
-        return result;
-    }
-
-    protected <K> Map<K, U> handleMap(Map<K,T> src, Map<K,U> destination) {
-        if(src == null) {
-            return null;
-        }
-        Map<K, U> result = destination;
-        if(result == null) {
-            result = this.context.getFactory().newMap();
-        }
-        for(K elem : src.keySet()) {
-            U target = destination.get(elem);
-            if(target == null) {
-                target = newInstance();
-                destination.put(elem, target);
-            }
-            copy(src.get(elem), target);
-        }
-
-        if(src.size() != destination.size()) {
-            Set<K> destinationKeys = Collections.unmodifiableSet(destination.keySet());
-            for(K key : destinationKeys) {
-                if(!destination.containsKey(key)) {
-                    destination.remove(key);
-                }
-            }
-        }
-
-        return result;
-    }
 
     /**
      * converts a java.lang.Short to a short.

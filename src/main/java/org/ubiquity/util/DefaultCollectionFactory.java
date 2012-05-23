@@ -5,6 +5,8 @@ import org.ubiquity.CollectionFactory;
 import java.util.*;
 
 /**
+ * Simple collection factory that should be fine for most cases.
+ *
  * Date: 24/04/12
  *
  * @author François LAROCHE
@@ -24,5 +26,10 @@ public class DefaultCollectionFactory implements CollectionFactory {
     @Override
     public <K, T> Map<K, T> newMap() {
         return new HashMap<K, T>();
+    }
+
+    @Override
+    public <T> Collection<T> newCollection() {
+        return new ArrayList<T>();
     }
 }

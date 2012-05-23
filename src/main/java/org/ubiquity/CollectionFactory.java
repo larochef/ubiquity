@@ -1,5 +1,6 @@
 package org.ubiquity;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -36,4 +37,11 @@ public interface CollectionFactory {
      * @return a new map
      */
     <K,T> Map<K,T> newMap();
+
+    /**
+     * Default collection creation
+     * @param <T> the type of elments to store in the collection
+     * @return a new Collection for objects of type T
+     */
+    <T>Collection<T> newCollection();
 }
