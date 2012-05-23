@@ -207,7 +207,21 @@ final class GeneratorHelper {
     }
 
     static void handleCollection(MethodVisitor visitor, Tuple<Property, Property> p, String collectionType, String srcName, String destinationName) {
-        // TODO : handle simple properties !!!!!
+        String tGeneric = p.tObject.getGenericGetter();
+        String uGeneric = p.uObject.getGenericSetter();
+        if(SIMPLE_PROPERTIES.containsKey(tGeneric)) {
+            // TODO : handle simple properties !!!!!
+            if(tGeneric.equals(uGeneric)) {
+
+            }
+            else if(SIMPLE_PROPERTIES.get(tGeneric).equals(uGeneric)) {
+
+            }
+            else {
+                // List from T is of a simple type but not of U !!
+                return;
+            }
+        }
         visitor.visitVarInsn(ALOAD, 2);
         visitor.visitVarInsn(ALOAD, 1);
         visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()Ljava/util/" + collectionType + ";");
@@ -218,8 +232,8 @@ final class GeneratorHelper {
         visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getFactory", "()Lorg/ubiquity/CollectionFactory;");
         visitor.visitVarInsn(ALOAD, 0);
         visitor.visitFieldInsn(GETFIELD, "org/ubiquity/bytecode/SimpleCopier", "context", "Lorg/ubiquity/bytecode/CopyContext;");
-        visitor.visitLdcInsn(Type.getType(getDescription(p.tObject.getGenericGetter())));
-        visitor.visitLdcInsn(Type.getType(getDescription(p.uObject.getGenericSetter())));
+        visitor.visitLdcInsn(Type.getType(p.tObject.getGenericGetter()));
+        visitor.visitLdcInsn(Type.getType(p.uObject.getGenericSetter()));
         visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/Copier;");
         visitor.visitMethodInsn(INVOKESTATIC, "org/ubiquity/bytecode/SimpleCopier", "handle" + collectionType,
                 "(Ljava/util/" + collectionType + ";Ljava/util/" + collectionType + ";Lorg/ubiquity/CollectionFactory;Lorg/ubiquity/Copier;)Ljava/util/" + collectionType + ";");

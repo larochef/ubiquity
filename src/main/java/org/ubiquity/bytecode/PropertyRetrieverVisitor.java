@@ -223,7 +223,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
             return generics;
         }
         if(generics.charAt(0) == 'L' && generics.indexOf(';') == generics.length() - 1) {
-            return generics.substring(1, generics.length() - 1);
+            return generics;
         }
         int index = generics.indexOf(';');
         // If no complex objects, return the last simple one
