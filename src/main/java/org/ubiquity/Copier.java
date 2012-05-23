@@ -37,11 +37,14 @@ public interface Copier<T, U> {
     void copy(T source, U destination);
 
     /**
+     * Map an array of T elements to an array of U elements.
+     * If the specified array of Us doesn't have the same size as the array of T
+     * or is null, then a new array of U will be created.
+     * Else, the original array will be returned.
      *
-     *
-     * @param src
-     * @param target
-     * @return
+     * @param src the array containing the Ts to copy
+     * @param target the array containing the destination Us
+     * @return an array, that can be the target argument containing all the merged elements
      */
     U[] map (T[] src, U[] target);
 
