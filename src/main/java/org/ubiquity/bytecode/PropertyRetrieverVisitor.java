@@ -56,9 +56,9 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 
     @Override
 	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-		Property property = getProperty(name);
-		property.setName(name);
-        property.setTypeField(parseType(desc));
+//		Property property = getProperty(name);
+//		property.setName(name);
+//        property.setTypeField(parseType(desc));
 		return super.visitField(access, name, desc, signature, value);
 //        new FieldReader(property);
 	}
@@ -93,7 +93,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 	
 	private Property getProperty(String name) {
 		if(!this.properties.containsKey(name)) {
-			this.properties.put(name, new Property(name));
+			this.properties.put(name, new Property());
 		}
 		return this.properties.get(name);
 	}

@@ -19,11 +19,12 @@ class  Property {
 	private String setter;
     private String typeGetter;
     private String typeSetter;
-    private String typeField;
-	
+    private String genericGetter;
+    private String genericSetter;
+
 	private List<String> annotations;
 	
-	public Property(String type) {
+	public Property() {
 		this.annotations = new ArrayList<String>();
 	}
 	
@@ -79,16 +80,24 @@ class  Property {
         this.typeSetter = typeSetter;
     }
 
-    public String getTypeField() {
-        return typeField;
-    }
-
-    public void setTypeField(String typeField) {
-        this.typeField = typeField;
-    }
-
     private boolean isIgnored() {
         return this.annotations != null && this.annotations.contains(Constants.IGNORE_ANNOTATION);
+    }
+
+    public String getGenericGetter() {
+        return genericGetter;
+    }
+
+    public void setGenericGetter(String genericGetter) {
+        this.genericGetter = genericGetter;
+    }
+
+    public String getGenericSetter() {
+        return genericSetter;
+    }
+
+    public void setGenericSetter(String genericSetter) {
+        this.genericSetter = genericSetter;
     }
 
     @Override

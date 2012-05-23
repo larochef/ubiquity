@@ -206,6 +206,25 @@ final class GeneratorHelper {
         visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
     }
 
+    static void handleCollection(MethodVisitor visitor, Tuple<Property, Property> p, String collectionType, String srcName, String destinationName) {
+        visitor.visitVarInsn(ALOAD, 2);
+        visitor.visitVarInsn(ALOAD, 1);
+        visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()Ljava/util/" + collectionType + ";");
+        visitor.visitVarInsn(ALOAD, 2);
+        visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()Ljava/util/" + collectionType + ";");
+        visitor.visitVarInsn(ALOAD, 0);
+        visitor.visitFieldInsn(GETFIELD, "org/ubiquity/bytecode/SimpleCopier", "context", "Lorg/ubiquity/bytecode/CopyContext;");
+        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getFactory", "()Lorg/ubiquity/CollectionFactory;");
+        visitor.visitVarInsn(ALOAD, 0);
+        visitor.visitFieldInsn(GETFIELD, "org/ubiquity/bytecode/SimpleCopier", "context", "Lorg/ubiquity/bytecode/CopyContext;");
+        visitor.visitLdcInsn(Type.getType(p.tObject.getGenericGetter()));
+        visitor.visitLdcInsn(Type.getType(p.uObject.getGenericSetter()));
+        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/Copier;");
+        visitor.visitMethodInsn(INVOKESTATIC, "org/ubiquity/bytecode/SimpleCopier", "handle" + collectionType,
+                "(Ljava/util/" + collectionType + ";Ljava/util/" + collectionType + ";Lorg/ubiquity/CollectionFactory;Lorg/ubiquity/Copier;)Ljava/util/" + collectionType + ";");
+        visitor.visitMethodInsn(INVOKEDYNAMIC, destinationName, p.uObject.getSetter(), "(Ljava/util/" + collectionType + ";)V");
+    }
+
     static String getDescription(String className){
         if(className.indexOf('/') < 0) {
             return className;
@@ -226,4 +245,5 @@ final class GeneratorHelper {
         rightPart += targetBytecodeName.substring(index);
         return "org/ubiquity/bytecode/generated/Copier" + rightPart.replaceAll("[/]", "").replaceAll(";", "");
     }
+
 }
