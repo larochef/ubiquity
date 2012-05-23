@@ -3,7 +3,8 @@ package org.ubiquity;
 import java.util.List;
 
 /**
- * This interface defines a Copier, used to copy an object into another, or map an object into another one of another class.
+ * This interface defines a Copier, used to copy an object into another,
+ * or map an object into another one of another class.
  *
  * @author François LAROCHE
  *
