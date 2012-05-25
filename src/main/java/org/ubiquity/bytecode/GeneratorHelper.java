@@ -167,27 +167,30 @@ final class GeneratorHelper {
                 visitor.visitVarInsn(ALOAD, 1);
                 visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
                 visitor.visitMethodInsn(INVOKEVIRTUAL, className, "convert",
-                        "(" + getDescription(p.tObject.getGetter()) + ")" + getDescription(p.uObject.getTypeSetter()));
+                        "(" + getDescription(p.tObject.getTypeGetter()) + ")" + getDescription(p.uObject.getTypeSetter()));
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + getDescription(p.uObject.getTypeSetter()) + ")V");
                 return;
             }
             // Simple arrays cloned from a to b
             visitor.visitVarInsn(ALOAD, 1);
-            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getTypeGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
+            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
             Label arrayNotNull = new Label();
             visitor.visitJumpInsn(IFNONNULL, arrayNotNull);
             visitor.visitVarInsn(ALOAD, 2);
             visitor.visitInsn(ACONST_NULL);
             visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "()" + getDescription(p.uObject.getTypeSetter()));
             Label arrayNullEnd = new Label();
+            visitor.visitInsn(POP);
+            visitor.visitInsn(POP);
             visitor.visitJumpInsn(GOTO, arrayNullEnd);
             visitor.visitLabel(arrayNotNull);
             visitor.visitVarInsn(ALOAD, 2);
             visitor.visitVarInsn(ALOAD, 1);
-            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getTypeGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
+            visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + getDescription(p.tObject.getTypeGetter()));
             visitor.visitMethodInsn(INVOKEVIRTUAL, "java/lang/Object", "clone", "()Ljava/lang/Object;");
             visitor.visitTypeInsn(CHECKCAST, getDescription(p.uObject.getTypeSetter()));
             visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
+            visitor.visitLabel(arrayNullEnd);
             return;
         }
         // Arrays of complex types
