@@ -124,8 +124,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 	private final class MethodReader extends MethodVisitor {
 		
 		private final Property property;
-//        private static final String UBIQUITY_ANNOTATION = "Lorg/ubiquity/annotation/";
-		
+
 		private MethodReader(Property property) {
 			super(ASM_LEVEL);
 			this.property = property;
@@ -143,6 +142,10 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 
                 if(Constants.RENAMES_ANNOTATION.equals(desc)) {
                     return new AnnotationVisitor(ASM_LEVEL) {
+                        @Override
+                        public AnnotationVisitor visitArray(String name) {
+                            return this;
+                        }
                         @Override
                         public AnnotationVisitor visitAnnotation(String name, String desc) {
                             return new RenameAnotationVisitor(property);
@@ -181,7 +184,15 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         }
 
         @Override
+        public AnnotationVisitor visitArray(String name) {
+            return this;
+        }
+
+        @Override
         public void visitEnd() {
+            if("Ljava/lang/Object;".equals(targetClass) || null == targetClass) {
+                targetClass = "*";
+            }
             this.property.getAnnotations().add(RENAME_ANNOTATION + ':' + this.targetName + ':' + this.targetClass);
         }
     }

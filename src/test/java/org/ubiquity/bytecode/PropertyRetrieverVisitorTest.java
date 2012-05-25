@@ -8,12 +8,13 @@ import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import org.ubiquity.Copier;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.StringTokenizer;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertNull;
+import static junit.framework.Assert.*;
 
 /**
  * Test for class {@link PropertyRetrieverVisitor}
@@ -24,35 +25,22 @@ public class PropertyRetrieverVisitorTest {
 
 	 @Test
      public void test() throws Exception {
-//        long start = System.currentTimeMillis();
         ClassReader reader = new ClassReader("org/ubiquity/bytecode/SimpleTestClass");
         PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
         reader.accept(visitor, 0);
-//        long stop = System.currentTimeMillis();
-//        System.out.println(visitor.toString());
-//        System.out.println("ASM parsing took " + (stop - start) + "ms.");
-
     }
 
     @Test
     public void testInheritance() throws Exception {
-//        long start = System.currentTimeMillis();
         ClassReader reader = new ClassReader("org/ubiquity/bytecode/InheritingClass");
         PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
         reader.accept(visitor, 0);
-//        long stop = System.currentTimeMillis();
-//        System.out.println(visitor.toString());
-//        System.out.println("ASM parsing took " + (stop - start) + "ms.");
-
     }
 	
 	@Test
 	public void testBeanutils() throws Exception{
 		Object dummy = new SimpleTestClass();
-//		long start = System.currentTimeMillis();
 		BeanUtils.describe(dummy);
-//		long stop = System.currentTimeMillis();
-//		System.out.println("beanutils parsing took " + (stop - start) + "ms.");
 	}
 
     @Test
@@ -60,18 +48,10 @@ public class PropertyRetrieverVisitorTest {
         SimpleTestClass src = new SimpleTestClass();
         src.setProperty1("property1");
         src.setProperty3("property3");
-//        long start = System.currentTimeMillis();
         CopyContext ctx = new CopyContext();
         Copier<SimpleTestClass, SimpleTestClass> copier = new CopierGenerator().createCopier(SimpleTestClass.class, SimpleTestClass.class, ctx);
-//        long start2 = System.currentTimeMillis();
         copier.copy(src, new SimpleTestClass());
-//        long end = System.currentTimeMillis();
-//        System.out.println("Asm process took : " + (end - start) + "ms, copy took " + (end - start2) + "ms");
-//        start = System.currentTimeMillis();
         BeanUtils.copyProperties(new SimpleTestClass(), src);
-//        end = System.currentTimeMillis();
-//        System.out.println("BeanUtils process took : " + (end - start) + "ms");
-
     }
 
     @Test
@@ -89,7 +69,6 @@ public class PropertyRetrieverVisitorTest {
 
     @Test
     public void testInternalClasses() throws Exception {
-//        long start = System.currentTimeMillis();
         CopyContext ctx = new CopyContext();
         Copier<InheritingClass.InternalInheritingClass, InheritingClass.InternalInheritingClass> copier =
                 new CopierGenerator().createCopier(InheritingClass.InternalInheritingClass.class, InheritingClass.InternalInheritingClass.class, ctx);
@@ -98,8 +77,6 @@ public class PropertyRetrieverVisitorTest {
         testObject.setField(2);
         InheritingClass.InternalInheritingClass result = copier.map(testObject);
         assertEquals(Integer.valueOf(2), result.getField());
-//        long end = System.currentTimeMillis();
-//        System.out.println("testInternalClasses took " + (end - start) + "ms");
     }
 
     @Test
@@ -202,7 +179,25 @@ public class PropertyRetrieverVisitorTest {
         CollectionClass dest = copier.map(object);
         assertNotNull(dest);
         assertNull(dest.getObjects());
+    }
 
+    @Test
+    public void testAnnotationsParsing() throws IOException{
+        ClassReader reader = new ClassReader("org/ubiquity/bytecode/AnnotatedClass");
+        PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
+        reader.accept(visitor, 0);
+        Map<String, Property> properties = visitor.getProperties();
+        assertFalse(properties.isEmpty());
+        assertTrue(properties.containsKey("property1"));
+        Property property1 = properties.get("property1");
+        assertFalse(property1.getAnnotations().isEmpty());
+        assertTrue(property1.getAnnotations().contains("Lorg/ubiquity/annotation/CopyRename;:property3:Lorg/ubiquity/bytecode/SimpleTestClass;"));
+
+        Property property3 = properties.get("property3");
+        assertNotNull(property3);
+        assertFalse(property3.getAnnotations().isEmpty());
+        assertTrue(property3.getAnnotations().contains("Lorg/ubiquity/annotation/CopyRename;:test:*"));
+        assertTrue(property3.getAnnotations().contains("Lorg/ubiquity/annotation/CopyRename;:property3:Lorg/ubiquity/bytecode/SimpleTestClass;"));
     }
 
 }
