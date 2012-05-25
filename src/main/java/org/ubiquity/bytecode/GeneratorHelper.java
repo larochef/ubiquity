@@ -210,8 +210,6 @@ final class GeneratorHelper {
         String tGeneric = p.tObject.getGenericGetter();
         String uGeneric = p.uObject.getGenericSetter();
         if(SIMPLE_PROPERTIES.containsKey(tGeneric)) {
-            // TODO : handle simple properties !!!!!
-            // TODO : handle null lists
             if(tGeneric.equals(uGeneric)) {
                 Label l0 = new Label();
                 visitor.visitVarInsn(ALOAD, 1);

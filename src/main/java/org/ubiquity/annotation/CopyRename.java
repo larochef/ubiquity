@@ -32,5 +32,5 @@ public @interface CopyRename {
      *
      * @return the class matching this rule
      */
-    Class<? extends Object> targetClass() default Object.class;
+    Class<?> targetClass() default Object.class;
 }
