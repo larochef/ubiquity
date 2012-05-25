@@ -33,4 +33,6 @@ public final class Constants {
     public static final Map<String, String> SIMPLE_PROPERTIES;
 	public static final int ASM_LEVEL = Opcodes.ASM4;
     public static final String IGNORE_ANNOTATION = "Lorg/ubiquity/annotation/CopyIgnore;";
+    public static final String RENAME_ANNOTATION = "Lorg/ubiquity/annotation/CopyRename;";
+    public static final String RENAMES_ANNOTATION = "Lorg/ubiquity/annotation/CopyRenames;";
 }

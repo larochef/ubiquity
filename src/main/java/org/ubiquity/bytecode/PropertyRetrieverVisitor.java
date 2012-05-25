@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.ubiquity.util.Constants.ASM_LEVEL;
+import static org.ubiquity.util.Constants.RENAME_ANNOTATION;
 
 /**
  * @author François LAROCHE
@@ -53,15 +54,6 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         }
         super.visit(version, access, name, signature, superName, interfaces);
     }
-
-    @Override
-	public FieldVisitor visitField(int access, String name, String desc, String signature, Object value) {
-//		Property property = getProperty(name);
-//		property.setName(name);
-//        property.setTypeField(parseType(desc));
-		return super.visitField(access, name, desc, signature, value);
-//        new FieldReader(property);
-	}
 
 	@Override
 	public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
@@ -145,26 +137,54 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
                 if(Constants.IGNORE_ANNOTATION.equals(desc)) {
                     this.property.getAnnotations().add(desc);
                 }
-                /*if(desc != null && desc.startsWith(UBIQUITY_ANNOTATION)) {
-                    return new AnnotationReader(this.property, desc);
-                }*/
+                if(Constants.RENAME_ANNOTATION.equals(desc)) {
+                    return new RenameAnotationVisitor(this.property);
+                }
+
+                if(Constants.RENAMES_ANNOTATION.equals(desc)) {
+                    return new AnnotationVisitor(ASM_LEVEL) {
+                        @Override
+                        public AnnotationVisitor visitAnnotation(String name, String desc) {
+                            return new RenameAnotationVisitor(property);
+                        }
+                    };
+                }
 			}
 			return super.visitAnnotation(desc, visible);
 		}
 
 	}
 
-    /*private final class AnnotationReader extends AnnotationVisitor {
-
+    /**
+     * Visitor for the rename annotations {@link org.ubiquity.annotation.CopyRename}
+     */
+    static class RenameAnotationVisitor extends AnnotationVisitor {
         private final Property property;
-        private final String desc;
 
-        private AnnotationReader(Property property, String desc) {
+        private String targetClass;
+        private String targetName;
+
+        public RenameAnotationVisitor(Property property) {
             super(ASM_LEVEL);
             this.property = property;
-            this.desc = desc;
         }
-    }*/
+
+        @Override
+        public void visit(String name, Object value) {
+            if("propertyName".equals(name)) {
+                this.targetName = (String) value;
+            }
+            else if("targetClass".equals(name)) {
+                Type t = (Type) value;
+                this.targetClass = t.getDescriptor();
+            }
+        }
+
+        @Override
+        public void visitEnd() {
+            this.property.getAnnotations().add(RENAME_ANNOTATION + ':' + this.targetName + ':' + this.targetClass);
+        }
+    }
 	
 	@Override public String toString() {
 		StringBuilder builder = new StringBuilder();
