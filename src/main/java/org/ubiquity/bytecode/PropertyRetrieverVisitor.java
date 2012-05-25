@@ -176,6 +176,9 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         public void visit(String name, Object value) {
             if("propertyName".equals(name)) {
                 this.targetName = (String) value;
+                if(targetName.contains(".")) {
+                    throw new IllegalArgumentException("Deep renaming not supporting yet, work in progress.");
+                }
             }
             else if("targetClass".equals(name)) {
                 Type t = (Type) value;

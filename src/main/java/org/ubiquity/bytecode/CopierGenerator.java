@@ -5,6 +5,7 @@ package org.ubiquity.bytecode;
 
 import org.objectweb.asm.*;
 import org.ubiquity.Copier;
+import org.ubiquity.util.Constants;
 import org.ubiquity.util.Tuple;
 
 import java.io.IOException;
@@ -127,7 +128,8 @@ final class CopierGenerator {
             if(!property.isReadable()) {
                 continue;
             }
-            Property dest = resolveTargetProperty(property, targetProperties);
+            Property dest = resolveTargetProperty(property, targetProperties,
+                    getDescription(CopierGenerator.byteCodeName(source)), getDescription(CopierGenerator.byteCodeName(destination)));
             if(dest != null && dest.isWritable()) {
                 compatibleProperties.add(new Tuple<Property, Property>(property, dest));
             }
@@ -136,8 +138,31 @@ final class CopierGenerator {
         return compatibleProperties;
     }
 
-    private Property resolveTargetProperty(Property src, Map<String, Property> targetProperties) {
-        return targetProperties.get(src.getName());
+    private Property resolveTargetProperty(Property src, Map<String, Property> targetProperties, String srcDescription, String destinationDescription) {
+        String sourceName = src.getName();
+        String matchingAnnotation = null;
+        for(String annotation : src.getAnnotations()) {
+            if(annotation.startsWith(Constants.RENAME_ANNOTATION) && (annotation.endsWith(destinationDescription) || annotation.endsWith("*"))) {
+                if(matchingAnnotation == null || annotation.endsWith(destinationDescription)) {
+                    matchingAnnotation = annotation;
+                }
+            }
+        }
+        if(matchingAnnotation != null) {
+            sourceName = matchingAnnotation.split("[:]")[1];
+        }
+
+        for(String key : targetProperties.keySet()) {
+            Property p = targetProperties.get(key);
+            if(sourceName.equals(key)) {
+                return p;
+            }
+            String annotationBeginning = Constants.RENAME_ANNOTATION + ":" + sourceName + ":";
+            if(p.getAnnotations().contains(annotationBeginning + "*") || p.getAnnotations().contains(annotationBeginning + srcDescription)) {
+                return p;
+            }
+        }
+        return null;
     }
 
 	private static String byteCodeName(Class<?> c) {

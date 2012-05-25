@@ -200,4 +200,19 @@ public class PropertyRetrieverVisitorTest {
         assertTrue(property3.getAnnotations().contains("Lorg/ubiquity/annotation/CopyRename;:property3:Lorg/ubiquity/bytecode/SimpleTestClass;"));
     }
 
+    @Test
+    public void testSimpleRenaming() throws Exception {
+        AnnotatedClass2 object = new AnnotatedClass2();
+        object.setToto("toto");
+
+
+        CopyContext ctx = new CopyContext();
+        Copier<AnnotatedClass2, SimpleTestClass> copier =
+                new CopierGenerator().createCopier(AnnotatedClass2.class, SimpleTestClass.class, ctx);
+
+        SimpleTestClass dest = copier.map(object);
+        assertNotNull(dest);
+        assertEquals("toto", dest.getProperty1());
+    }
+
 }
