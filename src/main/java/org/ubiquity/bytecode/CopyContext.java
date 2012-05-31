@@ -32,7 +32,7 @@ public class CopyContext {
         this.factory = new DefaultCollectionFactory();
     }
 
-    public <T, U> Copier<T,U> getCopier(Class<T> source, Class<U> destination) {
+    public synchronized <T, U> Copier<T,U> getCopier(Class<T> source, Class<U> destination) {
         Tuple<Class<T>,Class<U>> key = new Tuple<Class<T>, Class<U>>(source, destination);
         if(!copiers.containsKey(key)) {
             this.requireCopier(source, destination);

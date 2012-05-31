@@ -48,7 +48,7 @@ final class CopierGenerator {
         String destinationName = byteCodeName(destination);
         String className = createCopierClassName(srcName, destinationName);
 
-        ClassWriter writer = new ClassWriter(0);
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         writer.visit(V1_5, ACC_PUBLIC + ACC_FINAL, className,
                 "Lorg/ubiquity/bytecode/SimpleCopier<" + getDescription(srcName) + getDescription(destinationName) + ">;",
                 "org/ubiquity/bytecode/SimpleCopier", null);

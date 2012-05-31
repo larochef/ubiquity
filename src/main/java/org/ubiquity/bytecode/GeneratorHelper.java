@@ -237,7 +237,7 @@ final class GeneratorHelper {
                 visitor.visitLabel(l1);
                 visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
-                visitor.visitMethodInsn(INVOKEINTERFACE, "java/util/Collection", "clear", "()V");
+                visitor.visitMethodInsn(INVOKEINTERFACE, "java/util/" + collectionType, "clear", "()V");
                 visitor.visitVarInsn(ALOAD, 2);
                 visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
                 visitor.visitVarInsn(ALOAD, 1);
@@ -251,10 +251,8 @@ final class GeneratorHelper {
                 }
                 visitor.visitLabel(l2);
             }
-            else {
-                // List from T is of a simple type but not of U !!
-                return;
-            }
+            // List from T is of a simple type but not of U !!
+            return;
         }
         visitor.visitVarInsn(ALOAD, 2);
         visitor.visitVarInsn(ALOAD, 1);

@@ -24,9 +24,11 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
     private static final List<String> COLLECTIONS;
     static {
         COLLECTIONS = new ArrayList<String>();
+        COLLECTIONS.add("()Ljava/util/Collection;");
         COLLECTIONS.add("()Ljava/util/List;");
         COLLECTIONS.add("()Ljava/util/Set;");
         COLLECTIONS.add("()Ljava/util/Map;");
+        COLLECTIONS.add("(Ljava/util/Collection;)V");
         COLLECTIONS.add("(Ljava/util/List;)V");
         COLLECTIONS.add("(Ljava/util/Set;)V");
         COLLECTIONS.add("(Ljava/util/Map;)V");
