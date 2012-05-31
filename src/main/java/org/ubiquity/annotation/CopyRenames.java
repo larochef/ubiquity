@@ -12,7 +12,7 @@ import java.lang.annotation.Target;
  *
  * @author François LAROCHE
  */
-@Retention(RetentionPolicy.RUNTIME)
+@Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface CopyRenames {
 

@@ -132,27 +132,25 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 
 		@Override
 		public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-			if(visible) {
-                if(Constants.IGNORE_ANNOTATION.equals(desc)) {
-                    this.property.getAnnotations().add(desc);
-                }
-                if(Constants.RENAME_ANNOTATION.equals(desc)) {
-                    return new RenameAnotationVisitor(this.property);
-                }
+            if(Constants.IGNORE_ANNOTATION.equals(desc)) {
+                this.property.getAnnotations().add(desc);
+            }
+            if(Constants.RENAME_ANNOTATION.equals(desc)) {
+                return new RenameAnotationVisitor(this.property);
+            }
 
-                if(Constants.RENAMES_ANNOTATION.equals(desc)) {
-                    return new AnnotationVisitor(ASM_LEVEL) {
-                        @Override
-                        public AnnotationVisitor visitArray(String name) {
-                            return this;
-                        }
-                        @Override
-                        public AnnotationVisitor visitAnnotation(String name, String desc) {
-                            return new RenameAnotationVisitor(property);
-                        }
-                    };
-                }
-			}
+            if(Constants.RENAMES_ANNOTATION.equals(desc)) {
+                return new AnnotationVisitor(ASM_LEVEL) {
+                    @Override
+                    public AnnotationVisitor visitArray(String name) {
+                        return this;
+                    }
+                    @Override
+                    public AnnotationVisitor visitAnnotation(String name, String desc) {
+                        return new RenameAnotationVisitor(property);
+                    }
+                };
+            }
 			return super.visitAnnotation(desc, visible);
 		}
 
