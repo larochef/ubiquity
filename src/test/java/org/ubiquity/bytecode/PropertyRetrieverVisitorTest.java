@@ -148,39 +148,6 @@ public class PropertyRetrieverVisitorTest {
     }
 
     @Test
-    public void testSimpleLists1() throws Exception {
-        CollectionClass object = new CollectionClass();
-        List<String> objects = new ArrayList<String>();
-        objects.add("ubiquity");
-        object.setObjects(objects);
-
-        CopyContext ctx = new CopyContext();
-        Copier<CollectionClass, CollectionClass> copier =
-                new CopierGenerator().createCopier(CollectionClass.class, CollectionClass.class, ctx);
-
-        CollectionClass dest = copier.map(object);
-        assertNotNull(dest);
-        assertNotNull(dest.getObjects());
-        assertEquals(1, object.getObjects().size());
-        assertEquals("ubiquity", object.getObjects().iterator().next());
-
-    }
-
-    @Test
-    public void testSimpleLists2() throws Exception {
-        CollectionClass object = new CollectionClass();
-        object.setObjects(null);
-
-        CopyContext ctx = new CopyContext();
-        Copier<CollectionClass, CollectionClass> copier =
-                new CopierGenerator().createCopier(CollectionClass.class, CollectionClass.class, ctx);
-
-        CollectionClass dest = copier.map(object);
-        assertNotNull(dest);
-        assertNull(dest.getObjects());
-    }
-
-    @Test
     public void testSimpleArrays() throws Exception {
         ByteArrayClass object = new ByteArrayClass();
         object.setArray(new byte[]{0x5, 0xa});
