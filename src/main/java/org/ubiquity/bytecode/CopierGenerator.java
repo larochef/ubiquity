@@ -14,6 +14,7 @@ import java.util.*;
 
 import static org.objectweb.asm.Opcodes.*;
 import static org.ubiquity.bytecode.GeneratorHelper.*;
+import static org.ubiquity.util.Constants.COLLECTIONS;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
 
 /**
@@ -84,23 +85,13 @@ final class CopierGenerator {
                 continue;
             }
             // Handle collections
-            if(descriptionGetter.startsWith("Ljava/util/Collection;")) {
-                handleCollection(visitor, p, "Collection", srcName, destinationName);
+            if(COLLECTIONS.contains(descriptionGetter)) {
+                String type = descriptionGetter.substring(
+                                descriptionGetter.lastIndexOf("/") + 1,
+                                descriptionGetter.length() - 1);
+                handleCollection(visitor, p, type, srcName, destinationName);
                 continue;
             }
-            if(descriptionGetter.startsWith("Ljava/util/List;")) {
-                handleCollection(visitor, p, "List", srcName, destinationName);
-                continue;
-            }
-            if(descriptionGetter.startsWith("Ljava/util/Set;")) {
-                handleCollection(visitor, p, "Set", srcName, destinationName);
-                continue;
-            }
-            if(descriptionGetter.startsWith("Ljava/util/Map;")) {
-                handleCollection(visitor, p, "Map", srcName, destinationName);
-                continue;
-            }
-
             // Handle other objects
             handleComplexObjects(visitor, className, srcName, destinationName, p);
         }

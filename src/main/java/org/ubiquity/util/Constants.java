@@ -2,8 +2,10 @@ package org.ubiquity.util;
 
 import org.objectweb.asm.Opcodes;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class Constants {
@@ -28,9 +30,17 @@ public final class Constants {
         map.put("Ljava/lang/Double;", "D");
         map.put("Ljava/lang/String;", "Ljava/lang/String;");
         SIMPLE_PROPERTIES = Collections.unmodifiableMap(map);
+
+        List<String> c = new ArrayList<String>();
+        c.add("Ljava/util/Collection;");
+        c.add("Ljava/util/List;");
+        c.add("Ljava/util/Set;");
+        c.add("Ljava/util/Map;");
+        COLLECTIONS = Collections.unmodifiableList(c);
     }
 
     public static final Map<String, String> SIMPLE_PROPERTIES;
+    public static final List<String> COLLECTIONS;
 	public static final int ASM_LEVEL = Opcodes.ASM4;
     public static final String IGNORE_ANNOTATION = "Lorg/ubiquity/annotation/CopyIgnore;";
     public static final String RENAME_ANNOTATION = "Lorg/ubiquity/annotation/CopyRename;";
