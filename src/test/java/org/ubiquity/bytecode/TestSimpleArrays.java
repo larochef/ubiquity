@@ -241,50 +241,50 @@ public class TestSimpleArrays {
         for(int i = 0; i < obj.getBoolObjects().length; i++) {
             assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getBools().length; i++) {
+            assertEquals(obj.getBools()[i], dest.getBools()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getByteObjects().length; i++) {
+            assertEquals(obj.getByteObjects()[i], dest.getByteObjects()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getBytes().length; i++) {
+            assertEquals(obj.getBytes()[i], dest.getBytes()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getCharObjects().length; i++) {
+            assertEquals(obj.getCharObjects()[i], dest.getCharObjects()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getChars().length; i++) {
+            assertEquals(obj.getChars()[i], dest.getChars()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getDoubleObjects().length; i++) {
+            assertEquals(obj.getDoubleObjects()[i], dest.getDoubleObjects()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getDoubles().length; i++) {
+            assertEquals(obj.getDoubles()[i], dest.getDoubles()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getFloatObjects().length; i++) {
+            assertEquals(obj.getFloatObjects()[i], dest.getFloatObjects()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getFloats().length; i++) {
+            assertEquals(obj.getFloats()[i], dest.getFloats()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getIntObjects().length; i++) {
+            assertEquals(obj.getIntObjects()[i], dest.getIntObjects()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getInts().length; i++) {
+            assertEquals(obj.getInts()[i], dest.getInts()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getLongObjects().length; i++) {
+            assertEquals(obj.getLongObjects()[i], dest.getLongObjects()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getLongs().length; i++) {
+            assertEquals(obj.getLongs()[i], dest.getLongs()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getShortObjects().length; i++) {
+            assertEquals(obj.getShortObjects()[i], dest.getShortObjects()[i]);
         }
-        for(int i = 0; i < obj.getBoolObjects().length; i++) {
-            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        for(int i = 0; i < obj.getShorts().length; i++) {
+            assertEquals(obj.getShorts()[i], dest.getShorts()[i]);
         }
     }
 }
