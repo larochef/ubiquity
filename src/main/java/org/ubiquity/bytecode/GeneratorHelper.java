@@ -178,10 +178,8 @@ final class GeneratorHelper {
             visitor.visitJumpInsn(IFNONNULL, arrayNotNull);
             visitor.visitVarInsn(ALOAD, 2);
             visitor.visitInsn(ACONST_NULL);
-            visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "()" + getDescription(p.uObject.getTypeSetter()));
+            visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + getDescription(p.uObject.getTypeSetter()) + ")V");
             Label arrayNullEnd = new Label();
-            visitor.visitInsn(POP);
-            visitor.visitInsn(POP);
             visitor.visitJumpInsn(GOTO, arrayNullEnd);
             visitor.visitLabel(arrayNotNull);
             visitor.visitVarInsn(ALOAD, 2);

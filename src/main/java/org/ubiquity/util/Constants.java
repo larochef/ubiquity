@@ -23,7 +23,7 @@ public final class Constants {
         map.put("I", "Ljava/lang/Integer;");
         map.put("Ljava/lang/Integer;", "I");
         map.put("F", "Ljava/lang/Float;");
-        map.put("Ljava/lang/Floats;", "F");
+        map.put("Ljava/lang/Float;", "F");
         map.put("J", "Ljava/lang/Long;");
         map.put("Ljava/lang/Long;", "J");
         map.put("D", "Ljava/lang/Double;");

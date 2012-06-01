@@ -1,7 +1,8 @@
 package org.ubiquity.bytecode;
 
+import org.junit.Test;
 import org.ubiquity.Ubiquity;
-
+import static junit.framework.Assert.*;
 /**
  * Date: 01/06/12
  *
@@ -11,7 +12,7 @@ public class TestSimpleArrays {
     private static final Ubiquity ubiquity = new Ubiquity();
 
     // Class containing all the possible arrays
-    public class ArraysTest {
+    public static class ArraysTest {
         private int [] ints;
         private boolean [] bools;
         private long [] longs;
@@ -156,6 +157,134 @@ public class TestSimpleArrays {
 
         public void setShortObjects(Short[] shortObjects) {
             this.shortObjects = shortObjects;
+        }
+    }
+
+    @Test
+    public void testNullArrays() {
+        ArraysTest obj = new ArraysTest();
+        ArraysTest dest = ubiquity.map(obj, ArraysTest.class);
+
+        assertNull(dest.getBoolObjects());
+        assertNull(dest.getBools());
+        assertNull(dest.getByteObjects());
+        assertNull(dest.getBytes());
+        assertNull(dest.getCharObjects());
+        assertNull(dest.getChars());
+        assertNull(dest.getDoubleObjects());
+        assertNull(dest.getDoubles());
+        assertNull(dest.getFloatObjects());
+        assertNull(dest.getFloats());
+        assertNull(dest.getIntObjects());
+        assertNull(dest.getInts());
+        assertNull(dest.getLongObjects());
+        assertNull(dest.getLongs());
+        assertNull(dest.getShortObjects());
+        assertNull(dest.getShorts());
+    }
+
+    @Test
+    public void testDatas() {
+        ArraysTest obj = new ArraysTest();
+        obj.setBoolObjects(new Boolean[] {true, false, false, false, true});
+        obj.setBools(new boolean[] {true, true, true, false});
+        obj.setByteObjects(new Byte[] {0x10, 0x0A, 0xF});
+        obj.setBytes(new byte[] {0xB, 0x55, 0x0, 0x2D});
+        obj.setCharObjects(new Character[] {'A', 'z', 'e'});
+        obj.setChars(new char[] {'Q', 's', 'D', 'w'});
+        obj.setDoubleObjects(new Double[] {1d, 2512589d, 11.1236d});
+        obj.setDoubles(new double[] {0d, 3.14d});
+        obj.setFloatObjects(new Float[] {1.2f});
+        obj.setFloats(new float[] {1.5f, 2.45f});
+        obj.setIntObjects(new Integer[] {2, 3, 4});
+        obj.setInts(new int[] {});
+        obj.setLongObjects(new Long[] {2222255558787744112L, 258L});
+        obj.setLongs(new long[] {0L});
+        obj.setShortObjects(new Short[] {2});
+        obj.setShorts(new short[] {3, 4, 5});
+        ArraysTest dest = ubiquity.map(obj, ArraysTest.class);
+
+        assertNotNull(dest.getBoolObjects());
+        assertNotNull(dest.getBools());
+        assertNotNull(dest.getByteObjects());
+        assertNotNull(dest.getBytes());
+        assertNotNull(dest.getCharObjects());
+        assertNotNull(dest.getChars());
+        assertNotNull(dest.getDoubleObjects());
+        assertNotNull(dest.getDoubles());
+        assertNotNull(dest.getFloatObjects());
+        assertNotNull(dest.getFloats());
+        assertNotNull(dest.getIntObjects());
+        assertNotNull(dest.getInts());
+        assertNotNull(dest.getLongObjects());
+        assertNotNull(dest.getLongs());
+        assertNotNull(dest.getShortObjects());
+        assertNotNull(dest.getShorts());
+
+        assertEquals(obj.getBoolObjects().length, dest.getBoolObjects().length);
+        assertEquals(obj.getBools().length, dest.getBools().length);
+        assertEquals(obj.getByteObjects().length, dest.getByteObjects().length);
+        assertEquals(obj.getBytes().length, dest.getBytes().length);
+        assertEquals(obj.getCharObjects().length, dest.getCharObjects().length);
+        assertEquals(obj.getChars().length, dest.getChars().length);
+        assertEquals(obj.getDoubleObjects().length, dest.getDoubleObjects().length);
+        assertEquals(obj.getDoubles().length, dest.getDoubles().length);
+        assertEquals(obj.getFloatObjects().length, dest.getFloatObjects().length);
+        assertEquals(obj.getFloats().length, dest.getFloats().length);
+        assertEquals(obj.getIntObjects().length, dest.getIntObjects().length);
+        assertEquals(obj.getInts().length, dest.getInts().length);
+        assertEquals(obj.getLongObjects().length, dest.getLongObjects().length);
+        assertEquals(obj.getLongs().length, dest.getLongs().length);
+        assertEquals(obj.getShortObjects().length, dest.getShortObjects().length);
+        assertEquals(obj.getShorts().length, dest.getShorts().length);
+
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
+        }
+        for(int i = 0; i < obj.getBoolObjects().length; i++) {
+            assertEquals(obj.getBoolObjects()[i], dest.getBoolObjects()[i]);
         }
     }
 }
