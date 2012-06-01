@@ -148,38 +148,6 @@ public class PropertyRetrieverVisitorTest {
     }
 
     @Test
-    public void testSimpleArrays() throws Exception {
-        ByteArrayClass object = new ByteArrayClass();
-        object.setArray(new byte[]{0x5, 0xa});
-
-        CopyContext ctx = new CopyContext();
-        Copier<ByteArrayClass, ByteArrayClass> copier =
-                new CopierGenerator().createCopier(ByteArrayClass.class, ByteArrayClass.class, ctx);
-
-        ByteArrayClass dest = copier.map(object);
-        assertNotNull(dest);
-        assertEquals(2, dest.getArray().length);
-        assertEquals(0x5, dest.getArray()[0]);
-        assertEquals(0xa, dest.getArray()[1]);
-    }
-
-    @Test
-    public void testSimpleArraysBoxing() throws Exception {
-        ByteArrayClass object = new ByteArrayClass();
-        object.setArray(new byte[]{0x5, 0xa});
-
-        CopyContext ctx = new CopyContext();
-        Copier<ByteArrayClass, ByteArrayClass.ByteArray2> copier =
-                new CopierGenerator().createCopier(ByteArrayClass.class, ByteArrayClass.ByteArray2.class, ctx);
-
-        ByteArrayClass.ByteArray2 dest = copier.map(object);
-        assertNotNull(dest);
-        assertEquals(2, dest.getArray().length);
-        assertEquals(0x5, dest.getArray()[0].byteValue());
-        assertEquals(0xa, dest.getArray()[1].byteValue());
-    }
-
-    @Test
     public void testAnnotationsParsing() throws IOException{
         ClassReader reader = new ClassReader("org/ubiquity/bytecode/AnnotatedClass");
         PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
