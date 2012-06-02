@@ -98,38 +98,6 @@ public class PropertyRetrieverVisitorTest {
     }
 
     @Test
-    public void testLists() throws Exception {
-        ListObject src = new ListObject();
-        List<SimpleTestClass> objects = new ArrayList<SimpleTestClass>();
-        SimpleTestClass elem = new SimpleTestClass();
-        objects.add(elem);
-        src.setObjects(objects);
-
-        CopyContext ctx = new CopyContext();
-        Copier<ListObject, ListObject> copier =
-                new CopierGenerator().createCopier(ListObject.class, ListObject.class, ctx);
-
-        ListObject dest = copier.map(src);
-        assertNotNull(dest);
-        assertNotNull(dest.getObjects());
-        assertEquals(1, dest.getObjects().size());
-    }
-
-    @Test
-    public void testLists2() throws Exception {
-        ListObject src = new ListObject();
-        src.setObjects(null);
-
-        CopyContext ctx = new CopyContext();
-        Copier<ListObject, ListObject> copier =
-                new CopierGenerator().createCopier(ListObject.class, ListObject.class, ctx);
-
-        ListObject dest = copier.map(src);
-        assertNotNull(dest);
-        assertNull(dest.getObjects());
-    }
-
-    @Test
     public void testAnnotationsParsing() throws IOException{
         ClassReader reader = new ClassReader("org/ubiquity/bytecode/AnnotatedClass");
         PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
