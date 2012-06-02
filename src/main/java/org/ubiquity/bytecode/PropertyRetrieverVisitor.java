@@ -95,7 +95,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 	}
 	
 	private String getPropertyName(String functionName) {
-        String upperName = null;
+        String upperName;
         if(functionName.startsWith("is")) {
             upperName = functionName.substring(2);
         }
