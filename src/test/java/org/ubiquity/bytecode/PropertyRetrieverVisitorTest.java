@@ -8,10 +8,8 @@ import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import org.ubiquity.Copier;
 
-import java.io.IOException;
-import java.util.Map;
-
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 /**
  * Test for class {@link PropertyRetrieverVisitor}
