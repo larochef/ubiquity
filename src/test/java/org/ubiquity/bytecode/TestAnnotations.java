@@ -3,6 +3,8 @@ package org.ubiquity.bytecode;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import org.ubiquity.Copier;
+import org.ubiquity.annotation.CopyRename;
+import org.ubiquity.annotation.CopyRenames;
 
 import java.io.IOException;
 import java.util.Map;
@@ -16,9 +18,57 @@ import static junit.framework.Assert.*;
  */
 public class TestAnnotations {
 
+    public static class AnnotatedClass {
+
+        private String property1;
+        private String property2;
+        private String property3;
+
+        @CopyRename(targetClass = SimpleTestClass.class, propertyName = "property3")
+        public String getProperty1() {
+            return property1;
+        }
+
+        public void setProperty1(String property1) {
+            this.property1 = property1;
+        }
+
+        @CopyRename(propertyName = "test")
+        public String getProperty2() {
+            return property2;
+        }
+
+        public void setProperty2(String property2) {
+            this.property2 = property2;
+        }
+
+        @CopyRenames(configurations = {@CopyRename(propertyName = "test"),@CopyRename(propertyName = "property3", targetClass = SimpleTestClass.class)})
+        public String getProperty3() {
+            return property3;
+        }
+
+        public void setProperty3(String property3) {
+            this.property3 = property3;
+        }
+    }
+
+    public static class AnnotatedClass2 {
+        private String toto;
+
+        @CopyRename(propertyName = "property1")
+        public String getToto() {
+            return toto;
+        }
+
+        public void setToto(String toto) {
+            this.toto = toto;
+        }
+    }
+
+
     @Test
     public void testAnnotationsParsing() throws IOException {
-        ClassReader reader = new ClassReader("org/ubiquity/bytecode/AnnotatedClass");
+        ClassReader reader = new ClassReader("org/ubiquity/bytecode/TestAnnotations$AnnotatedClass");
         PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
         reader.accept(visitor, 0);
         Map<String, Property> properties = visitor.getProperties();
