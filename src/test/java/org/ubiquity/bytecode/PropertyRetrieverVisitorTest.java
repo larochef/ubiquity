@@ -3,10 +3,9 @@
  */
 package org.ubiquity.bytecode;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Test;
-import org.objectweb.asm.ClassReader;
 import org.ubiquity.Copier;
+import org.ubiquity.annotation.CopyIgnore;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
@@ -17,50 +16,6 @@ import static junit.framework.Assert.assertNotNull;
  * @author François LAROCHE
  */
 public class PropertyRetrieverVisitorTest {
-
-	 @Test
-     public void test() throws Exception {
-        ClassReader reader = new ClassReader("org/ubiquity/bytecode/SimpleTestClass");
-        PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
-        reader.accept(visitor, 0);
-    }
-
-    @Test
-    public void testInheritance() throws Exception {
-        ClassReader reader = new ClassReader("org/ubiquity/bytecode/InheritingClass");
-        PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
-        reader.accept(visitor, 0);
-    }
-	
-	@Test
-	public void testBeanutils() throws Exception{
-		Object dummy = new SimpleTestClass();
-		BeanUtils.describe(dummy);
-	}
-
-    @Test
-    public void testCopySpeed() throws Exception {
-        SimpleTestClass src = new SimpleTestClass();
-        src.setProperty1("property1");
-        src.setProperty3("property3");
-        CopyContext ctx = new CopyContext();
-        Copier<SimpleTestClass, SimpleTestClass> copier = new CopierGenerator().createCopier(SimpleTestClass.class, SimpleTestClass.class, ctx);
-        copier.copy(src, new SimpleTestClass());
-        BeanUtils.copyProperties(new SimpleTestClass(), src);
-    }
-
-    @Test
-    public void testCopierCreation() throws Exception {
-        CopyContext ctx = new CopyContext();
-        Copier<SimpleTestClass, SimpleTestClass> copier = new CopierGenerator().createCopier(SimpleTestClass.class, SimpleTestClass.class, ctx);
-        assertNotNull(copier);
-        SimpleTestClass testObject = new SimpleTestClass();
-        String value = "This is a test";
-        testObject.setProperty1("This is a test");
-        SimpleTestClass result = copier.map(testObject);
-        assertNotNull(result);
-        assertEquals(value, result.getProperty1());
-    }
 
     @Test
     public void testInternalClasses() throws Exception {
@@ -92,5 +47,88 @@ public class PropertyRetrieverVisitorTest {
         assertNotNull(result.getParent());
         assertEquals("Parent property 1", result.getParent().getProperty1());
     }
+
+    public static class InheritingClass extends SimpleTestClass {
+
+        private String myProperty;
+        private InheritingClass parent;
+
+        public String getMyProperty() {
+            return myProperty;
+        }
+
+
+
+        public void setMyProperty(String myProperty) {
+            this.myProperty = myProperty;
+        }
+
+        public InheritingClass getParent() {
+            return parent;
+        }
+
+        public void setParent(InheritingClass parent) {
+            this.parent = parent;
+        }
+
+        public static class InternalInheritingClass extends InheritingClass {
+
+            public InternalInheritingClass() {}
+
+            private Integer field;
+
+            public Integer getField() {
+                return field;
+            }
+
+            public void setField(Integer field) {
+                this.field = field;
+            }
+        }
+    }
+
+    public static class InheritingClass2 extends SimpleTestClass {
+
+        private InheritingClass2 parent;
+
+        public InheritingClass2 getParent() {
+            return parent;
+        }
+
+        public void setParent(InheritingClass2 parent) {
+            this.parent = parent;
+        }
+    }
+
+    public static class SimpleTestClass {
+
+        private String property1;
+        private String property2;
+        private String property3;
+        private String property4;
+
+        public String getProperty1() {
+            return property1;
+        }
+        public void setProperty1(String property1) {
+            this.property1 = property1;
+        }
+
+        @CopyIgnore
+        public String getProperty2() {
+            return property2;
+        }
+        public void setProperty3(String property3) {
+            this.property3 = property3;
+        }
+        @Override
+        public String toString() {
+            return "SimpleObject [property1=" + property1 + ", property2="
+                    + property2 + ", property3=" + property3 + ", property4="
+                    + property4 + "]";
+        }
+
+    }
+
 
 }

@@ -18,6 +18,28 @@ import static junit.framework.Assert.*;
  */
 public class TestAnnotations {
 
+    public static class SimpleTestClass {
+
+        private String property1;
+        private String property3;
+
+        public String getProperty1() {
+            return property1;
+        }
+        public void setProperty1(String property1) {
+            this.property1 = property1;
+        }
+
+        public String getProperty3() {
+            return property3;
+        }
+
+        public void setProperty3(String property3) {
+            this.property3 = property3;
+        }
+    }
+
+
     public static class AnnotatedClass {
 
         private String property1;
@@ -76,13 +98,13 @@ public class TestAnnotations {
         assertTrue(properties.containsKey("property1"));
         Property property1 = properties.get("property1");
         assertFalse(property1.getAnnotations().isEmpty());
-        assertTrue(property1.getAnnotations().contains("Lorg/ubiquity/annotation/CopyRename;:property3:Lorg/ubiquity/bytecode/SimpleTestClass;"));
+        assertTrue(property1.getAnnotations().contains("Lorg/ubiquity/annotation/CopyRename;:property3:Lorg/ubiquity/bytecode/TestAnnotations$SimpleTestClass;"));
 
         Property property3 = properties.get("property3");
         assertNotNull(property3);
         assertFalse(property3.getAnnotations().isEmpty());
         assertTrue(property3.getAnnotations().contains("Lorg/ubiquity/annotation/CopyRename;:test:*"));
-        assertTrue(property3.getAnnotations().contains("Lorg/ubiquity/annotation/CopyRename;:property3:Lorg/ubiquity/bytecode/SimpleTestClass;"));
+        assertTrue(property3.getAnnotations().contains("Lorg/ubiquity/annotation/CopyRename;:property3:Lorg/ubiquity/bytecode/TestAnnotations$SimpleTestClass;"));
     }
 
     @Test
