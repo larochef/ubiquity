@@ -95,13 +95,10 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 	}
 	
 	private String getPropertyName(String functionName) {
-		StringBuilder build = new StringBuilder()
-		// lower case
-		.append((char)(functionName.charAt(3) - 'A' + 'a'));
-		if(functionName.length() > 4) {
-			build.append(functionName.substring(4));
-		}
-		return build.toString();
+        if(functionName.startsWith("is")) {
+            return functionName.substring(2);
+        }
+        return functionName.substring(3);
 		
 	}
 
@@ -109,17 +106,10 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 		if(name.length() < 4) {
 			return false;
 		}
-		if(name.charAt(1) != 'e') {
+		if(!name.startsWith("get") && !name.startsWith("set") && !name.startsWith("is")) {
 			return false;
 		}
-		if(name.charAt(2) != 't') {
-			return false;
-		}
-		char start = name.charAt(0);
-		if(start != 'g' && start != 's') {
-			return false;
-		}
-		char propertyStart = name.charAt(3);
+		char propertyStart = name.charAt(name.startsWith("is") ? 2 : 3);
 		return propertyStart >= 'A' && propertyStart <= 'Z';
 	}
 
