@@ -9,8 +9,6 @@ import org.objectweb.asm.ClassReader;
 import org.ubiquity.Copier;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 import static junit.framework.Assert.*;
