@@ -10,6 +10,8 @@ import java.util.Map;
 
 public final class Constants {
 
+    private Constants() {}
+
     static {
         Map<String, String> map = new HashMap<String, String>();
         map.put("Z", "Ljava/lang/Boolean;");
