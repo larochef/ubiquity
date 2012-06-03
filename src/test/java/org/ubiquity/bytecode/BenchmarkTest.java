@@ -16,7 +16,7 @@ import java.util.Collection;
  *
  * @author François LAROCHE
  */
-public class Benchmark {
+public class BenchmarkTest {
 
     private static final int LOOP_NUMBER = 1000;
 
