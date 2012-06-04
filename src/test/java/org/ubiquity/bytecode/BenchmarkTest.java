@@ -23,7 +23,7 @@ import java.util.Collection;
  */
 public class BenchmarkTest {
 
-    private static final int WARM_LOOP_NUMBER = 50000;
+    private static final int WARM_LOOP_NUMBER = 200000;
     private static final int LOOP_NUMBER = 10000;
     private static final int NANO_TO_MS = 1000000;
 
@@ -44,23 +44,6 @@ public class BenchmarkTest {
         Order order = createOrder();
         System.out.println("Warming up UBIQUITY...");
         long start, end;
-        start = System.nanoTime();
-        for(int i = 0; i < WARM_LOOP_NUMBER; i++) {
-            UBIQUITY.map(order, Order.class);
-        }
-        end = System.nanoTime();
-        long ubiquityWarmTime = end - start;
-        System.gc();
-        System.out.println("Executing UBIQUITY");
-        start = System.nanoTime();
-        for(int i = 0; i < LOOP_NUMBER; i++) {
-            orders.add(UBIQUITY.map(order, Order.class));
-        }
-        end = System.nanoTime();
-        long ubiquityTime = end - start;
-        System.out.println("Finished executing UBIQUITY");
-        Assert.assertEquals(LOOP_NUMBER, orders.size());
-        orders.clear();
 
         System.out.println("Warming up ORIKA...");
         start = System.nanoTime();
@@ -78,6 +61,24 @@ public class BenchmarkTest {
         end = System.nanoTime();
         long orikaTime = end - start;
         System.out.println("Finished executing ORIKA");
+        Assert.assertEquals(LOOP_NUMBER, orders.size());
+        orders.clear();
+
+        start = System.nanoTime();
+        for(int i = 0; i < WARM_LOOP_NUMBER; i++) {
+            UBIQUITY.map(order, Order.class);
+        }
+        end = System.nanoTime();
+        long ubiquityWarmTime = end - start;
+        System.gc();
+        System.out.println("Executing UBIQUITY");
+        start = System.nanoTime();
+        for(int i = 0; i < LOOP_NUMBER; i++) {
+            orders.add(UBIQUITY.map(order, Order.class));
+        }
+        end = System.nanoTime();
+        long ubiquityTime = end - start;
+        System.out.println("Finished executing UBIQUITY");
         Assert.assertEquals(LOOP_NUMBER, orders.size());
         orders.clear();
 
