@@ -42,7 +42,6 @@ public class BenchmarkTest {
     public void displayStats() {
         Collection<Order> orders = new ArrayList<Order>(LOOP_NUMBER);
         Order order = createOrder();
-        System.out.println("Warming up UBIQUITY...");
         long start, end;
 
         System.out.println("Warming up ORIKA...");
@@ -64,6 +63,7 @@ public class BenchmarkTest {
         Assert.assertEquals(LOOP_NUMBER, orders.size());
         orders.clear();
 
+        System.out.println("Warming up UBIQUITY...");
         start = System.nanoTime();
         for(int i = 0; i < WARM_LOOP_NUMBER; i++) {
             UBIQUITY.map(order, Order.class);
