@@ -30,7 +30,7 @@ final class CopierGenerator {
 
     private final MyClassLoader loader = new MyClassLoader();
 
-	public Map<String, Property> findProperties(Class<?> clazz) {
+	Map<String, Property> findProperties(Class<?> clazz, Map<String, String> generics) {
 		try {
 			ClassReader reader = new ClassReader(byteCodeName(clazz));
 			PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
@@ -41,9 +41,9 @@ final class CopierGenerator {
 		}
 	}
 
-	public <T, U> Copier<T, U> createCopier(Class<T> src, Class<U> destination, CopyContext ctx)
+	<T, U> Copier<T, U> createCopier(Class<T> src, Class<U> destination, CopyContext ctx, Map<String, String> srcGenerics, Map<String, String> destinationGenerics)
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
-        List<Tuple<Property, Property>> properties = listCompatibelProperties(src, destination);
+        List<Tuple<Property, Property>> properties = listCompatibelProperties(src, destination, srcGenerics, destinationGenerics);
         String srcName = byteCodeName(src);
         String destinationName = byteCodeName(destination);
         String className = createCopierClassName(srcName, destinationName);
@@ -109,10 +109,10 @@ final class CopierGenerator {
         return instance;
 	}
 
-    private List<Tuple<Property, Property>> listCompatibelProperties(Class<?> source, Class<?> destination) {
+    private List<Tuple<Property, Property>> listCompatibelProperties(Class<?> source, Class<?> destination, Map<String, String> sourceGenerics, Map<String, String> destinationGenerics) {
         List<Tuple<Property, Property>> compatibleProperties = new ArrayList<Tuple<Property, Property>>();
-        Map<String, Property> srcProperties = findProperties(source);
-        Map<String, Property> targetProperties = findProperties(destination);
+        Map<String, Property> srcProperties = findProperties(source, sourceGenerics);
+        Map<String, Property> targetProperties = findProperties(destination, destinationGenerics);
 
         for(String name : srcProperties.keySet()) {
             Property property = srcProperties.get(name);

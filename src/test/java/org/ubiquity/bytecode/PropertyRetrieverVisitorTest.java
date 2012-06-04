@@ -4,7 +4,7 @@
 package org.ubiquity.bytecode;
 
 import org.junit.Test;
-import org.ubiquity.Copier;
+import org.ubiquity.Ubiquity;
 import org.ubiquity.annotation.CopyIgnore;
 
 import static junit.framework.Assert.assertEquals;
@@ -16,24 +16,18 @@ import static junit.framework.Assert.assertNotNull;
  * @author François LAROCHE
  */
 public class PropertyRetrieverVisitorTest {
+    private static final Ubiquity ubiquity = new Ubiquity();
 
     @Test
     public void testInternalClasses() throws Exception {
-        CopyContext ctx = new CopyContext();
-        Copier<InheritingClass.InternalInheritingClass, InheritingClass.InternalInheritingClass> copier =
-                new CopierGenerator().createCopier(InheritingClass.InternalInheritingClass.class, InheritingClass.InternalInheritingClass.class, ctx);
-        assertNotNull(copier);
         InheritingClass.InternalInheritingClass testObject = new InheritingClass.InternalInheritingClass();
         testObject.setField(2);
-        InheritingClass.InternalInheritingClass result = copier.map(testObject);
+        InheritingClass.InternalInheritingClass result = ubiquity.map(testObject, InheritingClass.InternalInheritingClass.class);
         assertEquals(Integer.valueOf(2), result.getField());
     }
 
     @Test
     public void testMultipleImplementations() throws Exception {
-        CopyContext ctx = new CopyContext();
-        Copier<InheritingClass, InheritingClass2> copier =
-                new CopierGenerator().createCopier(InheritingClass.class, InheritingClass2.class, ctx);
         InheritingClass src = new InheritingClass();
         src.setMyProperty("My property");
         src.setProperty1("property1");
@@ -41,7 +35,7 @@ public class PropertyRetrieverVisitorTest {
         parent.setProperty1("Parent property 1");
         src.setParent(parent);
 
-        InheritingClass2 result = copier.map(src);
+        InheritingClass2 result = ubiquity.map(src, InheritingClass2.class);
         assertNotNull(result);
         assertEquals("property1", result.getProperty1());
         assertNotNull(result.getParent());

@@ -115,7 +115,7 @@ public class TestAnnotations {
 
         CopyContext ctx = new CopyContext();
         Copier<AnnotatedClass2, SimpleTestClass> copier =
-                new CopierGenerator().createCopier(AnnotatedClass2.class, SimpleTestClass.class, ctx);
+                new CopierGenerator().createCopier(AnnotatedClass2.class, SimpleTestClass.class, ctx, null, null);
 
         SimpleTestClass dest = copier.map(object);
         assertNotNull(dest);

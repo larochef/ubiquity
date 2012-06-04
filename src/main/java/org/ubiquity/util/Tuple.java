@@ -14,14 +14,21 @@ public class Tuple<T, U> {
 	private final int hashcode;
 	
 	public Tuple(T tObject, U uObject) {
-		if(tObject == null || uObject == null) {
-			throw new IllegalStateException("Provided classes musn't be null !");
-		}
+//		if(tObject == null || uObject == null) {
+//			throw new IllegalStateException("Provided classes musn't be null !");
+//		}
 		this.tObject = tObject;
 		this.uObject = uObject;
 
 		// cache hashcode since class is immutable
-		this.hashcode =  31 * (31 * + tObject.hashCode()) + uObject.hashCode();
+        int calculatedHashcode = 0;
+        if(this.tObject != null) {
+            calculatedHashcode = 31 * (31 * + tObject.hashCode());
+        }
+        if(this.uObject != null) {
+            calculatedHashcode += uObject.hashCode();
+        }
+		this.hashcode = calculatedHashcode;
 	}
 
 	@Override
