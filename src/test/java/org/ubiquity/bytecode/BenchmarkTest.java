@@ -18,7 +18,9 @@ import java.util.Collection;
  */
 public class BenchmarkTest {
 
-    private static final int LOOP_NUMBER = 1000;
+    private static final int WARM_LOOP_NUMBER = 10000000;
+    private static final int LOOP_NUMBER = 10000;
+    private static final int NANO_TO_MS = 1000000;
 
     private static final MapperFacade ORIKA;
     private static final Ubiquity UBIQUITY = new Ubiquity();
@@ -36,49 +38,54 @@ public class BenchmarkTest {
         Order order = createOrder();
         long start, end;
         start = System.nanoTime();
+        for(int i = 0; i < WARM_LOOP_NUMBER; i++) {
+            UBIQUITY.map(order, Order.class);
+        }
+        end = System.nanoTime();
+        long ubiquityWarmTime = end - start;
+        System.gc();
+        start = System.nanoTime();
         for(int i = 0; i < LOOP_NUMBER; i++) {
             UBIQUITY.map(order, Order.class);
         }
         end = System.nanoTime();
         long ubiquityTime = end - start;
+
+        start = System.nanoTime();
+        for(int i = 0; i < WARM_LOOP_NUMBER; i++) {
+            ORIKA.map(order, Order.class);
+        }
+        end = System.nanoTime();
+        long orikaWarmTime = end - start;
+        System.gc();
         start = System.nanoTime();
         for(int i = 0; i < LOOP_NUMBER; i++) {
             ORIKA.map(order, Order.class);
         }
         end = System.nanoTime();
         long orikaTime = end - start;
+
+        start = System.nanoTime();
+        for(int i = 0; i < WARM_LOOP_NUMBER; i++) {
+            DOZER.map(order, Order.class);
+        }
+        end = System.nanoTime();
+        long dozerWarmTime = end - start;
+        System.gc();
         start = System.nanoTime();
         for(int i = 0; i < LOOP_NUMBER; i++) {
             DOZER.map(order, Order.class);
         }
         end = System.nanoTime();
         long dozerTime = end - start;
-        System.out.println("Ubiquity copying took " + ubiquityTime + "ns, which makes " + ubiquityTime / 1000000 + "ms");
-        System.out.println("Orika copying took " + orikaTime + "ns, which makes " + orikaTime / 1000000 + "ms");
-        System.out.println("Dozer copying took " + dozerTime + "ns, which makes " + dozerTime / 1000000 + "ms");
 
+        System.out.println("Ubiquity copying took " + ubiquityWarmTime + "ns, which makes " + ubiquityWarmTime / NANO_TO_MS + "ms");
+        System.out.println("Orika copying took " + orikaWarmTime + "ns, which makes " + orikaWarmTime / NANO_TO_MS + "ms");
+        System.out.println("Dozer copying took " + dozerWarmTime + "ns, which makes " + dozerWarmTime / NANO_TO_MS + "ms");
 
-        start = System.nanoTime();
-        for(int i = 0; i < LOOP_NUMBER; i++) {
-            UBIQUITY.map(order, Order.class);
-        }
-        end = System.nanoTime();
-        ubiquityTime = end - start;
-        start = System.nanoTime();
-        for(int i = 0; i < LOOP_NUMBER; i++) {
-            ORIKA.map(order, Order.class);
-        }
-        end = System.nanoTime();
-        orikaTime = end - start;
-        start = System.nanoTime();
-        for(int i = 0; i < LOOP_NUMBER; i++) {
-            DOZER.map(order, Order.class);
-        }
-        end = System.nanoTime();
-        dozerTime = end - start;
-        System.out.println("Ubiquity copying took (initialized) " + ubiquityTime + "ns, which makes " + ubiquityTime / 1000000 + "ms");
-        System.out.println("Orika copying took (initialized) " + orikaTime + "ns, which makes " + orikaTime / 1000000 + "ms");
-        System.out.println("Dozer copying took (initialized) " + dozerTime + "ns, which makes " + dozerTime / 1000000 + "ms");
+        System.out.println("Ubiquity copying took (initialized) " + ubiquityTime + "ns, which makes " + ubiquityTime / NANO_TO_MS + "ms");
+        System.out.println("Orika copying took (initialized) " + orikaTime + "ns, which makes " + orikaTime / NANO_TO_MS + "ms");
+        System.out.println("Dozer copying took (initialized) " + dozerTime + "ns, which makes " + dozerTime / NANO_TO_MS + "ms");
     }
 
     private Order createOrder() {
