@@ -81,42 +81,6 @@ public class BenchmarkTest {
         System.out.println("Dozer copying took (initialized) " + dozerTime + "ns, which makes " + dozerTime / 1000000 + "ms");
     }
 
-    @Test
-    public void testUbiquity() {
-        Order order = createOrder();
-
-        long start = System.nanoTime();
-        for(int i = 0; i < LOOP_NUMBER; i++) {
-            UBIQUITY.map(order, Order.class);
-        }
-        long end = System.nanoTime();
-        System.out.println("Ubiquity Test took " + (end - start) / 1000 + " ms");
-    }
-
-    @Test
-    public void testOrika() {
-        Order order = createOrder();
-
-        long start = System.nanoTime();
-        for(int i = 0; i < LOOP_NUMBER; i++) {
-            ORIKA.map(order, Order.class);
-        }
-        long end = System.nanoTime();
-        System.out.println("Orika Test took " + (end - start) / 1000 + " ms");
-    }
-
-    @Test
-    public void testDozer() {
-        Order order = createOrder();
-
-        long start = System.nanoTime();
-        for(int i = 0; i < LOOP_NUMBER; i++) {
-            DOZER.map(order, Order.class);
-        }
-        long end = System.nanoTime();
-        System.out.println("Dozer Test took " + (end - start) / 1000 + " ms");
-    }
-
     private Order createOrder() {
         Order order = new Order();
         order.setId(200l);
