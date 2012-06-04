@@ -33,8 +33,9 @@ final class CopierGenerator {
 	Map<String, Property> findProperties(Class<?> clazz, Map<String, String> generics) {
 		try {
 			ClassReader reader = new ClassReader(byteCodeName(clazz));
-			PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
-			reader.accept(visitor, 0);
+            PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
+			GenericsVisitor genericsVisitor = new GenericsVisitor(visitor, generics);
+			reader.accept(genericsVisitor, 0);
 			return visitor.getProperties();
 		} catch (IOException e) {
 			throw new IllegalStateException("Unable to parse class : ", e);

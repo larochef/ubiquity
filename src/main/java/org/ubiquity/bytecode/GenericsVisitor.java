@@ -37,7 +37,7 @@ class GenericsVisitor extends ClassVisitor {
             for(String key : generics.keySet()) {
                 newSignature = replaceAll(newSignature, "T" + key + ";", generics.get(key));
             }
-            System.out.println("Changed signature from " + signature + " to " + newSignature);
+//            System.out.println("Changed signature from " + signature + " to " + newSignature);
         }
         return super.visitMethod(access, name, desc, newSignature, exceptions);
     }
