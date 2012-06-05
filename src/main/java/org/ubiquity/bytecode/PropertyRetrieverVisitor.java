@@ -60,7 +60,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        if(!"java/lang/Object".equals(superName)) {
+        if(!"java/lang/Object".equals(superName) && superName != null) {
             try {
                 this.parent = new PropertyRetrieverVisitor();
                 ClassReader r = new ClassReader(superName);
@@ -260,7 +260,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         if(signature == null || !signature.contains("<") || !signature.contains(">")) {
             return null;
         }
-        String[] generics = signature.substring(signature.indexOf('<') + 1, signature.indexOf('>')).split("[;]");
+        String[] generics = signature.substring(signature.indexOf('<') + 1, signature.lastIndexOf('>')).split("[;]");
         Iterator<String> letters;
         if(generics.length == 1) {
             letters = SINGLE_LETTER.iterator();

@@ -36,6 +36,8 @@ public class CopyContext {
         this.generator = new CopierGenerator();
         this.factory = new DefaultCollectionFactory();
         this.loggerFactory = JdkLogging.getJdkLoggerFactory();
+
+        this.registerCopier(CopierKey.newBuilder(Object.class, Object.class).build(), new DefaultCopier(this));
     }
 
     @SuppressWarnings("Unchecked")
