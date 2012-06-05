@@ -38,7 +38,7 @@ public class CopyContext {
         this.loggerFactory = JdkLogging.getJdkLoggerFactory();
     }
 
-    public synchronized <T, U> Copier<T,U> getCopier(CopierKey key) {
+    public synchronized <T, U> Copier<T,U> getCopier(CopierKey<T, U> key) {
         if(!copiers.containsKey(key)) {
             this.requireCopier(key);
             try {

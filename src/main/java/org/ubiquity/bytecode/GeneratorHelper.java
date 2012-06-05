@@ -6,7 +6,31 @@ import org.objectweb.asm.MethodVisitor;
 import org.objectweb.asm.Type;
 import org.ubiquity.util.Tuple;
 
-import static org.objectweb.asm.Opcodes.*;
+import java.util.Map;
+
+import static org.objectweb.asm.Opcodes.ACC_BRIDGE;
+import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
+import static org.objectweb.asm.Opcodes.ACC_PROTECTED;
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
+import static org.objectweb.asm.Opcodes.ACC_VOLATILE;
+import static org.objectweb.asm.Opcodes.ACONST_NULL;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.ANEWARRAY;
+import static org.objectweb.asm.Opcodes.ARETURN;
+import static org.objectweb.asm.Opcodes.ASTORE;
+import static org.objectweb.asm.Opcodes.CHECKCAST;
+import static org.objectweb.asm.Opcodes.DUP;
+import static org.objectweb.asm.Opcodes.GETFIELD;
+import static org.objectweb.asm.Opcodes.GOTO;
+import static org.objectweb.asm.Opcodes.IFNONNULL;
+import static org.objectweb.asm.Opcodes.ILOAD;
+import static org.objectweb.asm.Opcodes.INVOKEINTERFACE;
+import static org.objectweb.asm.Opcodes.INVOKESPECIAL;
+import static org.objectweb.asm.Opcodes.INVOKESTATIC;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static org.objectweb.asm.Opcodes.NEW;
+import static org.objectweb.asm.Opcodes.POP;
+import static org.objectweb.asm.Opcodes.PUTFIELD;
 import static org.objectweb.asm.Opcodes.RETURN;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
 
@@ -19,13 +43,25 @@ final class GeneratorHelper {
 
     private GeneratorHelper() {}
 
-    static void createConstructor(ClassWriter writer, String className) {
+    static void createConstructor(ClassWriter writer, String className, Map<String, Tuple<Property, Property>> requiredCopiers) {
         MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC, "<init>", "(Lorg/ubiquity/bytecode/CopyContext;)V", null, null);
         Label label1 = new Label();
         visitor.visitLabel(label1);
         visitor.visitVarInsn(ALOAD, 0);
         visitor.visitVarInsn(ALOAD, 1);
         visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/bytecode/SimpleCopier", "<init>", "(Lorg/ubiquity/bytecode/CopyContext;)V");
+
+        for(String key : requiredCopiers.keySet()) {
+            Tuple<Property, Property> tuple = requiredCopiers.get(key);
+            visitor.visitVarInsn(ALOAD, 0);
+            visitor.visitLdcInsn(Type.getType(getDescription(tuple.tObject.getTypeGetter())));
+            visitor.visitLdcInsn(Type.getType(getDescription(tuple.uObject.getTypeSetter())));
+            visitor.visitMethodInsn(INVOKESTATIC, "org/ubiquity/util/CopierKey", "newBuilder", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/util/CopierKey$Builder;");
+            // TODO : initialize generics !
+            visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/util/CopierKey$Builder", "build", "()Lorg/ubiquity/util/CopierKey;");
+            visitor.visitFieldInsn(PUTFIELD, className, key, "Lorg/ubiquity/util/CopierKey;");
+        }
+
         Label label2 = new Label();
         visitor.visitLabel(label2);
         visitor.visitInsn(RETURN);
@@ -113,7 +149,13 @@ final class GeneratorHelper {
         visitor.visitEnd();
     }
 
-    static void handleComplexObjects(MethodVisitor visitor, String className, String srcName, String destinationName, Tuple<Property, Property> p) {
+    static void createCopierKeys(ClassWriter writer, Map<String, Tuple<Property, Property>> requiredCopiers) {
+        for(String key : requiredCopiers.keySet()) {
+            writer.visitField(ACC_PRIVATE, key, "Lorg/ubiquity/util/CopierKey;", null, null).visitEnd();
+        }
+    }
+
+    static void handleComplexObjects(MethodVisitor visitor, String className, String srcName, String destinationName, Tuple<Property, Property> p, Map<String, Tuple<Property, Property>> requiredCopiers) {
         String descriptionGetter = getDescription(p.tObject.getTypeGetter());
         String descriptionSetter = getDescription(p.uObject.getTypeSetter());
         Label notNullLabel = new Label();
@@ -127,10 +169,12 @@ final class GeneratorHelper {
         visitor.visitJumpInsn(GOTO, nullLabel);
         visitor.visitLabel(notNullLabel);
         visitor.visitVarInsn(ALOAD, 0);
-        visitor.visitFieldInsn(GETFIELD, className, "context", "Lorg/ubiquity/bytecode/CopyContext;");
-        visitor.visitLdcInsn(Type.getType(descriptionGetter));
-        visitor.visitLdcInsn(Type.getType(descriptionSetter));
-        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/Copier;");
+        visitor.visitFieldInsn(GETFIELD, "org/ubiquity/bytecode/SimpleCopier", "context", "Lorg/ubiquity/bytecode/CopyContext;");
+        String copierName = "COPIER_" + requiredCopiers.size();
+        requiredCopiers.put(copierName, p);
+        visitor.visitVarInsn(ALOAD, 0);
+        visitor.visitFieldInsn(GETFIELD, className, copierName, "Lorg/ubiquity/util/CopierKey;");
+        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Lorg/ubiquity/util/CopierKey;)Lorg/ubiquity/Copier;");
         visitor.visitVarInsn(ASTORE, 3);
         visitor.visitVarInsn(ALOAD, 2);
         visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getGetter(), "()" + getDescription(p.uObject.getTypeGetter()));
@@ -154,7 +198,7 @@ final class GeneratorHelper {
         visitor.visitLabel(nullLabel);
     }
 
-    static void handeArrays(MethodVisitor visitor, String className, String srcName, String destinationName, Tuple<Property, Property> p) {
+    static void handeArrays(MethodVisitor visitor, String className, String srcName, String destinationName, Tuple<Property, Property> p, Map<String, Tuple<Property, Property>> requiredCopiers) {
         String descriptionGetter = getDescription(p.tObject.getTypeGetter());
         String descriptionSetter = getDescription(p.uObject.getTypeSetter());
         String typeDescriptionGetter = descriptionGetter.substring(1);
@@ -194,10 +238,12 @@ final class GeneratorHelper {
         // Arrays of complex types
         visitor.visitVarInsn(ALOAD, 2);
         visitor.visitVarInsn(ALOAD, 0);
-        visitor.visitFieldInsn(GETFIELD, className, "context", "Lorg/ubiquity/bytecode/CopyContext;");
-        visitor.visitLdcInsn(Type.getType(p.tObject.getTypeGetter().substring(1)));
-        visitor.visitLdcInsn(Type.getType(p.uObject.getTypeSetter().substring(1)));
-        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/Copier;");
+        visitor.visitFieldInsn(GETFIELD, "org/ubiquity/bytecode/SimpleCopier", "context", "Lorg/ubiquity/bytecode/CopyContext;");
+        String copierName = "COPIER_" + requiredCopiers.size();
+        requiredCopiers.put(copierName, p);
+        visitor.visitVarInsn(ALOAD, 0);
+        visitor.visitFieldInsn(GETFIELD, className, copierName, "Lorg/ubiquity/util/CopierKey;");
+        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Lorg/ubiquity/util/CopierKey;)Lorg/ubiquity/Copier;");
         visitor.visitVarInsn(ALOAD, 1);
         visitor.visitMethodInsn(INVOKEVIRTUAL, srcName, p.tObject.getGetter(), "()" + descriptionGetter);
         visitor.visitVarInsn(ALOAD, 2);
@@ -207,7 +253,7 @@ final class GeneratorHelper {
         visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(" + descriptionSetter + ")V");
     }
 
-    static void handleCollection(MethodVisitor visitor, Tuple<Property, Property> p, String collectionType, String srcName, String destinationName) {
+    static void handleCollection(MethodVisitor visitor, String className, Tuple<Property, Property> p, String collectionType, String srcName, String destinationName, Map<String, Tuple<Property, Property>> requiredCopiers) {
         String tGeneric = p.tObject.getGenericGetter();
         String uGeneric = p.uObject.getGenericSetter();
         if(SIMPLE_PROPERTIES.containsKey(tGeneric)) {
@@ -262,9 +308,11 @@ final class GeneratorHelper {
         visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getFactory", "()Lorg/ubiquity/CollectionFactory;");
         visitor.visitVarInsn(ALOAD, 0);
         visitor.visitFieldInsn(GETFIELD, "org/ubiquity/bytecode/SimpleCopier", "context", "Lorg/ubiquity/bytecode/CopyContext;");
-        visitor.visitLdcInsn(Type.getType(p.tObject.getGenericGetter()));
-        visitor.visitLdcInsn(Type.getType(p.uObject.getGenericSetter()));
-        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/Copier;");
+        String copierName = "COPIER_" + requiredCopiers.size();
+        requiredCopiers.put(copierName, p);
+        visitor.visitVarInsn(ALOAD, 0);
+        visitor.visitFieldInsn(GETFIELD, className, copierName, "Lorg/ubiquity/util/CopierKey;");
+        visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/bytecode/CopyContext", "getCopier", "(Lorg/ubiquity/util/CopierKey;)Lorg/ubiquity/Copier;");
         visitor.visitMethodInsn(INVOKESTATIC, "org/ubiquity/bytecode/SimpleCopier", "handle" + collectionType,
                 "(Ljava/util/" + collectionType + ";Ljava/util/" + collectionType + ";Lorg/ubiquity/CollectionFactory;Lorg/ubiquity/Copier;)Ljava/util/" + collectionType + ";");
         visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(Ljava/util/" + collectionType + ";)V");
