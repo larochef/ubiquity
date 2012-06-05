@@ -2,14 +2,17 @@ package org.ubiquity.bytecode;
 
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
-import org.ubiquity.Copier;
+import org.ubiquity.Ubiquity;
 import org.ubiquity.annotation.CopyRename;
 import org.ubiquity.annotation.CopyRenames;
 
 import java.io.IOException;
 import java.util.Map;
 
-import static junit.framework.Assert.*;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 
 /**
  * Date: 02/06/12
@@ -17,6 +20,8 @@ import static junit.framework.Assert.*;
  * @author François LAROCHE
  */
 public class TestAnnotations {
+
+    private static final Ubiquity ubiquity = new Ubiquity();
 
     public static class SimpleTestClass {
 
@@ -112,12 +117,7 @@ public class TestAnnotations {
         AnnotatedClass2 object = new AnnotatedClass2();
         object.setToto("toto");
 
-
-        CopyContext ctx = new CopyContext();
-        Copier<AnnotatedClass2, SimpleTestClass> copier =
-                new CopierGenerator().createCopier(AnnotatedClass2.class, SimpleTestClass.class, ctx, null, null);
-
-        SimpleTestClass dest = copier.map(object);
+        SimpleTestClass dest = ubiquity.map(object, SimpleTestClass.class);
         assertNotNull(dest);
         assertEquals("toto", dest.getProperty1());
     }
