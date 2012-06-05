@@ -1,10 +1,7 @@
 package org.ubiquity;
 
 import org.ubiquity.bytecode.CopyContext;
-
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import org.ubiquity.util.CopierKey;
 
 /**
  * Date: 21/04/12
@@ -18,18 +15,18 @@ public class Ubiquity {
         this.context = new CopyContext();
     }
 
-    public <T,U> U map(T source, Class<U> destiationClass) {
-        Copier<T,U> copier = this.context.getCopier((Class<T>)source.getClass(), destiationClass);
+    public <T,U> U map(T source, Class<U> destinationClass) {
+        Copier<T,U> copier = this.context.getCopier(CopierKey.newBuilder((Class<T>)source.getClass(), destinationClass).build());
         return copier.map(source);
     }
 
     public <T,U> void copy(T src, U destination) {
-        Copier<T,U> copier = this.context.getCopier((Class<T>)src.getClass(), (Class<U>)destination.getClass());
+        Copier<T,U> copier = this.context.getCopier(CopierKey.newBuilder((Class<T>)src.getClass(), (Class<U>)destination.getClass()).build());
         copier.copy(src, destination);
     }
 
-    public <T,U> void registerCopier(Class<T> src, Class<U> target, Copier<T,U> copier) {
-        this.context.registerCopier(src, target, copier);
+    public <T,U> void registerCopier(CopierKey<T,U> key, Copier<T,U> copier) {
+        this.context.registerCopier(key, copier);
     }
 
     public CollectionFactory getFactory() {

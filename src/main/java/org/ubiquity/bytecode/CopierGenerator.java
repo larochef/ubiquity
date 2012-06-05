@@ -3,17 +3,37 @@
  */
 package org.ubiquity.bytecode;
 
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
 import org.ubiquity.Copier;
 import org.ubiquity.util.Constants;
+import org.ubiquity.util.CopierKey;
 import org.ubiquity.util.Tuple;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-import static org.objectweb.asm.Opcodes.*;
-import static org.ubiquity.bytecode.GeneratorHelper.*;
+import static org.objectweb.asm.Opcodes.ACC_FINAL;
+import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
+import static org.objectweb.asm.Opcodes.ALOAD;
+import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
+import static org.objectweb.asm.Opcodes.RETURN;
+import static org.objectweb.asm.Opcodes.V1_5;
+import static org.ubiquity.bytecode.GeneratorHelper.createConstructor;
+import static org.ubiquity.bytecode.GeneratorHelper.createCopierClassName;
+import static org.ubiquity.bytecode.GeneratorHelper.createCopierKeys;
+import static org.ubiquity.bytecode.GeneratorHelper.createCopyBridge;
+import static org.ubiquity.bytecode.GeneratorHelper.createNewArray;
+import static org.ubiquity.bytecode.GeneratorHelper.createNewInstance;
+import static org.ubiquity.bytecode.GeneratorHelper.getDescription;
+import static org.ubiquity.bytecode.GeneratorHelper.handeArrays;
+import static org.ubiquity.bytecode.GeneratorHelper.handleCollection;
+import static org.ubiquity.bytecode.GeneratorHelper.handleComplexObjects;
 import static org.ubiquity.util.Constants.COLLECTIONS;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
 
@@ -38,12 +58,19 @@ final class CopierGenerator {
 			reader.accept(genericsVisitor, 0);
 			return visitor.getProperties();
 		} catch (IOException e) {
-			throw new IllegalStateException("Unable to parse class : ", e);
+			throw new IllegalStateException("Unable to parse class : " + byteCodeName(clazz), e);
 		}
 	}
 
-	<T, U> Copier<T, U> createCopier(Class<T> src, Class<U> destination, CopyContext ctx, Map<String, String> srcGenerics, Map<String, String> destinationGenerics)
+	<T, U> Copier<T, U> createCopier(CopierKey<T,U> key, CopyContext ctx)
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        Class<T> src = key.getSourceClass();
+
+        Map<String, Tuple<Property, Property>> requiredCopiers = new HashMap<String, Tuple<Property, Property>>();
+
+        Class<U> destination = key.getDestinationClass();
+        Map<String, String> srcGenerics = key.getDestinationAnnotations();
+        Map<String, String> destinationGenerics = key.getDestinationAnnotations();
         List<Tuple<Property, Property>> properties = listCompatibelProperties(src, destination, srcGenerics, destinationGenerics);
         String srcName = byteCodeName(src);
         String destinationName = byteCodeName(destination);
@@ -54,7 +81,6 @@ final class CopierGenerator {
                 "Lorg/ubiquity/bytecode/SimpleCopier<" + getDescription(srcName) + getDescription(destinationName) + ">;",
                 "org/ubiquity/bytecode/SimpleCopier", null);
 
-        createConstructor(writer, className);
         createNewInstance(writer, className, destinationName);
         createCopyBridge(writer, className, srcName, destinationName);
         createNewArray(writer, className, destinationName);
@@ -82,30 +108,34 @@ final class CopierGenerator {
 
             // Handle arrays
             if(descriptionGetter.startsWith("[")) {
-                handeArrays(visitor, className, srcName, destinationName, p);
+                handeArrays(visitor, className, srcName, destinationName, p, requiredCopiers);
                 continue;
             }
+
             // Handle collections
             if(COLLECTIONS.contains(descriptionGetter)) {
                 String type = descriptionGetter.substring(
                                 descriptionGetter.lastIndexOf("/") + 1,
                                 descriptionGetter.length() - 1);
-                handleCollection(visitor, p, type, srcName, destinationName);
+                handleCollection(visitor, className, p, type, srcName, destinationName, requiredCopiers);
                 continue;
             }
             // Handle other objects
-            handleComplexObjects(visitor, className, srcName, destinationName, p);
+            handleComplexObjects(visitor, className, srcName, destinationName, p, requiredCopiers);
         }
         visitor.visitInsn(RETURN);
         visitor.visitMaxs(7,4);
         visitor.visitEnd();
+
+        createConstructor(writer, className, requiredCopiers);
+        createCopierKeys(writer, requiredCopiers);
 
         writer.visitEnd();
 
         Class<?> resultClass = loader.defineClass(className.replaceAll("[/]", "."), writer.toByteArray());
         @SuppressWarnings("unchecked")
         Copier<T,U> instance =  (Copier<T,U>) resultClass.getConstructor(CopyContext.class).newInstance(ctx);
-        ctx.registerCopier(src, destination, instance);
+        ctx.registerCopier(key, instance);
         ctx.createRequiredCopiers();
         return instance;
 	}
@@ -158,7 +188,14 @@ final class CopierGenerator {
     }
 
 	private static String byteCodeName(Class<?> c) {
-		return c.getName().replaceAll("[\\.]", "/");
+        String name = c.getName().replaceAll("[\\.]", "/");
+        if(name.startsWith("[")) {
+            name = name.substring(1);
+        }
+        if(name.startsWith("L")) {
+            name = name.substring(1, name.length() - 1);
+        }
+		return name;
 	}
 
     private static class MyClassLoader extends ClassLoader {

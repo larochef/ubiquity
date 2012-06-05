@@ -2,18 +2,21 @@ package org.ubiquity.bytecode;
 
 import org.ubiquity.CollectionFactory;
 import org.ubiquity.Copier;
+import org.ubiquity.logging.LoggerFactory;
+import org.ubiquity.logging.impl.JdkLogging;
+import org.ubiquity.util.CopierKey;
 import org.ubiquity.util.DefaultCollectionFactory;
-import org.ubiquity.util.Tuple;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * TODO : explain.me
+ * Class storing the different copiers, making all copiers available to other copiers.
+ * <br />
+ *
  * Date: 17/04/12
  * Time: 09:33
  *
@@ -21,27 +24,27 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class CopyContext {
 
-    private Map<Tuple<?,?>, Copier<?,?>> copiers;
-    private final Map<Tuple<Class<?>,Class<?>>, Tuple<Map<String, String>, Map<String, String>>> requiredTuples;
+    private Map<CopierKey<?,?>, Copier<?,?>> copiers;
+    private final List<CopierKey<?,?>> requiredTuples;
     private final CopierGenerator generator;
     private CollectionFactory factory;
+    private LoggerFactory loggerFactory;
 
     public CopyContext() {
-        this.copiers = new ConcurrentHashMap<Tuple<?, ?>, Copier<?, ?>>();
-        this.requiredTuples = new HashMap<Tuple<Class<?>, Class<?>>, Tuple<Map<String, String>, Map<String, String>>>();
+        this.copiers = new ConcurrentHashMap<CopierKey<?,?>, Copier<?, ?>>();
+        this.requiredTuples = new ArrayList<CopierKey<?,?>>();
         this.generator = new CopierGenerator();
         this.factory = new DefaultCollectionFactory();
+        this.loggerFactory = JdkLogging.getJdkLoggerFactory();
     }
 
-    public synchronized <T, U> Copier<T,U> getCopier(Class<T> source, Class<U> destination, Map<String, String> srcGenerics, Map<String, String> destinationGenerics) {
-        Tuple<Class<T>,Class<U>> key = new Tuple<Class<T>, Class<U>>(source, destination);
+    public synchronized <T, U> Copier<T,U> getCopier(CopierKey<T, U> key) {
         if(!copiers.containsKey(key)) {
-            this.requireCopier(source, destination, srcGenerics, destinationGenerics);
+            this.requireCopier(key);
             try {
                 this.createRequiredCopiers();
             } catch (Exception e) {
-                // TODO : handle the exception !!
-                e.printStackTrace();
+                loggerFactory.getLogger(getClass()).error("Unable to create copier : ", e);
             }
         }
         @SuppressWarnings("Unchecked")
@@ -52,24 +55,19 @@ public class CopyContext {
         return result;
     }
 
-    public synchronized <T, U> Copier<T,U> getCopier(Class<T> source, Class<U> destination) {
-        return getCopier(source, destination, null, null);
+    public <T, U> void registerCopier(CopierKey<T,U> key, Copier<T,U> copier) {
+        this.copiers.put(key, copier);
     }
 
-    public <T, U> void registerCopier(Class<T> source, Class<U> destination, Copier<T,U> copier) {
-        this.copiers.put(new Tuple<Class<T>, Class<U>>(source, destination), copier);
-    }
-
-    <T, U> void requireCopier(Class<T> source, Class<U> destination, Map<String, String> srcGenerics, Map<String, String> destinationGenerics) {
-        Tuple<Class<?>, Class<?>> key = new Tuple<Class<?>, Class<?>>(source, destination);
+    void requireCopier(CopierKey<?,?> key) {
         // If copier already exists, nothing to do.
         if(copiers.containsKey(key)) {
             return;
         }
         // Require copier so that the conversion can be done.
-        if(!requiredTuples.containsKey(key)) {
+        if(!requiredTuples.contains(key)) {
             synchronized (this.requiredTuples) {
-                this.requiredTuples.put(key, new Tuple<Map<String, String>, Map<String, String>>(srcGenerics, destinationGenerics));
+                this.requiredTuples.add(key);
             }
         }
     }
@@ -78,13 +76,8 @@ public class CopyContext {
     <T, U> void createRequiredCopiers() throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         while(!this.requiredTuples.isEmpty()) {
             synchronized (this.requiredTuples) {
-                Tuple<Class<?>, Class<?>> tuple = this.requiredTuples.keySet().iterator().next();
-                Tuple<Map<String, String>, Map<String, String>> generics = this.requiredTuples.remove(tuple);
-                Class<T> source = (Class<T>) tuple.tObject;
-                Class<U> destination = (Class<U>) tuple.uObject;
-
-                registerCopier(source, destination,
-                        this.generator.createCopier(source, destination, this, generics.tObject, generics.uObject));
+                CopierKey<T,U> key = (CopierKey<T,U>)this.requiredTuples.remove(0);
+                registerCopier(key, this.generator.createCopier(key, this));
             }
         }
     }

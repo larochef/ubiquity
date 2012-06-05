@@ -1,12 +1,8 @@
 package org.ubiquity.bytecode;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.util.TraceClassVisitor;
-
-import java.io.PrintWriter;
-import java.util.HashMap;
-import java.util.Map;
+import org.ubiquity.Ubiquity;
 
 /**
  * Date: 04/06/12
@@ -14,6 +10,7 @@ import java.util.Map;
  * @author François LAROCHE
  */
 public class TestGenerics {
+    private static final Ubiquity ubiquity = new Ubiquity();
 
     public static class ParentClass<T> {
         private T parent;
@@ -40,22 +37,16 @@ public class TestGenerics {
     }
 
     @Test
-    public void testPrinting() throws Exception {
-        ClassReader reader = new ClassReader("org/ubiquity/bytecode/TestGenerics$ParentClass");
-        reader.accept(new PrintClassTest.MyVisitor(new TraceClassVisitor(new PrintWriter(System.out))), 0);
+    public void testGenerics() {
+        TestClass test = new TestClass();
+        ParentClass<ParentClass> child = new ParentClass<ParentClass>();
+        child.setParent(new ParentClass<ParentClass>());
+        test.setElement(child);
+
+        TestClass result = ubiquity.map(test, TestClass.class);
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(result.getElement());
+        Assert.assertNotNull(result.getElement().getParent());
     }
 
-    @Test
-    public void testPrinting2() throws Exception {
-        ClassReader reader = new ClassReader("org/ubiquity/bytecode/TestGenerics$TestClass");
-        reader.accept(new PrintClassTest.MyVisitor(new TraceClassVisitor(new PrintWriter(System.out))), 0);
-    }
-
-    @Test
-    public void testPrinting3() throws Exception {
-        Map<String, String> generics = new HashMap<String, String>();
-        generics.put("T", "Lorg/ubiquity/bytecode/TestGenerics$ParentClass;");
-        ClassReader reader = new ClassReader("org/ubiquity/bytecode/TestGenerics$ParentClass");
-        reader.accept(new GenericsVisitor(new PrintClassTest.MyVisitor(new TraceClassVisitor(new PrintWriter(System.out))), generics), 0);
-    }
 }

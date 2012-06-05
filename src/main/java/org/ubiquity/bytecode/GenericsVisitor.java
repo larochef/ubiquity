@@ -33,12 +33,14 @@ class GenericsVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         // if generics are matched, replace the generic by the concre type defined.
         String newSignature = signature;
+        String newDesc = desc;
         if(signature != null) {
             for(String key : generics.keySet()) {
                 newSignature = replaceAll(newSignature, "T" + key + ";", generics.get(key));
             }
-//            System.out.println("Changed signature from " + signature + " to " + newSignature);
+            newDesc = createDescFromSignature(newSignature);
         }
+
         return super.visitMethod(access, name, desc, newSignature, exceptions);
     }
 
@@ -52,4 +54,18 @@ class GenericsVisitor extends ClassVisitor {
         }
         return from.substring(0, index) + replacement + replaceAll(from.substring(index + pattern.length()), pattern, replacement);
     }
+
+    private String createDescFromSignature(String signature) {
+        int start = signature.indexOf("<");
+        if(start == -1) {
+            return signature;
+        }
+        int end = signature.indexOf(">");
+        String startStr = signature.substring(0, start);
+        if(end == signature.length() - 1) {
+            return startStr;
+        }
+        return startStr + createDescFromSignature(signature.substring(end + 1));
+    }
+
 }
