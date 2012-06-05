@@ -56,15 +56,30 @@ final class GeneratorHelper {
             Tuple<Property, Property> tuple = requiredCopiers.get(key);
             visitor.visitVarInsn(ALOAD, 0);
             if(COLLECTIONS.contains(getDescription(tuple.tObject.getTypeGetter()))) {
-                visitor.visitLdcInsn(Type.getType(getDescription(tuple.tObject.getGenericGetter())));
-                visitor.visitLdcInsn(Type.getType(getDescription(tuple.uObject.getGenericSetter())));
+                visitor.visitLdcInsn(Type.getType(getDescription(tuple.tObject.getDefaultGenericsGetterValue())));
+                visitor.visitLdcInsn(Type.getType(getDescription(tuple.uObject.getDefaultGenericsSetterValue())));
             }
             else {
                 visitor.visitLdcInsn(Type.getType(getDescription(tuple.tObject.getTypeGetter())));
                 visitor.visitLdcInsn(Type.getType(getDescription(tuple.uObject.getTypeSetter())));
             }
             visitor.visitMethodInsn(INVOKESTATIC, "org/ubiquity/util/CopierKey", "newBuilder", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/util/CopierKey$Builder;");
-            // TODO : initialize generics !
+            if(tuple.tObject.getGenericGetter() != null && !COLLECTIONS.contains(getDescription(tuple.tObject.getTypeGetter()))) {
+                for(String genKey : tuple.tObject.getGenericGetter().keySet()) {
+                    visitor.visitLdcInsn(genKey);
+                    visitor.visitLdcInsn(tuple.tObject.getGenericGetter().get(genKey));
+                    visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/util/CopierKey$Builder", "sourceAnnotation",
+                            "(Ljava/lang/String;Ljava/lang/String;)Lorg/ubiquity/util/CopierKey$Builder;");
+                }
+            }
+            if(tuple.uObject.getGenericSetter() != null && !COLLECTIONS.contains(getDescription(tuple.tObject.getTypeGetter()))) {
+                for(String genKey : tuple.uObject.getGenericSetter().keySet()) {
+                    visitor.visitLdcInsn(genKey);
+                    visitor.visitLdcInsn(tuple.uObject.getGenericSetter().get(genKey));
+                    visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/util/CopierKey$Builder", "destinationAnnotation",
+                            "(Ljava/lang/String;Ljava/lang/String;)Lorg/ubiquity/util/CopierKey$Builder;");
+                }
+            }
             visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/util/CopierKey$Builder", "build", "()Lorg/ubiquity/util/CopierKey;");
             visitor.visitFieldInsn(PUTFIELD, className, key, "Lorg/ubiquity/util/CopierKey;");
         }
@@ -261,8 +276,8 @@ final class GeneratorHelper {
     }
 
     static void handleCollection(MethodVisitor visitor, String className, Tuple<Property, Property> p, String collectionType, String srcName, String destinationName, Map<String, Tuple<Property, Property>> requiredCopiers) {
-        String tGeneric = p.tObject.getGenericGetter();
-        String uGeneric = p.uObject.getGenericSetter();
+        String tGeneric = p.tObject.getDefaultGenericsGetterValue();
+        String uGeneric = p.uObject.getDefaultGenericsSetterValue();
         if(SIMPLE_PROPERTIES.containsKey(tGeneric)) {
             if(tGeneric.equals(uGeneric)) {
                 Label l0 = new Label();

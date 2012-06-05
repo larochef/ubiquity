@@ -3,12 +3,18 @@
  */
 package org.ubiquity.bytecode;
 
-import org.objectweb.asm.*;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassVisitor;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Type;
 import org.ubiquity.util.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +28,11 @@ import static org.ubiquity.util.Constants.RENAME_ANNOTATION;
 final class PropertyRetrieverVisitor extends ClassVisitor {
 
     private static final List<String> COLLECTIONS;
+    private static final List<String> LETTERS;
+    private static final List<String> SINGLE_LETTER;
+    private static final List<String> TWO_LETTERS;
+
+
     static {
         COLLECTIONS = new ArrayList<String>();
         COLLECTIONS.add("()Ljava/util/Collection;");
@@ -32,6 +43,10 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         COLLECTIONS.add("(Ljava/util/List;)V");
         COLLECTIONS.add("(Ljava/util/Set;)V");
         COLLECTIONS.add("(Ljava/util/Map;)V");
+
+        SINGLE_LETTER = Arrays.asList("T");
+        TWO_LETTERS = Arrays.asList("K", "V");
+        LETTERS = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P");
 
     }
 
@@ -64,7 +79,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 			char start = name.charAt(0);
 			if(start == 's') {
                 property.setSetter(name);
-                if(COLLECTIONS.contains(desc) && signature != null) {
+                if(signature != null) {
                     property.setTypeSetter(parseParameterFromDesc(desc));
                     property.setGenericSetter(parsegenericsFronSignature(signature));
                 }
@@ -74,7 +89,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 			}
 			else {
                 property.setGetter(name);
-                if(COLLECTIONS.contains(desc) && signature != null) {
+                if(signature != null) {
                     property.setTypeGetter(parseReturnTypeFromDesc(desc));
                     property.setGenericGetter(parsegenericsFronSignature(signature));
                 }
@@ -240,12 +255,34 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         return parseType(desc.substring(desc.indexOf(')') + 1));
     }
 
-    private String parsegenericsFronSignature(String signature) {
+    private Map<String, String> parsegenericsFronSignature(String signature) {
+        Map<String, String> result = new HashMap<String, String>();
         if(signature == null || !signature.contains("<") || !signature.contains(">")) {
             return null;
         }
-        String generics = signature.substring(signature.indexOf('<') + 1, signature.indexOf('>'));
-        return parseGenericsInternal(generics);
+        String[] generics = signature.substring(signature.indexOf('<') + 1, signature.indexOf('>')).split("[;]");
+        Iterator<String> letters;
+        if(generics.length == 1) {
+            letters = SINGLE_LETTER.iterator();
+        }
+        else if (generics.length == 2) {
+            letters = TWO_LETTERS.iterator();
+        }
+        else {
+            letters = LETTERS.iterator();
+        }
+        for(String gen : generics) {
+            String letter = letters.next();
+            if(gen.contains(":")) {
+                String[] vals = gen.split("[:]");
+                letter = vals[0];
+                result.put(letter, vals[1] + ";");
+            }
+            else {
+                result.put(letter, gen + ";");
+            }
+        }
+        return result;
     }
 
     private String parseGenericsInternal(String generics) {

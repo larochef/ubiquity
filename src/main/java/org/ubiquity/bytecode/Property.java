@@ -7,6 +7,7 @@ import org.ubiquity.util.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author François LAROCHE
@@ -19,8 +20,8 @@ class  Property {
 	private String setter;
     private String typeGetter;
     private String typeSetter;
-    private String genericGetter;
-    private String genericSetter;
+    private Map<String, String> genericGetter;
+    private Map<String, String> genericSetter;
 
 	private List<String> annotations;
 	
@@ -81,20 +82,41 @@ class  Property {
         return this.annotations != null && this.annotations.contains(Constants.IGNORE_ANNOTATION);
     }
 
-    public String getGenericGetter() {
+    public Map<String, String> getGenericGetter() {
         return genericGetter;
     }
 
-    public void setGenericGetter(String genericGetter) {
+    public void setGenericGetter(Map<String, String> genericGetter) {
         this.genericGetter = genericGetter;
     }
 
-    public String getGenericSetter() {
+    public Map<String, String> getGenericSetter() {
         return genericSetter;
     }
 
-    public void setGenericSetter(String genericSetter) {
+    public void setGenericSetter(Map<String, String> genericSetter) {
         this.genericSetter = genericSetter;
+    }
+
+    public String getDefaultGenericsGetterValue() {
+        return getDefaultValue(this.genericGetter);
+    }
+
+    public String getDefaultGenericsSetterValue() {
+        return getDefaultValue(this.genericSetter);
+    }
+
+    private String getDefaultValue(Map<String, String> genericsMap) {
+        if(genericsMap == null || genericsMap.isEmpty()) {
+            return null;
+        }
+        if(genericsMap.containsKey("T")) {
+            return genericsMap.get("T");
+        }
+        if(genericsMap.containsKey("V")) {
+            return genericsMap.get("V");
+        }
+        return genericsMap.values().iterator().next();
     }
 
     @Override
