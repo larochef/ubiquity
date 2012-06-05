@@ -1,0 +1,212 @@
+<!doctype html>
+<!-- The Time Machine GitHub pages theme was designed and developed by Jon Rohan, on Feb 7, 2012. -->
+<!-- Follow him for fun. http://twitter.com/jonrohan. Tail his code on http://github.com/jonrohan -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <link rel="stylesheet" href="stylesheets/stylesheet.css" media="screen"/>
+  <link rel="stylesheet" href="stylesheets/pygment_trac.css"/>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+  <script type="text/javascript" src="javascripts/script.js"></script>
+
+  <title>Ubiquity</title>
+  <meta name="description" content="Copy java objects">
+
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+</head>
+
+<body>
+
+  <div class="wrapper">
+    <header>
+      <h1 class="title">Ubiquity</h1>
+    </header>
+    <div id="container">
+      <p class="tagline">Copy java objects</p>
+      <div id="main" role="main">
+        <div class="download-bar">
+        <div class="inner">
+          <a href="https://github.com/larochef/ubiquity/tarball/master" class="download-button tar"><span>Download</span></a>
+          <a href="https://github.com/larochef/ubiquity/zipball/master" class="download-button zip"><span>Download</span></a>
+          <a href="https://github.com/larochef/ubiquity" class="code">View Ubiquity on GitHub</a>
+        </div>
+        <span class="blc"></span><span class="trc"></span>
+        </div>
+        <article class="markdown-body">
+          <h3>Welcome to Ubiquity</h3>
+
+<p>Ubiquity is a utility framework used to copy objects into other objects that may not be compatible.</p>
+
+<h3>Why ubiquity ?</h3>
+
+<ul>
+<li>Ubiquity is fast
+When some other popular tools (like beanutils or dozer) use reflexion, Ubiquity parses the bytecode of classes and generates copiers on the fly. Thus, the code wil call "new" to create objets and use getters and setters directly. 
+Since it doesn't use reflexion, it is dramatically faster, you can expect your copy times to be divided by 10 !! The tests I made showed Ubiquity is about 3 times faster than Orika, and about 20 times faster than Dozer. If you have tests showing different resuls, feel free to send me them.</li>
+<li>Ubiquity performs recursive deep copy, and will go as deep as possible</li>
+<li>Support different logging systems, you choose the one you want</li>
+<li>Ubiquity only needs asm to work, nothing more ! All other dependencies are optionnal, and not needed unless you use them.</li>
+</ul><h3>Getting ubiquity</h3>
+
+<p>You can get ubiquity with this link : <a href="https://github.com/downloads/larochef/ubiquity/ubiquity-1.0-rc5.jar">https://github.com/downloads/larochef/ubiquity/ubiquity-1.0-rc5.jar</a> If ubiquity grows enough in popularity, I will do my best for it to be on maven central !</p>
+
+<h3>Getting started</h3>
+
+<p>Using ubiquity is as simple as :</p>
+
+<pre><code>Ubiquity ubiquity = new Ubiquity();
+MyObject1 myObject1 = new MyOject1();
+// populate and have fun with your object
+MyObject2 myObject2 = ubiquity.map(myObject1, MyObject2.class);
+</code></pre>
+
+<h3>Configuration : working with collections and maps</h3>
+
+<h4>Framework support</h4>
+
+<p>Ubiquity support copying collections and maps, as long as you respect a few rules :</p>
+
+<ul>
+<li>List and maps should be declared by their interface</li>
+<li>Lists and maps must be parametrized</li>
+</ul><p>The different types of collections supported are :</p>
+
+<pre><code>java.util.Collection
+java.util.List
+java.util.Set
+java.util.Map
+</code></pre>
+
+<h4>Configuring the implementations of collections</h4>
+
+<p>To specify your favorite implementations of collections, all you have to do is to provide your Ubiquity with a CollectionFactory.</p>
+
+<pre><code>package org.ubiquity;
+
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+/**
+ * Factory for the different kinds of common collections.
+ * Implementing this interface allows you to choose the implementations.
+ *
+ * Date: 24/04/12
+ *
+ * @author François LAROCHE
+ */
+public interface CollectionFactory {
+
+    /**
+     * Create a new List
+     * @param &lt;T&gt;  the type of objects that can be added to the list
+     * @return a new list, for objects of type T
+     */
+    &lt;T&gt; List &lt;T&gt; newList();
+
+    /**
+     * Create a new set
+     * @param &lt;T&gt;  the type of objects that can be added to the set
+     * @return a new set, for objects of type T
+     */
+    &lt;T&gt; Set&lt;T&gt; newSet();
+
+    /**
+     * Creates a new map
+     *
+     * @param &lt;K&gt; the type associated to the keys
+     * @param &lt;T&gt; the type associated to the objects
+     * @return a new map
+     */
+    &lt;K,T&gt; Map&lt;K,T&gt; newMap();
+
+    /**
+     * Default collection creation
+     * @param &lt;T&gt; the type of elments to store in the collection
+     * @return a new Collection for objects of type T
+     */
+    &lt;T&gt;Collection&lt;T&gt; newCollection();
+}
+</code></pre>
+
+<p>Defaults are :</p>
+
+<ul>
+<li>java.util.ArrayList for java.util.List or java.util.Collection</li>
+<li>java.util.HashSet for java.util.Set</li>
+<li>java.util.HashMap for java.util.Map</li>
+</ul><h3>Dealing with special cases</h3>
+
+<p>There will be cases when all that's provided will not be enough. These cases can be, for exemple, converting from an enum to another one, or dealing with other special objects. 
+For all these special cases, you can tell Ubiquity how to copy a class to another one. All you have to do is create a copier implementing org.ubiquity.Copier, or you can extend, if it meets your need the org.ubiquity.bytecode.SimpleCopier class. Then, you can simply define it :</p>
+
+<pre><code>ubiquity.setCopier(SrcClass.class, DestinationClass.class, myCopier);
+</code></pre>
+
+<p>Then, any copy done by this ubiquity object from SrcClass to DestinationClass will use this copier.</p>
+
+<h3>Property matching</h3>
+
+<p>By default, every getter or setter will be taken into account, which means that a read-only property can be copier into a write only property !
+Properties are matched by name.</p>
+
+<h4>Ignoring a property</h4>
+
+<p>If you want to have a property no copied, just annote it with </p>
+
+<pre><code>@org.ubiquity.annotation.CopyIgnore
+</code></pre>
+
+<h4>Renaming a property</h4>
+
+<p>Ubiquity supports renaming properties and also allow multiple renaming configuration according to the target object class.
+When multiple configurations exist, Ubiquity will, at first, try to match a renaming for the target class. If none exist, it will take the default configuration (which will be with no target class, or java.lang.Object). If no configuration is found, then the property isn't renamed.</p>
+
+<pre><code>@org.ubiquity.annotation.CopyRename(propertyName="property2")
+public String getProperty1() {...}
+</code></pre>
+
+<pre><code>@org.ubiquity.annotation.CopyRenames(configurations={
+@org.ubiquity.annotation.CopyRename(propertyName="property2"),
+@org.ubiquity.annotation.CopyRename(propertyName="property3", targetClass=DestinationClass.class)
+}
+public String getProperty1() {...}
+</code></pre>
+
+<p>At the moment, you cannot rename to a nested property, which means,</p>
+
+<pre><code>@org.ubiquity.annotation.CopyRename(propertyName="property2.property3")
+public String getProperty1() {...}
+</code></pre>
+
+<p><strong>will throw an Exeption.</strong></p>
+
+<h3>Support or Contact</h3>
+
+<p>Please have fun with it ! If you have any trouble, please use all the feedback tools to let me know.
+François LAROCHE</p>
+        </article>
+      </div>
+    </div>
+    <footer>
+      <div class="owner">
+      <p><a href="https://github.com/larochef" class="avatar"><img src="https://secure.gravatar.com/avatar/f996d859243cfe21cc9852ccffea81b2?s=30&amp;d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-140.png" width="48" height="48"/></a> <a href="https://github.com/larochef">larochef</a> maintains <a href="https://github.com/larochef/ubiquity">Ubiquity</a></p>
+      </div>
+      <div class="creds">
+        <small>This page generated using <a href="https://pages.github.com/">GitHub Pages</a><br/>theme by <a href="http://twitter.com/jonrohan/">Jon Rohan</a></small>
+      </div>
+    </footer>
+  </div>
+  <div class="current-section">
+    <a href="#top">Scroll to top</a>
+    <a href="https://github.com/larochef/ubiquity/tarball/master" class="tar">tar</a><a href="https://github.com/larochef/ubiquity/zipball/master" class="zip">zip</a><a href="" class="code">source code</a>
+    <p class="name"></p>
+  </div>
+
+  
+</body>
+</html>
