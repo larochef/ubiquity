@@ -13,19 +13,19 @@ import java.util.Map;
  *
  * @author françois LAROCHE
  */
-public final class CopierKey {
+public final class CopierKey <T, U> {
 
-    public static Builder newBuilder(Class<?> source, Class<?> destination) {
-        return new Builder(source, destination);
+    public static <T, U> Builder<T,U> newBuilder(Class<T> source, Class<U> destination) {
+        return new Builder<T, U>(source, destination);
     }
 
-    private final Class<?> sourceClass;
-    private final Class<?> destinationClass;
+    private final Class<T> sourceClass;
+    private final Class<U> destinationClass;
     private final Map<String, String> sourceAnnotations;
     private final Map<String, String> destinationAnnotations;
     private final int hashCode;
 
-    CopierKey(Builder builder) {
+    CopierKey(Builder<T,U> builder) {
         this.sourceClass = builder.sourceClass;
         this.destinationClass = builder.destinationClass;
         this.sourceAnnotations = Collections.unmodifiableMap(builder.sourceAnnotations);
@@ -33,12 +33,28 @@ public final class CopierKey {
         this.hashCode = generateHashCode();
     }
 
+    public Class<T> getSourceClass() {
+        return sourceClass;
+    }
+
+    public Class<U> getDestinationClass() {
+        return destinationClass;
+    }
+
+    public Map<String, String> getSourceAnnotations() {
+        return sourceAnnotations;
+    }
+
+    public Map<String, String> getDestinationAnnotations() {
+        return destinationAnnotations;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        CopierKey copierKey = (CopierKey) o;
+        CopierKey<?,?> copierKey = (CopierKey<?,?>) o;
 
         if (destinationAnnotations != null ? !destinationAnnotations.equals(copierKey.destinationAnnotations) : copierKey.destinationAnnotations != null)
             return false;
@@ -65,41 +81,41 @@ public final class CopierKey {
         return result;
     }
 
-    public static class Builder {
-        private final Class<?> sourceClass;
-        private final Class<?> destinationClass;
+    public static class Builder <T,U> {
+        private final Class<T> sourceClass;
+        private final Class<U> destinationClass;
         private final Map<String, String> sourceAnnotations;
         private final Map<String, String> destinationAnnotations;
 
-        public Builder(Class<?> sourceClass, Class<?> destinationClass) {
+        Builder(Class<T> sourceClass, Class<U> destinationClass) {
             this.sourceAnnotations = new HashMap<String, String>();
             this.destinationAnnotations = new HashMap<String, String>();
             this.sourceClass = sourceClass;
             this.destinationClass = destinationClass;
         }
 
-        public Builder sourceAnnotation(String name, String value) {
+        public Builder<T,U> sourceAnnotation(String name, String value) {
             this.sourceAnnotations.put(name, value);
             return this;
         }
 
-        public Builder sourceAnnotations(Map<String, String> annotations) {
+        public Builder<T,U> sourceAnnotations(Map<String, String> annotations) {
             this.sourceAnnotations.putAll(annotations);
             return this;
         }
 
-        public Builder destinationAnnotation(String name, String value) {
+        public Builder<T,U> destinationAnnotation(String name, String value) {
             this.destinationAnnotations.put(name, value);
             return this;
         }
 
-        public Builder destinationAnnotations(Map<String, String> annotations) {
+        public Builder<T,U> destinationAnnotations(Map<String, String> annotations) {
             this.destinationAnnotations.putAll(annotations);
             return this;
         }
 
-        public CopierKey build() {
-            return new CopierKey(this);
+        public CopierKey<T, U> build() {
+            return new CopierKey<T,U>(this);
         }
     }
 }

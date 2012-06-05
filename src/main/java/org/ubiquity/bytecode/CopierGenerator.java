@@ -6,6 +6,7 @@ package org.ubiquity.bytecode;
 import org.objectweb.asm.*;
 import org.ubiquity.Copier;
 import org.ubiquity.util.Constants;
+import org.ubiquity.util.CopierKey;
 import org.ubiquity.util.Tuple;
 
 import java.io.IOException;
@@ -42,8 +43,12 @@ final class CopierGenerator {
 		}
 	}
 
-	<T, U> Copier<T, U> createCopier(Class<T> src, Class<U> destination, CopyContext ctx, Map<String, String> srcGenerics, Map<String, String> destinationGenerics)
+	<T, U> Copier<T, U> createCopier(CopierKey<T,U> key, CopyContext ctx)
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
+        Class<T> src = key.getSourceClass();
+        Class<U> destination = key.getDestinationClass();
+        Map<String, String> srcGenerics = key.getDestinationAnnotations();
+        Map<String, String> destinationGenerics = key.getDestinationAnnotations();
         List<Tuple<Property, Property>> properties = listCompatibelProperties(src, destination, srcGenerics, destinationGenerics);
         String srcName = byteCodeName(src);
         String destinationName = byteCodeName(destination);
@@ -105,7 +110,7 @@ final class CopierGenerator {
         Class<?> resultClass = loader.defineClass(className.replaceAll("[/]", "."), writer.toByteArray());
         @SuppressWarnings("unchecked")
         Copier<T,U> instance =  (Copier<T,U>) resultClass.getConstructor(CopyContext.class).newInstance(ctx);
-        ctx.registerCopier(src, destination, instance);
+        ctx.registerCopier(key, instance);
         ctx.createRequiredCopiers();
         return instance;
 	}
