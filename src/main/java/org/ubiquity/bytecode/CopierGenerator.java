@@ -58,7 +58,7 @@ final class CopierGenerator {
 			reader.accept(genericsVisitor, 0);
 			return visitor.getProperties();
 		} catch (IOException e) {
-			throw new IllegalStateException("Unable to parse class : ", e);
+			throw new IllegalStateException("Unable to parse class : " + byteCodeName(clazz), e);
 		}
 	}
 
@@ -113,7 +113,7 @@ final class CopierGenerator {
             }
 
             // Handle collections
-            if(COLLECTIONS.contains(descriptionGetter)) {  // TODO : remove the generics if any !
+            if(COLLECTIONS.contains(descriptionGetter)) {
                 String type = descriptionGetter.substring(
                                 descriptionGetter.lastIndexOf("/") + 1,
                                 descriptionGetter.length() - 1);
@@ -188,7 +188,14 @@ final class CopierGenerator {
     }
 
 	private static String byteCodeName(Class<?> c) {
-		return c.getName().replaceAll("[\\.]", "/");
+        String name = c.getName().replaceAll("[\\.]", "/");
+        if(name.startsWith("[")) {
+            name = name.substring(1);
+        }
+        if(name.startsWith("L")) {
+            name = name.substring(1, name.length() - 1);
+        }
+		return name;
 	}
 
     private static class MyClassLoader extends ClassLoader {

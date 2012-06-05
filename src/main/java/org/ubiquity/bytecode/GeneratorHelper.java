@@ -32,6 +32,7 @@ import static org.objectweb.asm.Opcodes.NEW;
 import static org.objectweb.asm.Opcodes.POP;
 import static org.objectweb.asm.Opcodes.PUTFIELD;
 import static org.objectweb.asm.Opcodes.RETURN;
+import static org.ubiquity.util.Constants.COLLECTIONS;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
 
 /**
@@ -54,8 +55,14 @@ final class GeneratorHelper {
         for(String key : requiredCopiers.keySet()) {
             Tuple<Property, Property> tuple = requiredCopiers.get(key);
             visitor.visitVarInsn(ALOAD, 0);
-            visitor.visitLdcInsn(Type.getType(getDescription(tuple.tObject.getTypeGetter())));
-            visitor.visitLdcInsn(Type.getType(getDescription(tuple.uObject.getTypeSetter())));
+            if(COLLECTIONS.contains(getDescription(tuple.tObject.getTypeGetter()))) {
+                visitor.visitLdcInsn(Type.getType(getDescription(tuple.tObject.getGenericGetter())));
+                visitor.visitLdcInsn(Type.getType(getDescription(tuple.uObject.getGenericSetter())));
+            }
+            else {
+                visitor.visitLdcInsn(Type.getType(getDescription(tuple.tObject.getTypeGetter())));
+                visitor.visitLdcInsn(Type.getType(getDescription(tuple.uObject.getTypeSetter())));
+            }
             visitor.visitMethodInsn(INVOKESTATIC, "org/ubiquity/util/CopierKey", "newBuilder", "(Ljava/lang/Class;Ljava/lang/Class;)Lorg/ubiquity/util/CopierKey$Builder;");
             // TODO : initialize generics !
             visitor.visitMethodInsn(INVOKEVIRTUAL, "org/ubiquity/util/CopierKey$Builder", "build", "()Lorg/ubiquity/util/CopierKey;");
