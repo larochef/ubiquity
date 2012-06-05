@@ -25,8 +25,8 @@ public class Ubiquity {
         copier.copy(src, destination);
     }
 
-    public <T,U> void registerCopier(Class<T> src, Class<U> target, Copier<T,U> copier) {
-        this.context.registerCopier(CopierKey.newBuilder(src, target).build(), copier);
+    public <T,U> void registerCopier(CopierKey<T,U> key, Copier<T,U> copier) {
+        this.context.registerCopier(key, copier);
     }
 
     public CollectionFactory getFactory() {
