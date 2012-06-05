@@ -12,7 +12,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * TODO : explain.me
+ * Class storing the different copiers, making all copiers available to other copiers.
+ * <br />
+ *
  * Date: 17/04/12
  * Time: 09:33
  *
