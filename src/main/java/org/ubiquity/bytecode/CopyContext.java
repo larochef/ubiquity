@@ -38,6 +38,7 @@ public class CopyContext {
         this.loggerFactory = JdkLogging.getJdkLoggerFactory();
     }
 
+    @SuppressWarnings("Unchecked")
     public synchronized <T, U> Copier<T,U> getCopier(CopierKey<T, U> key) {
         if(!copiers.containsKey(key)) {
             this.requireCopier(key);
@@ -47,7 +48,6 @@ public class CopyContext {
                 loggerFactory.getLogger(getClass()).error("Unable to create copier : ", e);
             }
         }
-        @SuppressWarnings("Unchecked")
         Copier<T,U> result = (Copier<T,U>) copiers.get(key);
         if(result == null) {
             throw new IllegalStateException("Unable to find the builder, it was supposed to be built.");
