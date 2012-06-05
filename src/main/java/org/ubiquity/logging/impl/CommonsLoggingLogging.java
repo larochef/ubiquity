@@ -14,7 +14,7 @@ import org.ubiquity.logging.LoggerFactory;
  *
  * @author françois LAROCHE
  */
-public class CommonsLonggingLogging {
+public class CommonsLoggingLogging {
 
     public static LoggerFactory getCommonsLoggingFactory() {
         return Factory.INSTANCE;
