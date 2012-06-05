@@ -16,6 +16,10 @@ import org.ubiquity.logging.LoggerFactory;
  */
 public class CommonsLonggingLogging {
 
+    public static LoggerFactory getCommonsLoggingFactory() {
+        return Factory.INSTANCE;
+    }
+
     private enum Factory implements LoggerFactory {
         INSTANCE;
 
