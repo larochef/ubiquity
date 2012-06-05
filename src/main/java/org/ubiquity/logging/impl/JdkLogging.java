@@ -15,7 +15,7 @@ import java.util.logging.Level;
  */
 public class JdkLogging {
 
-    public LoggerFactory getJdkLoggerFactory() {
+    public static LoggerFactory getJdkLoggerFactory() {
         return Factory.INSTANCE;
     }
 

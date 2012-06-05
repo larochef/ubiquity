@@ -2,6 +2,8 @@ package org.ubiquity.bytecode;
 
 import org.ubiquity.CollectionFactory;
 import org.ubiquity.Copier;
+import org.ubiquity.logging.LoggerFactory;
+import org.ubiquity.logging.impl.JdkLogging;
 import org.ubiquity.util.CopierKey;
 import org.ubiquity.util.DefaultCollectionFactory;
 
@@ -26,12 +28,14 @@ public class CopyContext {
     private final List<CopierKey<?,?>> requiredTuples;
     private final CopierGenerator generator;
     private CollectionFactory factory;
+    private LoggerFactory loggerFactory;
 
     public CopyContext() {
         this.copiers = new ConcurrentHashMap<CopierKey<?,?>, Copier<?, ?>>();
         this.requiredTuples = new ArrayList<CopierKey<?,?>>();
         this.generator = new CopierGenerator();
         this.factory = new DefaultCollectionFactory();
+        this.loggerFactory = JdkLogging.getJdkLoggerFactory();
     }
 
     public synchronized <T, U> Copier<T,U> getCopier(CopierKey key) {
@@ -40,8 +44,7 @@ public class CopyContext {
             try {
                 this.createRequiredCopiers();
             } catch (Exception e) {
-                // TODO : handle the exception !!
-                e.printStackTrace();
+                loggerFactory.getLogger(getClass()).error("Unable to create copier : ", e);
             }
         }
         @SuppressWarnings("Unchecked")
