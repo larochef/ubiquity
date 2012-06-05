@@ -1,11 +1,13 @@
 package org.ubiquity.logging.impl;
 
 import org.ubiquity.logging.Logger;
+import org.ubiquity.logging.LoggerFactory;
 
 import java.util.logging.Level;
 
 /**
- * TODO : explain.me
+ * Logging configuration for Jdk loggers.
+ * <br />
  * Date: 05/06/12
  * Time: 11:40
  *
@@ -13,7 +15,21 @@ import java.util.logging.Level;
  */
 public class JdkLogging {
 
-    private class JdkLogger implements Logger {
+    public LoggerFactory getJdkLoggerFactory() {
+        return Factory.INSTANCE;
+    }
+
+    private enum Factory implements LoggerFactory {
+        INSTANCE;
+
+
+        @Override
+        public Logger getLogger(Class<?> c) {
+            return new JdkLogger(java.util.logging.Logger.getLogger(c.getName()));
+        }
+    }
+
+    private static class JdkLogger implements Logger {
         private final java.util.logging.Logger logger;
 
         JdkLogger(java.util.logging.Logger logger) {
