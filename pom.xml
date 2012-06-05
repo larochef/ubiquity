@@ -6,7 +6,29 @@
     <packaging>jar</packaging>
     <version>1.0-SNAPSHOT</version>
     <name>Ubiquity</name>
-    <url>http://maven.apache.org</url>
+    <url>http://larochef.github.com/ubiquity/</url>
+    <developers>
+        <developer>
+            <id>Francois</id>
+            <name>François LAROCHE</name>
+            <roles>
+                <role>Everything</role>
+            </roles>
+        </developer>
+    </developers>
+    <description>
+        Ubiquity is a tool to copy objects that may be incompatible.
+        It uses as much as possible static information of the classes
+        to create copiers on the fly.
+    </description>
+    <inceptionYear>2012</inceptionYear>
+    <issueManagement>
+        <system>github</system>
+        <url>https://github.com/larochef/ubiquity/issues</url>
+    </issueManagement>
+    <scm>
+        <url>https://github.com/larochef/ubiquity</url>
+    </scm>
     <dependencies>
         <dependency>
             <groupId>junit</groupId>
@@ -61,7 +83,6 @@
             <version>1.5.8</version>
             <scope>provided</scope>
         </dependency>
-
         <dependency>
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging-api</artifactId>
