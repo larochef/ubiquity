@@ -13,7 +13,7 @@ import java.util.Map;
  *
  * @author françois LAROCHE
  */
-public class CopierKey {
+public final class CopierKey {
 
     public static Builder newBuilder(Class<?> source, Class<?> destination) {
         return new Builder(source, destination);
