@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author François LAROCHE
  */
-class DefaultCopier implements Copier<Object, Object> {
+final class DefaultCopier implements Copier<Object, Object> {
 
     private final CopyContext context;
 
