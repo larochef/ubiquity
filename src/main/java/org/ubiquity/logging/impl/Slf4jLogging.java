@@ -4,13 +4,13 @@ import org.ubiquity.logging.Logger;
 import org.ubiquity.logging.LoggerFactory;
 
 /**
- * Logging configuration for slf4j.
- * <br />
- * Date: 05/06/12
- * Time: 11:05
- *
- * @author françois LAROCHE
- */
+* Logging configuration for slf4j.
+* <br />
+* Date: 05/06/12
+* Time: 11:05
+*
+* @author françois LAROCHE
+*/
 public class Slf4jLogging {
 
     public static LoggerFactory getSlf4jFactory() {
