@@ -358,7 +358,7 @@ final class GeneratorHelper {
         String rightPart = srcBytecodeName.substring(index);
         index = targetBytecodeName.startsWith("L") ? 1 : 0;
         rightPart += targetBytecodeName.substring(index);
-        return "org/ubiquity/bytecode/generated/Copier" + rightPart.replaceAll("[/]", "").replaceAll(";", "");
+        return "org/ubiquity/bytecode/generated/Copier" + rightPart.replaceAll("[/]", "").replaceAll(";", "") + System.nanoTime();
     }
 
 }

@@ -62,6 +62,22 @@ final class CopierGenerator {
 		}
 	}
 
+    private static String getDefaultGenerics(Map<String, String> generics) {
+        if(generics.isEmpty()) {
+            return "java/lang/Object";
+        }
+        if(generics.size() == 1) {
+            return generics.values().iterator().next();
+        }
+        if(generics.containsKey("T")) {
+            return generics.get("T");
+        }
+        if(generics.containsKey("V")) {
+            return generics.get("V");
+        }
+        return generics.values().iterator().next();
+    }
+
 	<T, U> Copier<T, U> createCopier(CopierKey<T,U> key, CopyContext ctx)
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         Class<T> src = key.getSourceClass();
@@ -74,18 +90,26 @@ final class CopierGenerator {
         List<Tuple<Property, Property>> properties = listCompatibelProperties(src, destination, srcGenerics, destinationGenerics);
         String srcName = byteCodeName(src);
         String destinationName = byteCodeName(destination);
-        String className = createCopierClassName(srcName, destinationName);
+        String srcSafeName = srcName;
+        String destinationSafeName = destinationName;
+        if("java/lang/Object".equals(srcSafeName)) {
+            srcSafeName = byteCodeName(getDefaultGenerics(srcGenerics));
+        }
+        if("java/lang/Object".equals(destinationSafeName)) {
+            destinationSafeName = byteCodeName(getDefaultGenerics(destinationGenerics));
+        }
+        String className = loader.getFinalName(createCopierClassName(srcSafeName, destinationSafeName));
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         writer.visit(V1_5, ACC_PUBLIC + ACC_FINAL, className,
-                "Lorg/ubiquity/bytecode/SimpleCopier<" + getDescription(srcName) + getDescription(destinationName) + ">;",
+                "Lorg/ubiquity/bytecode/SimpleCopier<" + getDescription(srcSafeName) + getDescription(destinationSafeName) + ">;",
                 "org/ubiquity/bytecode/SimpleCopier", null);
 
-        createNewInstance(writer, className, destinationName);
-        createCopyBridge(writer, className, srcName, destinationName);
-        createNewArray(writer, className, destinationName);
+        createNewInstance(writer, className, destinationSafeName);
+        createCopyBridge(writer, className, srcSafeName, destinationSafeName);
+        createNewArray(writer, className, destinationSafeName);
 
-        MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC + ACC_FINAL, "copy", '(' + getDescription(srcName) + getDescription(destinationName) + ")V", null, null);
+        MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC + ACC_FINAL, "copy", '(' + getDescription(srcSafeName) + getDescription(destinationSafeName) + ")V", null, null);
         for(Tuple<Property, Property> p : properties) {
             String descriptionGetter = getDescription(p.tObject.getTypeGetter());
             String descriptionSetter = getDescription(p.uObject.getTypeSetter());
@@ -188,17 +212,34 @@ final class CopierGenerator {
     }
 
 	private static String byteCodeName(Class<?> c) {
-        String name = c.getName().replaceAll("[\\.]", "/");
+		return byteCodeName(c.getName());
+	}
+
+    private static String byteCodeName(String c) {
+        String name = c.replaceAll("[\\.]", "/");
         if(name.startsWith("[")) {
             name = name.substring(1);
         }
         if(name.startsWith("L")) {
             name = name.substring(1, name.length() - 1);
         }
-		return name;
-	}
+        if(name.contains("<")) {
+            name = name.substring(0, name.indexOf('<'));
+        }
+        return name;
+    }
 
     private static class MyClassLoader extends ClassLoader {
+        public String getFinalName(String name) {
+            String finalName = name;
+            int i = 0;
+            while(this.findLoadedClass(finalName) != null) {
+                finalName = name + i;
+                i++;
+            }
+            return finalName;
+        }
+
         public Class<?> defineClass(String name, byte[] b) {
             return defineClass(name, b, 0, b.length);
         }

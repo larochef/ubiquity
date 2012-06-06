@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  * @author françois LAROCHE
  */
-public class CopyContext {
+public final class CopyContext {
 
     private Map<CopierKey<?,?>, Copier<?,?>> copiers;
     private final List<CopierKey<?,?>> requiredTuples;
@@ -36,10 +36,12 @@ public class CopyContext {
         this.generator = new CopierGenerator();
         this.factory = new DefaultCollectionFactory();
         this.loggerFactory = JdkLogging.getJdkLoggerFactory();
+
+        this.registerCopier(CopierKey.newBuilder(Object.class, Object.class).build(), new DefaultCopier(this));
     }
 
     @SuppressWarnings("Unchecked")
-    public synchronized <T, U> Copier<T,U> getCopier(CopierKey<T, U> key) {
+    public final synchronized <T, U> Copier<T,U> getCopier(CopierKey<T, U> key) {
         if(!copiers.containsKey(key)) {
             this.requireCopier(key);
             try {
@@ -55,11 +57,11 @@ public class CopyContext {
         return result;
     }
 
-    public <T, U> void registerCopier(CopierKey<T,U> key, Copier<T,U> copier) {
+    public final <T, U> void registerCopier(CopierKey<T,U> key, Copier<T,U> copier) {
         this.copiers.put(key, copier);
     }
 
-    void requireCopier(CopierKey<?,?> key) {
+    final void requireCopier(CopierKey<?,?> key) {
         // If copier already exists, nothing to do.
         if(copiers.containsKey(key)) {
             return;
@@ -73,7 +75,7 @@ public class CopyContext {
     }
 
     @SuppressWarnings("Unchecked")
-    <T, U> void createRequiredCopiers() throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
+    final <T, U> void createRequiredCopiers() throws InstantiationException, IllegalAccessException, InvocationTargetException, NoSuchMethodException {
         while(!this.requiredTuples.isEmpty()) {
             synchronized (this.requiredTuples) {
                 CopierKey<T,U> key = (CopierKey<T,U>)this.requiredTuples.remove(0);
@@ -82,11 +84,11 @@ public class CopyContext {
         }
     }
 
-    public CollectionFactory getFactory() {
+    public final CollectionFactory getFactory() {
         return factory;
     }
 
-    public void setFactory(CollectionFactory factory) {
+    public final void setFactory(CollectionFactory factory) {
         this.factory = factory;
     }
 }

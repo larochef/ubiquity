@@ -27,26 +27,16 @@ import static org.ubiquity.util.Constants.RENAME_ANNOTATION;
  */
 final class PropertyRetrieverVisitor extends ClassVisitor {
 
-    private static final List<String> COLLECTIONS;
     private static final List<String> LETTERS;
     private static final List<String> SINGLE_LETTER;
     private static final List<String> TWO_LETTERS;
 
 
     static {
-        COLLECTIONS = new ArrayList<String>();
-        COLLECTIONS.add("()Ljava/util/Collection;");
-        COLLECTIONS.add("()Ljava/util/List;");
-        COLLECTIONS.add("()Ljava/util/Set;");
-        COLLECTIONS.add("()Ljava/util/Map;");
-        COLLECTIONS.add("(Ljava/util/Collection;)V");
-        COLLECTIONS.add("(Ljava/util/List;)V");
-        COLLECTIONS.add("(Ljava/util/Set;)V");
-        COLLECTIONS.add("(Ljava/util/Map;)V");
-
         SINGLE_LETTER = Arrays.asList("T");
         TWO_LETTERS = Arrays.asList("K", "V");
-        LETTERS = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P");
+        LETTERS = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
+                "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
 
     }
 
@@ -60,7 +50,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 
     @Override
     public void visit(int version, int access, String name, String signature, String superName, String[] interfaces) {
-        if(!"java/lang/Object".equals(superName)) {
+        if(!"java/lang/Object".equals(superName) && superName != null) {
             try {
                 this.parent = new PropertyRetrieverVisitor();
                 ClassReader r = new ClassReader(superName);
@@ -257,46 +247,102 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 
     private Map<String, String> parsegenericsFronSignature(String signature) {
         Map<String, String> result = new HashMap<String, String>();
+        // Clean signature to only get only the wanted type
         if(signature == null || !signature.contains("<") || !signature.contains(">")) {
             return null;
         }
-        String[] generics = signature.substring(signature.indexOf('<') + 1, signature.indexOf('>')).split("[;]");
+        String typesOnly;
+        if(signature.startsWith("()")) {
+            typesOnly = signature.substring(2);
+        }
+        else if (signature.startsWith("(") && signature.endsWith(")V")) {
+            typesOnly = signature.substring(1, signature.length() - 2);
+        }
+        else {
+            typesOnly = signature;
+        }
+
+        String allGenerics = typesOnly.substring(typesOnly.indexOf('<') + 1, typesOnly.lastIndexOf('>'));
+        List<String> genericTypes = new ArrayList<String>();
+        while(allGenerics.length() > 0) {
+            String gen = getFirstType(allGenerics);
+            if(gen == null) {
+                allGenerics = "";
+                continue;
+            }
+
+            genericTypes.add(gen);
+            if(gen.length() != allGenerics.length()) {
+                int index = allGenerics.indexOf(gen);
+                allGenerics = allGenerics.substring(index + gen.length(), allGenerics.length());
+            }
+            else {
+                allGenerics = "";
+            }
+            if(">;".equals(allGenerics)) {
+                allGenerics = "";
+            }
+        }
+
         Iterator<String> letters;
-        if(generics.length == 1) {
+        if(genericTypes.size() == 1) {
             letters = SINGLE_LETTER.iterator();
         }
-        else if (generics.length == 2) {
+        else if (genericTypes.size() == 2) {
             letters = TWO_LETTERS.iterator();
         }
         else {
             letters = LETTERS.iterator();
         }
-        for(String gen : generics) {
+        for(String gen : genericTypes) {
             String letter = letters.next();
             if(gen.contains(":")) {
-                String[] vals = gen.split("[:]");
-                letter = vals[0];
-                result.put(letter, vals[1] + ";");
+                String[] values = gen.split("[:]");
+                letter = values[0];
+                result.put(letter, values[1]);
             }
             else {
-                result.put(letter, gen + ";");
+                result.put(letter, gen);
             }
         }
         return result;
     }
 
-    private String parseGenericsInternal(String generics) {
-        if(generics.length() == 1) {
-            return generics;
+    private String getFirstType(String types) {
+        int begin = types.indexOf("L");
+        if(begin == -1) {
+            return null;
         }
-        if(generics.charAt(0) == 'L' && generics.indexOf(';') == generics.length() - 1) {
-            return generics;
+        int indexGen = types.indexOf('<', begin);
+        int indexType = types.indexOf(';', begin);
+        if(indexGen == -1) {
+            indexGen = Integer.MAX_VALUE;
         }
-        int index = generics.indexOf(';');
-        // If no complex objects, return the last simple one
-        if(index == -1) {
-            return generics.substring(generics.length() - 1);
+        if(indexType == -1) {
+            indexType = types.length() - 1;
         }
-        return parseGenericsInternal(generics.substring(index + 1));
+        if(indexType < indexGen) {
+            return types.substring(begin, indexType + 1);
+        }
+        return types.substring(begin, getClosingIndex(types, indexGen) + 2); // Add the ";" after the ">"
+    }
+
+    private int getClosingIndex(String str, int openIndex) {
+        if(str  == null || str.length() < openIndex || str.charAt(openIndex) != '<') {
+            return -1;
+        }
+        int nbOpen = 0;
+        for(int i = openIndex; i < str.length(); i++) {
+            if(str.charAt(i) == '<') {
+                nbOpen ++;
+            }
+            if(str.charAt(i) == '>') {
+                nbOpen --;
+            }
+            if(nbOpen == 0) {
+                return i;
+            }
+        }
+        return -1;
     }
 }
