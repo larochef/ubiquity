@@ -266,11 +266,20 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         List<String> genericTypes = new ArrayList<String>();
         while(allGenerics.length() > 0) {
             String gen = getFirstType(allGenerics);
+            if(gen == null) {
+                allGenerics = "";
+                continue;
+            }
+
             genericTypes.add(gen);
             if(gen.length() != allGenerics.length()) {
-                allGenerics = allGenerics.substring(0, gen.length());
+                int index = allGenerics.indexOf(gen);
+                allGenerics = allGenerics.substring(index + gen.length(), allGenerics.length());
             }
             else {
+                allGenerics = "";
+            }
+            if(">;".equals(allGenerics)) {
                 allGenerics = "";
             }
         }
@@ -300,8 +309,12 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
     }
 
     private String getFirstType(String types) {
-        int indexGen = types.indexOf('<');
-        int indexType = types.indexOf(';');
+        int begin = types.indexOf("L");
+        if(begin == -1) {
+            return null;
+        }
+        int indexGen = types.indexOf('<', begin);
+        int indexType = types.indexOf(';', begin);
         if(indexGen == -1) {
             indexGen = Integer.MAX_VALUE;
         }
@@ -309,9 +322,9 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
             indexType = types.length() - 1;
         }
         if(indexType < indexGen) {
-            return types.substring(0, indexType + 1);
+            return types.substring(begin, indexType + 1);
         }
-        return types.substring(0, getClosingIndex(types, indexGen) + 2); // Add the ";" after the "<"
+        return types.substring(begin, getClosingIndex(types, indexGen) + 2); // Add the ";" after the ">"
     }
 
     private int getClosingIndex(String str, int openIndex) {

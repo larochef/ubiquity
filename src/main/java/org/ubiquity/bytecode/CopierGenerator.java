@@ -105,9 +105,9 @@ final class CopierGenerator {
                 "Lorg/ubiquity/bytecode/SimpleCopier<" + getDescription(srcSafeName) + getDescription(destinationSafeName) + ">;",
                 "org/ubiquity/bytecode/SimpleCopier", null);
 
-        createNewInstance(writer, className, destinationName);
-        createCopyBridge(writer, className, srcName, destinationName);
-        createNewArray(writer, className, destinationName);
+        createNewInstance(writer, className, destinationSafeName);
+        createCopyBridge(writer, className, srcSafeName, destinationSafeName);
+        createNewArray(writer, className, destinationSafeName);
 
         MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC + ACC_FINAL, "copy", '(' + getDescription(srcSafeName) + getDescription(destinationSafeName) + ")V", null, null);
         for(Tuple<Property, Property> p : properties) {
@@ -222,6 +222,9 @@ final class CopierGenerator {
         }
         if(name.startsWith("L")) {
             name = name.substring(1, name.length() - 1);
+        }
+        if(name.contains("<")) {
+            name = name.substring(0, name.indexOf('<'));
         }
         return name;
     }

@@ -25,13 +25,13 @@ public class TestGenerics {
     }
 
     public static class TestClass {
-        private ParentClass<ParentClass> element;
+        private ParentClass<ParentClass<ParentClass<ParentClass<ParentClass>>>> element;
 
-        public ParentClass<ParentClass> getElement() {
+        public ParentClass<ParentClass<ParentClass<ParentClass<ParentClass>>>> getElement() {
             return element;
         }
 
-        public void setElement(ParentClass<ParentClass> element) {
+        public void setElement(ParentClass<ParentClass<ParentClass<ParentClass<ParentClass>>>> element) {
             this.element = element;
         }
     }
@@ -39,8 +39,8 @@ public class TestGenerics {
     @Test
     public void testGenerics() {
         TestClass test = new TestClass();
-        ParentClass<ParentClass> child = new ParentClass<ParentClass>();
-        child.setParent(new ParentClass<ParentClass>());
+        ParentClass<ParentClass<ParentClass<ParentClass<ParentClass>>>> child = new ParentClass<ParentClass<ParentClass<ParentClass<ParentClass>>>>();
+        child.setParent(new ParentClass<ParentClass<ParentClass<ParentClass>>>());
         test.setElement(child);
 
         TestClass result = ubiquity.map(test, TestClass.class);
