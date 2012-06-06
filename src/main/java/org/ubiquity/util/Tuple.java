@@ -20,13 +20,13 @@ public class Tuple<T, U> {
 		this.tObject = tObject;
 		this.uObject = uObject;
 
-		// cache hashcode since class is immutable
+		// cache hashcode since class is immutable (note: only if T & U are)
         int calculatedHashcode = 0;
-        if(this.tObject != null) {
-            calculatedHashcode = 31 * (31 * + tObject.hashCode());
+        if(tObject != null) {
+            calculatedHashcode = tObject.hashCode();
         }
-        if(this.uObject != null) {
-            calculatedHashcode += uObject.hashCode();
+        if(uObject != null) {
+            calculatedHashcode = 31 * calculatedHashcode + uObject.hashCode();
         }
 		this.hashcode = calculatedHashcode;
 	}
@@ -39,10 +39,9 @@ public class Tuple<T, U> {
     @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {return true;}
-		if (obj == null) {return false;}
 		if (!(obj instanceof Tuple)) {return false;}
 		Tuple<?,?> other = (Tuple<?,?>) obj;
 		return this.tObject == other.tObject && this.uObject == other.uObject;
 	}
-	
+
 }
