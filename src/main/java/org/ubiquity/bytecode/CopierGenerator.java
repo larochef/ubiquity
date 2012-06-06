@@ -160,7 +160,6 @@ final class CopierGenerator {
         @SuppressWarnings("unchecked")
         Copier<T,U> instance =  (Copier<T,U>) resultClass.getConstructor(CopyContext.class).newInstance(ctx);
         ctx.registerCopier(key, instance);
-        ctx.createRequiredCopiers();
         return instance;
 	}
 
