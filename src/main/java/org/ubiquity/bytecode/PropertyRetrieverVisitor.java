@@ -35,7 +35,8 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
     static {
         SINGLE_LETTER = Arrays.asList("T");
         TWO_LETTERS = Arrays.asList("K", "V");
-        LETTERS = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P");
+        LETTERS = Arrays.asList("A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P",
+                "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z");
 
     }
 
