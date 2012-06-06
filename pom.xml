@@ -29,6 +29,9 @@
     <scm>
         <url>https://github.com/larochef/ubiquity</url>
     </scm>
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
     <dependencies>
         <dependency>
             <groupId>org.ow2.asm</groupId>
