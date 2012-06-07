@@ -7,6 +7,7 @@ import org.objectweb.asm.Type;
 import org.ubiquity.util.Tuple;
 
 import java.util.Map;
+import java.util.regex.Pattern;
 
 import static org.objectweb.asm.Opcodes.ACC_BRIDGE;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
@@ -41,6 +42,8 @@ import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
  * @author François LAROCHE
  */
 final class GeneratorHelper {
+
+    private static final Pattern NAME_CLEANER_PATTERN = Pattern.compile("[/;]");
 
     private GeneratorHelper() {}
 
@@ -358,7 +361,8 @@ final class GeneratorHelper {
         String rightPart = srcBytecodeName.substring(index);
         index = targetBytecodeName.startsWith("L") ? 1 : 0;
         rightPart += targetBytecodeName.substring(index);
-        return "org/ubiquity/bytecode/generated/Copier" + rightPart.replaceAll("[/]", "").replaceAll(";", "") + System.nanoTime();
+        return "org/ubiquity/bytecode/generated/Copier" + NAME_CLEANER_PATTERN.matcher(rightPart).replaceAll("") +
+               System.nanoTime();
     }
 
 }

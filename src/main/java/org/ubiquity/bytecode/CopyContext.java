@@ -37,7 +37,7 @@ public final class CopyContext {
                         return generator.createCopier(copierKey, CopyContext.this);
                     }
                 });
-        this.factory = new DefaultCollectionFactory();
+        this.factory = DefaultCollectionFactory.INSTANCE;
         this.logger = JdkLogging.getJdkLoggerFactory().getLogger(CopyContext.class);
         this.registerCopier(CopierKey.newKey(Object.class, Object.class), new DefaultCopier(this));
     }
@@ -48,8 +48,8 @@ public final class CopyContext {
             return copier;
         } catch (ExecutionException e) {
             logger.error("Unable to create copier : ", e);
+            throw new IllegalStateException("Unable to create copier", e);
         }
-        return getCopier(key);
     }
 
     public final <T, U> void registerCopier(CopierKey<T,U> key, Copier<T,U> copier) {

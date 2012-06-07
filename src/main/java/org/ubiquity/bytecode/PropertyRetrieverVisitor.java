@@ -71,7 +71,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
                 property.setSetter(name);
                 if(signature != null) {
                     property.setTypeSetter(parseParameterFromDesc(desc));
-                    property.setGenericSetter(parsegenericsFronSignature(signature));
+                    property.setGenericSetter(parseGenericsFromSignature(signature));
                 }
                 else {
                     property.setTypeSetter(parseParameterFromDesc(desc));
@@ -81,7 +81,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
                 property.setGetter(name);
                 if(signature != null) {
                     property.setTypeGetter(parseReturnTypeFromDesc(desc));
-                    property.setGenericGetter(parsegenericsFronSignature(signature));
+                    property.setGenericGetter(parseGenericsFromSignature(signature));
                 }
                 else {
                     property.setTypeGetter(parseReturnTypeFromDesc(desc));
@@ -245,7 +245,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         return parseType(desc.substring(desc.indexOf(')') + 1));
     }
 
-    private Map<String, String> parsegenericsFronSignature(String signature) {
+    private Map<String, String> parseGenericsFromSignature(String signature) {
         Map<String, String> result = new HashMap<String, String>();
         // Clean signature to only get only the wanted type
         if(signature == null || !signature.contains("<") || !signature.contains(">")) {
@@ -297,7 +297,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         for(String gen : genericTypes) {
             String letter = letters.next();
             if(gen.contains(":")) {
-                String[] values = gen.split("[:]");
+                String[] values = Constants.SEPARATOR_PATTERN.split(gen);
                 letter = values[0];
                 result.put(letter, values[1]);
             }

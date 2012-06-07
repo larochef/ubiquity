@@ -1,10 +1,9 @@
 package org.ubiquity.bytecode;
 
+import com.google.common.collect.ImmutableMap;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import static org.ubiquity.util.Constants.ASM_LEVEL;
@@ -22,21 +21,18 @@ class GenericsVisitor extends ClassVisitor {
 
     public GenericsVisitor(ClassVisitor classVisitor, Map<String, String> generics) {
         super(ASM_LEVEL, classVisitor);
-        Map<String, String> gen = new HashMap<String, String>();
-        if(generics != null) {
-            gen.putAll(generics);
-        }
-        this.generics = Collections.unmodifiableMap(gen);
+        this.generics = generics == null ? ImmutableMap.<String, String>of() : ImmutableMap.copyOf(generics);
     }
 
     @Override
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
-        // if generics are matched, replace the generic by the concre type defined.
+        // if generics are matched, replace the generic by the concrete type defined.
         String newSignature = signature;
+        // FIXME: newDesc is not actually used?
         String newDesc = desc;
         if(signature != null) {
-            for(String key : generics.keySet()) {
-                newSignature = replaceAll(newSignature, "T" + key + ";", generics.get(key));
+            for (Map.Entry<String, String> entry : generics.entrySet()) {
+                newSignature = replaceAll(newSignature, "T" + entry.getKey() + ";", entry.getValue());
             }
             newDesc = createDescFromSignature(newSignature);
         }

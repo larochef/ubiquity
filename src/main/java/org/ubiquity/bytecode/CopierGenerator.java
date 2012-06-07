@@ -114,8 +114,9 @@ final class CopierGenerator {
             String descriptionGetter = getDescription(p.tObject.getTypeGetter());
             String descriptionSetter = getDescription(p.uObject.getTypeSetter());
             // Handle simple properties, like String, Integer
-            if(SIMPLE_PROPERTIES.containsKey(descriptionGetter)
-                    && (SIMPLE_PROPERTIES.get(descriptionGetter).equals(descriptionSetter)
+            String propertyType = SIMPLE_PROPERTIES.get(descriptionGetter);
+            if(propertyType != null
+                    && (propertyType.equals(descriptionSetter)
                     || descriptionGetter.equals(descriptionSetter))) {
                 visitor.visitVarInsn(ALOAD, 2);
                 if(!descriptionGetter.equals(descriptionSetter)) {
@@ -156,7 +157,7 @@ final class CopierGenerator {
 
         writer.visitEnd();
 
-        Class<?> resultClass = loader.defineClass(className.replaceAll("[/]", "."), writer.toByteArray());
+        Class<?> resultClass = loader.defineClass(className.replace('/', '.'), writer.toByteArray());
         @SuppressWarnings("unchecked")
         Copier<T,U> instance =  (Copier<T,U>) resultClass.getConstructor(CopyContext.class).newInstance(ctx);
         ctx.registerCopier(key, instance);
@@ -194,7 +195,7 @@ final class CopierGenerator {
             }
         }
         if(matchingAnnotation != null) {
-            sourceName = matchingAnnotation.split("[:]")[1];
+            sourceName = Constants.SEPARATOR_PATTERN.split(matchingAnnotation)[1];
         }
 
         for(String key : targetProperties.keySet()) {
@@ -215,7 +216,7 @@ final class CopierGenerator {
 	}
 
     private static String byteCodeName(String c) {
-        String name = c.replaceAll("[\\.]", "/");
+        String name = c.replace('.', '/');
         if(name.startsWith("[")) {
             name = name.substring(1);
         }
