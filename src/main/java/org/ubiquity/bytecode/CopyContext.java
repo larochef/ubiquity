@@ -25,17 +25,18 @@ public final class CopyContext {
 
     private static final CopierGenerator generator = new CopierGenerator();
 
-    private final LoadingCache<CopierKey<?,?>, Copier<?,?>> cache = CacheBuilder.newBuilder()
-                                    .build(new CacheLoader<CopierKey<?,?>,Copier<?, ?>>(){
-                                        @Override
-                                        public Copier<?, ?> load(CopierKey<?, ?> copierKey) throws Exception {
-                                            return generator.createCopier(copierKey, CopyContext.this);
-                                        }
-                                    });
-    private CollectionFactory factory;
+    private final LoadingCache<CopierKey<?,?>, Copier<?,?>> cache;
     private final Logger logger;
+    private CollectionFactory factory;
 
     public CopyContext() {
+        this.cache = CacheBuilder.newBuilder()
+                .build(new CacheLoader<CopierKey<?,?>,Copier<?, ?>>(){
+                    @Override
+                    public Copier<?, ?> load(CopierKey<?, ?> copierKey) throws Exception {
+                        return generator.createCopier(copierKey, CopyContext.this);
+                    }
+                });
         this.factory = new DefaultCollectionFactory();
         this.logger = JdkLogging.getJdkLoggerFactory().getLogger(CopyContext.class);
         this.registerCopier(CopierKey.newBuilder(Object.class, Object.class).build(), new DefaultCopier(this));
