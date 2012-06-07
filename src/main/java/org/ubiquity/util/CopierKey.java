@@ -2,7 +2,6 @@ package org.ubiquity.util;
 
 import com.google.common.collect.ImmutableMap;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -72,14 +71,11 @@ public final class CopierKey <T, U> {
 
         if (destinationAnnotations != null ? !destinationAnnotations.equals(copierKey.destinationAnnotations) : copierKey.destinationAnnotations != null)
             return false;
-        if (destinationClass != null ? !destinationClass.equals(copierKey.destinationClass) : copierKey.destinationClass != null)
+        if (destinationClass != copierKey.destinationClass)
             return false;
         if (sourceAnnotations != null ? !sourceAnnotations.equals(copierKey.sourceAnnotations) : copierKey.sourceAnnotations != null)
             return false;
-        if (sourceClass != null ? !sourceClass.equals(copierKey.sourceClass) : copierKey.sourceClass != null)
-            return false;
-
-        return true;
+        return sourceClass == copierKey.sourceClass;
     }
 
     @Override
