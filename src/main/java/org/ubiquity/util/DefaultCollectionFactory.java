@@ -11,7 +11,8 @@ import java.util.*;
  *
  * @author François LAROCHE
  */
-public class DefaultCollectionFactory implements CollectionFactory {
+public enum DefaultCollectionFactory implements CollectionFactory {
+    INSTANCE;
 
     @Override
     public <T> List<T> newList() {

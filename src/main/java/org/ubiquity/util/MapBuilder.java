@@ -1,8 +1,9 @@
 package org.ubiquity.util;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Date: 05/06/12
@@ -31,7 +32,7 @@ public class MapBuilder {
     }
 
     public Map<String, ?> build() {
-        return Collections.unmodifiableMap(this.values);
+        return ImmutableMap.copyOf(this.values);
     }
 
 

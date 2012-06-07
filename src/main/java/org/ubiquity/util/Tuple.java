@@ -3,6 +3,8 @@
  */
 package org.ubiquity.util;
 
+import com.google.common.base.Objects;
+
 /**
  * Utility class, serving as keys for maps
  * @author François LAROCHE
@@ -21,14 +23,7 @@ public class Tuple<T, U> {
 		this.uObject = uObject;
 
 		// cache hashcode since class is immutable (note: only if T & U are)
-        int calculatedHashcode = 0;
-        if(tObject != null) {
-            calculatedHashcode = tObject.hashCode();
-        }
-        if(uObject != null) {
-            calculatedHashcode = 31 * calculatedHashcode + uObject.hashCode();
-        }
-		this.hashcode = calculatedHashcode;
+		this.hashcode = Objects.hashCode(tObject, uObject);
 	}
 
 	@Override

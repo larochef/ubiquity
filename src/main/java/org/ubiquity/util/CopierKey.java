@@ -1,8 +1,10 @@
 package org.ubiquity.util;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+
+import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * Class used as a key for builders. It contains the source, destinations classes,
@@ -15,6 +17,11 @@ import java.util.Map;
  */
 public final class CopierKey <T, U> {
 
+    public static <T, U> CopierKey<T, U> create(Class<T> source, Class<U> destination) {
+        return new CopierKey<T, U>(source, destination, ImmutableMap.<String, String>of(),
+                ImmutableMap.<String, String>of());
+    }
+
     public static <T, U> Builder<T,U> newBuilder(Class<T> source, Class<U> destination) {
         return new Builder<T, U>(source, destination);
     }
@@ -25,12 +32,14 @@ public final class CopierKey <T, U> {
     private final Map<String, String> destinationAnnotations;
     private final int hashCode;
 
-    CopierKey(Builder<T,U> builder) {
-        this.sourceClass = builder.sourceClass;
-        this.destinationClass = builder.destinationClass;
-        this.sourceAnnotations = Collections.unmodifiableMap(builder.sourceAnnotations);
-        this.destinationAnnotations = Collections.unmodifiableMap(builder.destinationAnnotations);
-        this.hashCode = generateHashCode();
+    CopierKey(Class<T> sourceClass, Class<U> destinationClass, Map<String, String> sourceAnnotations,
+              Map<String, String> destinationAnnotations) {
+        this.sourceClass = sourceClass;
+        this.destinationClass = destinationClass;
+        this.sourceAnnotations = ImmutableMap.copyOf(sourceAnnotations);
+        this.destinationAnnotations = ImmutableMap.copyOf(destinationAnnotations);
+        this.hashCode = Objects.hashCode(this.sourceClass, this.destinationClass, this.sourceAnnotations,
+                this.destinationAnnotations);
     }
 
     public Class<T> getSourceClass() {
@@ -56,16 +65,10 @@ public final class CopierKey <T, U> {
 
         CopierKey<?,?> copierKey = (CopierKey<?,?>) o;
 
-        if (destinationAnnotations != null ? !destinationAnnotations.equals(copierKey.destinationAnnotations) : copierKey.destinationAnnotations != null)
-            return false;
-        if (destinationClass != null ? !destinationClass.equals(copierKey.destinationClass) : copierKey.destinationClass != null)
-            return false;
-        if (sourceAnnotations != null ? !sourceAnnotations.equals(copierKey.sourceAnnotations) : copierKey.sourceAnnotations != null)
-            return false;
-        if (sourceClass != null ? !sourceClass.equals(copierKey.sourceClass) : copierKey.sourceClass != null)
-            return false;
-
-        return true;
+        return Objects.equal(destinationAnnotations, copierKey.destinationAnnotations) &&
+               Objects.equal(destinationClass, copierKey.destinationClass) &&
+               Objects.equal(sourceAnnotations, copierKey.sourceAnnotations) &&
+               Objects.equal(sourceClass, copierKey.sourceClass);
     }
 
     @Override
@@ -73,13 +76,6 @@ public final class CopierKey <T, U> {
         return this.hashCode;
     }
 
-    private int generateHashCode() {
-        int result = sourceClass != null ? sourceClass.hashCode() : 0;
-        result = 31 * result + (destinationClass != null ? destinationClass.hashCode() : 0);
-        result = 31 * result + (sourceAnnotations != null ? sourceAnnotations.hashCode() : 0);
-        result = 31 * result + (destinationAnnotations != null ? destinationAnnotations.hashCode() : 0);
-        return result;
-    }
 
     public static class Builder <T,U> {
         private final Class<T> sourceClass;
@@ -115,7 +111,8 @@ public final class CopierKey <T, U> {
         }
 
         public CopierKey<T, U> build() {
-            return new CopierKey<T,U>(this);
+            return new CopierKey<T,U>(this.sourceClass, this.destinationClass, this.sourceAnnotations,
+                    this.destinationAnnotations);
         }
     }
 }
