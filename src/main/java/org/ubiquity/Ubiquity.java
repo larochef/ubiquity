@@ -16,12 +16,14 @@ public class Ubiquity {
     }
 
     public <T,U> U map(T source, Class<U> destinationClass) {
-        Copier<T,U> copier = this.context.getCopier(CopierKey.newBuilder((Class<T>)source.getClass(), destinationClass).build());
+        @SuppressWarnings("unchecked") Copier<T,U> copier =
+                this.context.getCopier(CopierKey.newBuilder((Class<T>)source.getClass(), destinationClass).build());
         return copier.map(source);
     }
 
     public <T,U> void copy(T src, U destination) {
-        Copier<T,U> copier = this.context.getCopier(CopierKey.newBuilder((Class<T>)src.getClass(), (Class<U>)destination.getClass()).build());
+        @SuppressWarnings("unchecked") Copier<T,U> copier =
+                this.context.getCopier(CopierKey.newBuilder((Class<T>)src.getClass(), (Class<U>)destination.getClass()).build());
         copier.copy(src, destination);
     }
 
