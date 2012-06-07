@@ -1,5 +1,7 @@
 package org.ubiquity.util;
 
+import com.google.common.collect.ImmutableMap;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,8 +17,12 @@ import java.util.Map;
  */
 public final class CopierKey <T, U> {
 
-    public static <T, U> Builder<T,U> newBuilder(Class<T> source, Class<U> destination) {
-        return new Builder<T, U>(source, destination);
+    public static <A, B> Builder<A,B> newBuilder(Class<A> source, Class<B> destination) {
+        return new Builder<A, B>(source, destination);
+    }
+
+    public static <A, B> CopierKey<A, B> newKey(Class<A> source, Class<B> destination) {
+        return new CopierKey<A, B>(source, destination);
     }
 
     private final Class<T> sourceClass;
@@ -25,11 +31,19 @@ public final class CopierKey <T, U> {
     private final Map<String, String> destinationAnnotations;
     private final int hashCode;
 
+    private CopierKey(Class<T> src, Class<U> dest) {
+        this.sourceClass = src;
+        this.destinationClass = dest;
+        this.sourceAnnotations = ImmutableMap.of();
+        this.destinationAnnotations = ImmutableMap.of();
+        this.hashCode = generateHashCode();
+    }
+
     CopierKey(Builder<T,U> builder) {
         this.sourceClass = builder.sourceClass;
         this.destinationClass = builder.destinationClass;
-        this.sourceAnnotations = Collections.unmodifiableMap(builder.sourceAnnotations);
-        this.destinationAnnotations = Collections.unmodifiableMap(builder.destinationAnnotations);
+        this.sourceAnnotations = ImmutableMap.copyOf(builder.sourceAnnotations);
+        this.destinationAnnotations = ImmutableMap.copyOf(builder.destinationAnnotations);
         this.hashCode = generateHashCode();
     }
 

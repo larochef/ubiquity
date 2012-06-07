@@ -24,7 +24,7 @@ final class DefaultCopier implements Copier<Object, Object> {
             return null;
         }
         @SuppressWarnings("unchecked") Copier<Object, Object> copier = (Copier<Object, Object>) context.getCopier(
-                CopierKey.newBuilder(element.getClass(), element.getClass()).build());
+                CopierKey.newKey(element.getClass(), element.getClass()));
         return copier.map(element);
     }
 
@@ -46,7 +46,7 @@ final class DefaultCopier implements Copier<Object, Object> {
             return ;
         }
         @SuppressWarnings("unchecked") Copier<Object, Object> copier = (Copier<Object, Object>) context.getCopier(
-                CopierKey.newBuilder(source.getClass(), destination.getClass()).build());
+                CopierKey.newKey(source.getClass(), destination.getClass()));
         copier.copy(source, destination);
     }
 
