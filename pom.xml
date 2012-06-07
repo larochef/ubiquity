@@ -1,5 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.ubiquity</groupId>
     <artifactId>ubiquity</artifactId>
@@ -7,6 +8,11 @@
     <version>1.0-SNAPSHOT</version>
     <name>Ubiquity</name>
     <url>http://larochef.github.com/ubiquity/</url>
+
+    <prerequisites>
+        <maven>3.0</maven>
+    </prerequisites>
+
     <developers>
         <developer>
             <id>Francois</id>
@@ -16,22 +22,37 @@
             </roles>
         </developer>
     </developers>
+
     <description>
         Ubiquity is a tool to copy objects that may be incompatible.
         It uses as much as possible static information of the classes
         to create copiers on the fly.
     </description>
+
     <inceptionYear>2012</inceptionYear>
+
     <issueManagement>
         <system>github</system>
         <url>https://github.com/larochef/ubiquity/issues</url>
     </issueManagement>
+
     <scm>
-        <url>https://github.com/larochef/ubiquity</url>
+        <url>https://www.github.com/larochef/ubiquity</url>
+        <connection>scm:git:ssh://git@github.com/larochef/ubiquity.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/larochef/ubiquity.git</developerConnection>
     </scm>
-    <prerequisites>
-        <maven>3.0</maven>
-    </prerequisites>
+
+    <distributionManagement>
+        <repository>
+            <id>ubiquity</id>
+            <url>http://repo.ubiquity-copy.org/nexus/content/repositories/ubiquity/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ubiquity-snapshots</id>
+            <url>http://repo.ubiquity-copy.org/nexus/content/repositories/ubiquity-snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
     <dependencies>
         <dependency>
             <groupId>org.ow2.asm</groupId>
@@ -93,4 +114,5 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
 </project>
