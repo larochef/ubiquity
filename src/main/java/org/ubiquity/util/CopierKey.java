@@ -1,10 +1,10 @@
 package org.ubiquity.util;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Class used as a key for builders. It contains the source, destinations classes,
@@ -17,13 +17,13 @@ import com.google.common.collect.ImmutableMap;
  */
 public final class CopierKey <T, U> {
 
-    public static <T, U> CopierKey<T, U> create(Class<T> source, Class<U> destination) {
-        return new CopierKey<T, U>(source, destination, ImmutableMap.<String, String>of(),
-                ImmutableMap.<String, String>of());
+    public static <A, B> Builder<A,B> newBuilder(Class<A> source, Class<B> destination) {
+        return new Builder<A, B>(source, destination);
     }
 
-    public static <T, U> Builder<T,U> newBuilder(Class<T> source, Class<U> destination) {
-        return new Builder<T, U>(source, destination);
+    public static <A, B> CopierKey<A, B> newKey(Class<A> source, Class<B> destination) {
+        return new CopierKey<A, B>(source, destination, ImmutableMap.<String, String>of(),
+                ImmutableMap.<String, String>of());
     }
 
     private final Class<T> sourceClass;
@@ -65,10 +65,10 @@ public final class CopierKey <T, U> {
 
         CopierKey<?,?> copierKey = (CopierKey<?,?>) o;
 
-        return Objects.equal(destinationAnnotations, copierKey.destinationAnnotations) &&
-               Objects.equal(destinationClass, copierKey.destinationClass) &&
+        return sourceClass == copierKey.sourceClass &&
+               destinationClass == copierKey.destinationClass &&
                Objects.equal(sourceAnnotations, copierKey.sourceAnnotations) &&
-               Objects.equal(sourceClass, copierKey.sourceClass);
+               Objects.equal(destinationAnnotations, copierKey.destinationAnnotations);
     }
 
     @Override

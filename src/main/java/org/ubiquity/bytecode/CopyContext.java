@@ -39,7 +39,7 @@ public final class CopyContext {
                 });
         this.factory = DefaultCollectionFactory.INSTANCE;
         this.logger = JdkLogging.getJdkLoggerFactory().getLogger(CopyContext.class);
-        this.registerCopier(CopierKey.create(Object.class, Object.class), new DefaultCopier(this));
+        this.registerCopier(CopierKey.newKey(Object.class, Object.class), new DefaultCopier(this));
     }
 
     public final <T, U> Copier<T,U> getCopier(final CopierKey<T, U> key) {
