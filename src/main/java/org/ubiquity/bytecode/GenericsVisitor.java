@@ -28,13 +28,10 @@ class GenericsVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         // if generics are matched, replace the generic by the concrete type defined.
         String newSignature = signature;
-        // FIXME: newDesc is not actually used?
-        String newDesc = desc;
         if(signature != null) {
             for (Map.Entry<String, String> entry : generics.entrySet()) {
                 newSignature = replaceAll(newSignature, "T" + entry.getKey() + ";", entry.getValue());
             }
-            newDesc = createDescFromSignature(newSignature);
         }
 
         return super.visitMethod(access, name, desc, newSignature, exceptions);
