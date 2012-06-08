@@ -2,8 +2,10 @@ package org.ubiquity.bytecode;
 
 import org.junit.Test;
 import org.ubiquity.Ubiquity;
-import static junit.framework.Assert.*;
+
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertNull;
 
 /**
  * Date: 01/06/12

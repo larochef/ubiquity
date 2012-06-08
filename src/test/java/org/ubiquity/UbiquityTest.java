@@ -1,12 +1,8 @@
 package org.ubiquity;
 
+import junit.framework.Assert;
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
-import static junit.framework.Assert.*;
+import org.ubiquity.util.DefaultCollectionFactory;
 
 /**
  * Date: 21/04/12
@@ -18,5 +14,6 @@ public class UbiquityTest {
     @Test
     public void testUbiquity() {
         Ubiquity ubiquity = new Ubiquity();
+        Assert.assertEquals(ubiquity.getFactory().getClass(), DefaultCollectionFactory.class);
     }
 }

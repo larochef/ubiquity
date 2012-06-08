@@ -1,14 +1,11 @@
 package org.ubiquity.bytecode;
 
 import org.junit.Test;
-import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.util.TraceClassVisitor;
 import org.ubiquity.util.Constants;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * @author François LAROCHE

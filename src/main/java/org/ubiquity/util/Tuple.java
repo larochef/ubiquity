@@ -34,7 +34,7 @@ public class Tuple<T, U> {
     @Override
 	public boolean equals(Object obj) {
 		if (this == obj) {return true;}
-		if (!(obj instanceof Tuple)) {return false;}
+		if (!(obj instanceof Tuple<?,?>)) {return false;}
 		Tuple<?,?> other = (Tuple<?,?>) obj;
 		return this.tObject == other.tObject && this.uObject == other.uObject;
 	}
