@@ -12,7 +12,7 @@ import java.util.regex.Pattern;
  *
  * @author françois LAROCHE
  */
-public final class BytecodeStringUtils {
+final class BytecodeStringUtils {
 
     private static final Pattern NAME_CLEANER_PATTERN = Pattern.compile("[/;]");
 
