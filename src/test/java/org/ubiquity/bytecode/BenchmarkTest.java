@@ -1,5 +1,6 @@
 package org.ubiquity.bytecode;
 
+import com.google.common.base.Stopwatch;
 import junit.framework.Assert;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
@@ -11,6 +12,7 @@ import org.ubiquity.Ubiquity;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Benchmark test testing the speed of different copy frameworks.
@@ -40,64 +42,64 @@ public class BenchmarkTest {
 
     @Test
     public void displayStats() {
+        Stopwatch watch = new Stopwatch();
         Collection<Order> orders = new ArrayList<Order>(LOOP_NUMBER);
         Order order = createOrder();
-        long start, end;
 
         System.out.println("Warming up ORIKA...");
-        start = System.nanoTime();
+        watch.start();
         for(int i = 0; i < WARM_LOOP_NUMBER; i++) {
             ORIKA.map(order, Order.class);
         }
-        end = System.nanoTime();
-        long orikaWarmTime = end - start;
+        watch.stop();
+        long orikaWarmTime = watch.elapsedTime(TimeUnit.NANOSECONDS);
         System.gc();
         System.out.println("Executing ORIKA");
-        start = System.nanoTime();
+        watch.reset().start();
         for(int i = 0; i < LOOP_NUMBER; i++) {
             orders.add(ORIKA.map(order, Order.class));
         }
-        end = System.nanoTime();
-        long orikaTime = end - start;
+        watch.stop();
+        long orikaTime = watch.elapsedTime(TimeUnit.NANOSECONDS);
         System.out.println("Finished executing ORIKA");
         Assert.assertEquals(LOOP_NUMBER, orders.size());
         orders.clear();
 
         System.out.println("Warming up UBIQUITY...");
-        start = System.nanoTime();
+        watch.reset().start();
         for(int i = 0; i < WARM_LOOP_NUMBER; i++) {
             UBIQUITY.map(order, Order.class);
         }
-        end = System.nanoTime();
-        long ubiquityWarmTime = end - start;
+        watch.stop();
+        long ubiquityWarmTime = watch.elapsedTime(TimeUnit.NANOSECONDS);
         System.gc();
         System.out.println("Executing UBIQUITY");
-        start = System.nanoTime();
+        watch.reset().start();
         for(int i = 0; i < LOOP_NUMBER; i++) {
             orders.add(UBIQUITY.map(order, Order.class));
         }
-        end = System.nanoTime();
-        long ubiquityTime = end - start;
+        watch.stop();
+        long ubiquityTime = watch.elapsedTime(TimeUnit.NANOSECONDS);
         System.out.println("Finished executing UBIQUITY");
         Assert.assertEquals(LOOP_NUMBER, orders.size());
         orders.clear();
 
         System.out.println("Warming up DOZER...");
-        start = System.nanoTime();
+        watch.reset().start();
         for(int i = 0; i < WARM_LOOP_NUMBER; i++) {
             DOZER.map(order, Order.class);
         }
-        end = System.nanoTime();
-        long dozerWarmTime = end - start;
+        watch.stop();
+        long dozerWarmTime = watch.elapsedTime(TimeUnit.NANOSECONDS);
         System.gc();
 
         System.out.println("Executing DOZER");
-        start = System.nanoTime();
+        watch.reset().start();
         for(int i = 0; i < LOOP_NUMBER; i++) {
             orders.add(DOZER.map(order, Order.class));
         }
-        end = System.nanoTime();
-        long dozerTime = end - start;
+        watch.stop();
+        long dozerTime = watch.elapsedTime(TimeUnit.NANOSECONDS);
         System.out.println("Finished executing DOZER");
         Assert.assertEquals(LOOP_NUMBER, orders.size());
         orders.clear();
