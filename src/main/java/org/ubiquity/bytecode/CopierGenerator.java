@@ -50,7 +50,7 @@ final class CopierGenerator {
 
     private final MyClassLoader loader = new MyClassLoader();
 
-	Map<String, Property> findProperties(Class<?> clazz, Map<String, String> generics) {
+    static Map<String, Property> findProperties(Class<?> clazz, Map<String, String> generics) {
 		try {
 			ClassReader reader = new ClassReader(byteCodeName(clazz));
             PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
@@ -164,7 +164,7 @@ final class CopierGenerator {
         return instance;
 	}
 
-    private List<Tuple<Property, Property>> listCompatibelProperties(Class<?> source, Class<?> destination, Map<String, String> sourceGenerics, Map<String, String> destinationGenerics) {
+    private static List<Tuple<Property, Property>> listCompatibelProperties(Class<?> source, Class<?> destination, Map<String, String> sourceGenerics, Map<String, String> destinationGenerics) {
         List<Tuple<Property, Property>> compatibleProperties = new ArrayList<Tuple<Property, Property>>();
         Map<String, Property> srcProperties = findProperties(source, sourceGenerics);
         Map<String, Property> targetProperties = findProperties(destination, destinationGenerics);
@@ -184,7 +184,7 @@ final class CopierGenerator {
         return compatibleProperties;
     }
 
-    private Property resolveTargetProperty(Property src, Map<String, Property> targetProperties, String srcDescription, String destinationDescription) {
+    private static Property resolveTargetProperty(Property src, Map<String, Property> targetProperties, String srcDescription, String destinationDescription) {
         String sourceName = src.getName();
         String matchingAnnotation = null;
         for(String annotation : src.getAnnotations()) {

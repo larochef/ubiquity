@@ -99,33 +99,8 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 		return this.properties.get(name);
 	}
 	
-	private String getPropertyName(String functionName) {
-        String upperName;
-        if(functionName.startsWith("is")) {
-            upperName = functionName.substring(2);
-        }
-        else {
-            upperName = functionName.substring(3);
-        }
-        if(upperName.length() == 1) {
-            return upperName.toLowerCase();
-        }
-        return upperName.substring(0,1).toLowerCase() + upperName.substring(1);
-	}
-
-	private static boolean isGetterOrSetter(String name) {
-		if(name.length() < 4) {
-			return false;
-		}
-		if(!name.startsWith("get") && !name.startsWith("set") && !name.startsWith("is")) {
-			return false;
-		}
-		char propertyStart = name.charAt(name.startsWith("is") ? 2 : 3);
-		return propertyStart >= 'A' && propertyStart <= 'Z';
-	}
-
 	private final class MethodReader extends MethodVisitor {
-		
+
 		private final Property property;
 
 		private MethodReader(Property property) {
@@ -163,11 +138,11 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
      * Visitor for the rename annotations {@link org.ubiquity.annotation.CopyRename}
      */
     static class RenameAnotationVisitor extends AnnotationVisitor {
+
         private final Property property;
-
         private String targetClass;
-        private String targetName;
 
+        private String targetName;
         public RenameAnotationVisitor(Property property) {
             super(ASM_LEVEL);
             this.property = property;
@@ -199,8 +174,8 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
             }
             this.property.getAnnotations().add(RENAME_ANNOTATION + ':' + this.targetName + ':' + this.targetClass);
         }
+
     }
-	
 	@Override public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("PropertyRetrieverVisitor {");
@@ -240,12 +215,12 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         return parseType(value);
     }
 
-
     private static String parseReturnTypeFromDesc(String desc) {
         return parseType(desc.substring(desc.indexOf(')') + 1));
     }
 
-    private Map<String, String> parseGenericsFromSignature(String signature) {
+
+    private static Map<String, String> parseGenericsFromSignature(String signature) {
         Map<String, String> result = new HashMap<String, String>();
         // Clean signature to only get only the wanted type
         if(signature == null || !signature.contains("<") || !signature.contains(">")) {
@@ -308,7 +283,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         return result;
     }
 
-    private String getFirstType(String types) {
+    private static String getFirstType(String types) {
         int begin = types.indexOf("L");
         if(begin == -1) {
             return null;
@@ -327,7 +302,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
         return types.substring(begin, getClosingIndex(types, indexGen) + 2); // Add the ";" after the ">"
     }
 
-    private int getClosingIndex(String str, int openIndex) {
+    private static int getClosingIndex(String str, int openIndex) {
         if(str  == null || str.length() < openIndex || str.charAt(openIndex) != '<') {
             return -1;
         }
@@ -344,5 +319,30 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
             }
         }
         return -1;
+    }
+
+    private static String getPropertyName(String functionName) {
+        String upperName;
+        if(functionName.startsWith("is")) {
+            upperName = functionName.substring(2);
+        }
+        else {
+            upperName = functionName.substring(3);
+        }
+        if(upperName.length() == 1) {
+            return upperName.toLowerCase();
+        }
+        return upperName.substring(0,1).toLowerCase() + upperName.substring(1);
+    }
+
+    private static boolean isGetterOrSetter(String name) {
+        if(name.length() < 4) {
+            return false;
+        }
+        if(!name.startsWith("get") && !name.startsWith("set") && !name.startsWith("is")) {
+            return false;
+        }
+        char propertyStart = name.charAt(name.startsWith("is") ? 2 : 3);
+        return propertyStart >= 'A' && propertyStart <= 'Z';
     }
 }
