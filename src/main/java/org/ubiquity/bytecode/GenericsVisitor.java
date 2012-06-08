@@ -7,7 +7,7 @@ import org.objectweb.asm.MethodVisitor;
 import java.util.Map;
 
 import static org.ubiquity.util.Constants.ASM_LEVEL;
-
+import static org.ubiquity.bytecode.BytecodeStringUtils.replaceAll;
 /**
  * Visitor used to make generics transparent, as if the class wasn't "generified".
  *
@@ -35,17 +35,6 @@ class GenericsVisitor extends ClassVisitor {
         }
 
         return super.visitMethod(access, name, desc, newSignature, exceptions);
-    }
-
-    private static String replaceAll(String from, String pattern, String replacement) {
-        if(from == null || pattern == null || replacement == null) {
-            return from;
-        }
-        int index = from.indexOf(pattern);
-        if(index == -1) {
-            return from;
-        }
-        return from.substring(0, index) + replacement + replaceAll(from.substring(index + pattern.length()), pattern, replacement);
     }
 
 }

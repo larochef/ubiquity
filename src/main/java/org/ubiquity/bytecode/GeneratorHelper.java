@@ -7,7 +7,6 @@ import org.objectweb.asm.Type;
 import org.ubiquity.util.Tuple;
 
 import java.util.Map;
-import java.util.regex.Pattern;
 
 import static org.objectweb.asm.Opcodes.ACC_BRIDGE;
 import static org.objectweb.asm.Opcodes.ACC_PRIVATE;
@@ -33,17 +32,15 @@ import static org.objectweb.asm.Opcodes.NEW;
 import static org.objectweb.asm.Opcodes.POP;
 import static org.objectweb.asm.Opcodes.PUTFIELD;
 import static org.objectweb.asm.Opcodes.RETURN;
+import static org.ubiquity.bytecode.BytecodeStringUtils.getDescription;
 import static org.ubiquity.util.Constants.COLLECTIONS;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
-
 /**
  * Date: 21/04/12
  *
  * @author François LAROCHE
  */
 final class GeneratorHelper {
-
-    private static final Pattern NAME_CLEANER_PATTERN = Pattern.compile("[/;]");
 
     private GeneratorHelper() {}
 
@@ -341,28 +338,6 @@ final class GeneratorHelper {
         visitor.visitMethodInsn(INVOKESTATIC, "org/ubiquity/bytecode/SimpleCopier", "handle" + collectionType,
                 "(Ljava/util/" + collectionType + ";Ljava/util/" + collectionType + ";Lorg/ubiquity/CollectionFactory;Lorg/ubiquity/Copier;)Ljava/util/" + collectionType + ";");
         visitor.visitMethodInsn(INVOKEVIRTUAL, destinationName, p.uObject.getSetter(), "(Ljava/util/" + collectionType + ";)V");
-    }
-
-    static String getDescription(String className){
-        if(className.indexOf('/') < 0) {
-            return className;
-        }
-        if(className.startsWith("[")) {
-            return "[" + getDescription(className.substring(1));
-        }
-        if(className.startsWith("L") && className.endsWith(";")) {
-            return className;
-        }
-        return 'L' + className + ';';
-    }
-
-    static String createCopierClassName(String srcBytecodeName, String targetBytecodeName) {
-        int index = srcBytecodeName.startsWith("L") ? 1 : 0;
-        String rightPart = srcBytecodeName.substring(index);
-        index = targetBytecodeName.startsWith("L") ? 1 : 0;
-        rightPart += targetBytecodeName.substring(index);
-        return "org/ubiquity/bytecode/generated/Copier" + NAME_CLEANER_PATTERN.matcher(rightPart).replaceAll("") +
-               System.nanoTime();
     }
 
 }

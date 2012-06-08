@@ -24,19 +24,19 @@ import static org.objectweb.asm.Opcodes.ALOAD;
 import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
 import static org.objectweb.asm.Opcodes.RETURN;
 import static org.objectweb.asm.Opcodes.V1_5;
+import static org.ubiquity.bytecode.BytecodeStringUtils.byteCodeName;
+import static org.ubiquity.bytecode.BytecodeStringUtils.createCopierClassName;
+import static org.ubiquity.bytecode.BytecodeStringUtils.getDescription;
 import static org.ubiquity.bytecode.GeneratorHelper.createConstructor;
-import static org.ubiquity.bytecode.GeneratorHelper.createCopierClassName;
 import static org.ubiquity.bytecode.GeneratorHelper.createCopierKeys;
 import static org.ubiquity.bytecode.GeneratorHelper.createCopyBridge;
 import static org.ubiquity.bytecode.GeneratorHelper.createNewArray;
 import static org.ubiquity.bytecode.GeneratorHelper.createNewInstance;
-import static org.ubiquity.bytecode.GeneratorHelper.getDescription;
 import static org.ubiquity.bytecode.GeneratorHelper.handeArrays;
 import static org.ubiquity.bytecode.GeneratorHelper.handleCollection;
 import static org.ubiquity.bytecode.GeneratorHelper.handleComplexObjects;
 import static org.ubiquity.util.Constants.COLLECTIONS;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
-
 /**
  *
  * TODO : when copying arrays / list, don't expect the order to exactly match, find a way to configure matching !!!
@@ -46,9 +46,7 @@ import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
  */
 final class CopierGenerator {
 
-	CopierGenerator() {}
-
-    private final MyClassLoader loader = new MyClassLoader();
+	private CopierGenerator() {}
 
     static Map<String, Property> findProperties(Class<?> clazz, Map<String, String> generics) {
 		try {
@@ -78,7 +76,7 @@ final class CopierGenerator {
         return generics.values().iterator().next();
     }
 
-	<T, U> Copier<T, U> createCopier(CopierKey<T,U> key, CopyContext ctx)
+	static <T, U> Copier<T, U> createCopier(CopierKey<T,U> key, CopyContext ctx, UbiquityClassLoader loader)
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         Class<T> src = key.getSourceClass();
 
@@ -175,7 +173,7 @@ final class CopierGenerator {
                 continue;
             }
             Property dest = resolveTargetProperty(property, targetProperties,
-                    getDescription(CopierGenerator.byteCodeName(source)), getDescription(CopierGenerator.byteCodeName(destination)));
+                    getDescription(byteCodeName(source)), getDescription(byteCodeName(destination)));
             if(dest != null && dest.isWritable()) {
                 compatibleProperties.add(new Tuple<Property, Property>(property, dest));
             }
@@ -209,39 +207,5 @@ final class CopierGenerator {
             }
         }
         return null;
-    }
-
-	private static String byteCodeName(Class<?> c) {
-		return byteCodeName(c.getName());
-	}
-
-    private static String byteCodeName(String c) {
-        String name = c.replace('.', '/');
-        if(name.startsWith("[")) {
-            name = name.substring(1);
-        }
-        if(name.startsWith("L")) {
-            name = name.substring(1, name.length() - 1);
-        }
-        if(name.contains("<")) {
-            name = name.substring(0, name.indexOf('<'));
-        }
-        return name;
-    }
-
-    private static class MyClassLoader extends ClassLoader {
-        public String getFinalName(String name) {
-            String finalName = name;
-            int i = 0;
-            while(this.findLoadedClass(finalName) != null) {
-                finalName = name + i;
-                i++;
-            }
-            return finalName;
-        }
-
-        public Class<?> defineClass(String name, byte[] b) {
-            return defineClass(name, b, 0, b.length);
-        }
     }
 }

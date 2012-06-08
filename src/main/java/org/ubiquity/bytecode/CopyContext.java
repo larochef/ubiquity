@@ -23,8 +23,7 @@ import java.util.concurrent.ExecutionException;
  */
 public final class CopyContext {
 
-    private static final CopierGenerator generator = new CopierGenerator();
-
+    private final UbiquityClassLoader loader = new UbiquityClassLoader();
     private final LoadingCache<CopierKey<?,?>, Copier<?,?>> cache;
     private final Logger logger;
     private CollectionFactory factory;
@@ -34,7 +33,7 @@ public final class CopyContext {
                 .build(new CacheLoader<CopierKey<?,?>,Copier<?, ?>>(){
                     @Override
                     public Copier<?, ?> load(CopierKey<?, ?> copierKey) throws Exception {
-                        return generator.createCopier(copierKey, CopyContext.this);
+                        return CopierGenerator.createCopier(copierKey, CopyContext.this, loader);
                     }
                 });
         this.factory = DefaultCollectionFactory.INSTANCE;
