@@ -48,17 +48,4 @@ class GenericsVisitor extends ClassVisitor {
         return from.substring(0, index) + replacement + replaceAll(from.substring(index + pattern.length()), pattern, replacement);
     }
 
-    private String createDescFromSignature(String signature) {
-        int start = signature.indexOf("<");
-        if(start == -1) {
-            return signature;
-        }
-        int end = signature.indexOf(">");
-        String startStr = signature.substring(0, start);
-        if(end == signature.length() - 1) {
-            return startStr;
-        }
-        return startStr + createDescFromSignature(signature.substring(end + 1));
-    }
-
 }
