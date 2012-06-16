@@ -33,12 +33,14 @@ public final class CopyContext {
                 .build(new CacheLoader<CopierKey<?,?>,Copier<?, ?>>(){
                     @Override
                     public Copier<?, ?> load(CopierKey<?, ?> copierKey) throws Exception {
-                        return CopierGenerator.createCopier(copierKey, CopyContext.this, loader);
+                        String className = BytecodeStringUtils.createCopierClassName(copierKey);
+                        byte[] copier = CopierGenerator.createCopier(copierKey, className);
+                        return loader.registerCopier(copier, className, CopyContext.this);
                     }
                 });
         this.factory = DefaultCollectionFactory.INSTANCE;
         this.logger = JdkLogging.getJdkLoggerFactory().getLogger(CopyContext.class);
-        this.registerCopier(CopierKey.newKey(Object.class, Object.class), new DefaultCopier(this));
+        this.cache.put(CopierKey.newKey(Object.class, Object.class), new DefaultCopier(this));
     }
 
     public final <T, U> Copier<T,U> getCopier(final CopierKey<T, U> key) {

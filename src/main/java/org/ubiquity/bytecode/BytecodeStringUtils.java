@@ -1,6 +1,14 @@
 package org.ubiquity.bytecode;
 
+import org.ubiquity.util.CopierKey;
+import org.ubiquity.util.Tuple;
+
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
+
+import static org.ubiquity.bytecode.BytecodeStringUtils.OBJECT_CLASS;
+import static org.ubiquity.bytecode.BytecodeStringUtils.byteCodeName;
 
 /**
  * Utility class used to manipulate Strings : create bytecode names, replacements, and so on.
@@ -17,6 +25,8 @@ final class BytecodeStringUtils {
     private static final Pattern NAME_CLEANER_PATTERN = Pattern.compile("[/;]");
 
     private BytecodeStringUtils() {}
+
+    static final String OBJECT_CLASS = "java/lang/Object";
 
     static String byteCodeName(Class<?> c) {
         return byteCodeName(c.getName());
@@ -49,11 +59,27 @@ final class BytecodeStringUtils {
         return 'L' + className + ';';
     }
 
-    static String createCopierClassName(String srcBytecodeName, String targetBytecodeName) {
-        int index = srcBytecodeName.startsWith("L") ? 1 : 0;
-        String rightPart = srcBytecodeName.substring(index);
-        index = targetBytecodeName.startsWith("L") ? 1 : 0;
-        rightPart += targetBytecodeName.substring(index);
+    static String createCopierClassName(CopierKey<?,?> key) {
+        Class<?> src = key.getSourceClass();
+        Class<?> destination = key.getDestinationClass();
+        Map<String, String> srcGenerics = key.getDestinationAnnotations();
+        Map<String, String> destinationGenerics = key.getDestinationAnnotations();
+        String srcName = byteCodeName(src);
+        String destinationName = byteCodeName(destination);
+        String srcSafeName = srcName;
+        String destinationSafeName = destinationName;
+        if(OBJECT_CLASS.equals(srcSafeName)) {
+            srcSafeName = byteCodeName(CopierGenerator.getDefaultGenerics(srcGenerics));
+        }
+        if(OBJECT_CLASS.equals(destinationSafeName)) {
+            destinationSafeName = byteCodeName(CopierGenerator.getDefaultGenerics(destinationGenerics));
+        }
+
+
+        int index = srcSafeName.startsWith("L") ? 1 : 0;
+        String rightPart = srcSafeName.substring(index);
+        index = destinationSafeName.startsWith("L") ? 1 : 0;
+        rightPart += destinationSafeName.substring(index);
         return "org/ubiquity/bytecode/generated/Copier" + NAME_CLEANER_PATTERN.matcher(rightPart).replaceAll("") +
                 System.nanoTime();
     }

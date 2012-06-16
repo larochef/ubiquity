@@ -6,7 +6,6 @@ package org.ubiquity.bytecode;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.MethodVisitor;
-import org.ubiquity.Copier;
 import org.ubiquity.util.Constants;
 import org.ubiquity.util.CopierKey;
 import org.ubiquity.util.Tuple;
@@ -18,23 +17,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.objectweb.asm.Opcodes.ACC_FINAL;
-import static org.objectweb.asm.Opcodes.ACC_PUBLIC;
-import static org.objectweb.asm.Opcodes.ALOAD;
-import static org.objectweb.asm.Opcodes.INVOKEVIRTUAL;
-import static org.objectweb.asm.Opcodes.RETURN;
-import static org.objectweb.asm.Opcodes.V1_5;
-import static org.ubiquity.bytecode.BytecodeStringUtils.byteCodeName;
-import static org.ubiquity.bytecode.BytecodeStringUtils.createCopierClassName;
-import static org.ubiquity.bytecode.BytecodeStringUtils.getDescription;
-import static org.ubiquity.bytecode.GeneratorHelper.createConstructor;
-import static org.ubiquity.bytecode.GeneratorHelper.createCopierKeys;
-import static org.ubiquity.bytecode.GeneratorHelper.createCopyBridge;
-import static org.ubiquity.bytecode.GeneratorHelper.createNewArray;
-import static org.ubiquity.bytecode.GeneratorHelper.createNewInstance;
-import static org.ubiquity.bytecode.GeneratorHelper.handeArrays;
-import static org.ubiquity.bytecode.GeneratorHelper.handleCollection;
-import static org.ubiquity.bytecode.GeneratorHelper.handleComplexObjects;
+import static org.objectweb.asm.Opcodes.*;
+import static org.ubiquity.bytecode.BytecodeStringUtils.*;
+import static org.ubiquity.bytecode.GeneratorHelper.*;
 import static org.ubiquity.util.Constants.COLLECTIONS;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
 /**
@@ -60,7 +45,7 @@ final class CopierGenerator {
 		}
 	}
 
-    private static String getDefaultGenerics(Map<String, String> generics) {
+    static String getDefaultGenerics(Map<String, String> generics) {
         if(generics.isEmpty()) {
             return "java/lang/Object";
         }
@@ -76,7 +61,7 @@ final class CopierGenerator {
         return generics.values().iterator().next();
     }
 
-	static <T, U> Copier<T, U> createCopier(CopierKey<T,U> key, CopyContext ctx, UbiquityClassLoader loader)
+	static <T, U> byte[] createCopier(CopierKey<T,U> key, String className)
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         Class<T> src = key.getSourceClass();
 
@@ -96,7 +81,7 @@ final class CopierGenerator {
         if("java/lang/Object".equals(destinationSafeName)) {
             destinationSafeName = byteCodeName(getDefaultGenerics(destinationGenerics));
         }
-        String className = loader.getFinalName(createCopierClassName(srcSafeName, destinationSafeName));
+//        String className = createCopierClassName(srcSafeName, destinationSafeName);
 
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_MAXS);
         writer.visit(V1_5, ACC_PUBLIC + ACC_FINAL, className,
@@ -154,12 +139,7 @@ final class CopierGenerator {
         createCopierKeys(writer, requiredCopiers);
 
         writer.visitEnd();
-
-        Class<?> resultClass = loader.defineClass(className.replace('/', '.'), writer.toByteArray());
-        @SuppressWarnings("unchecked")
-        Copier<T,U> instance =  (Copier<T,U>) resultClass.getConstructor(CopyContext.class).newInstance(ctx);
-        ctx.registerCopier(key, instance);
-        return instance;
+        return writer.toByteArray();
 	}
 
     private static List<Tuple<Property, Property>> listCompatibelProperties(Class<?> source, Class<?> destination, Map<String, String> sourceGenerics, Map<String, String> destinationGenerics) {

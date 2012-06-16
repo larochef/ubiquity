@@ -1,5 +1,9 @@
 package org.ubiquity.bytecode;
 
+import org.ubiquity.Copier;
+
+import java.lang.reflect.InvocationTargetException;
+
 /**
  * Class loader allowing to define classes.
  * This ClassLoader will be used to load the copiers generated classes.
@@ -11,17 +15,14 @@ package org.ubiquity.bytecode;
  */
 final class UbiquityClassLoader extends ClassLoader {
 
-    public String getFinalName(String name) {
-        String finalName = name;
-        int i = 0;
-        while(this.findLoadedClass(finalName) != null) {
-            finalName = name + i;
-            i++;
-        }
-        return finalName;
+    Class<?> defineClass(String name, byte[] b) {
+        return defineClass(name, b, 0, b.length);
     }
 
-    public Class<?> defineClass(String name, byte[] b) {
-        return defineClass(name, b, 0, b.length);
+    <T,U> Copier<T,U> registerCopier(byte[] bytecode, String className, CopyContext ctx) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+        Class<?> resultClass = this.defineClass(className.replace('/', '.'), bytecode);
+        @SuppressWarnings("unchecked")
+        Copier<T,U> instance =  (Copier<T,U>) resultClass.getConstructor(CopyContext.class).newInstance(ctx);
+        return instance;
     }
 }
