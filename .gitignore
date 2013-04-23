@@ -1,5 +1,4 @@
 /.classpath
 /.project
 /target
-/*.iml
-/.idea
+/ubiquity.iml
