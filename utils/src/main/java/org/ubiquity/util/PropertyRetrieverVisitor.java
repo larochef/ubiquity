@@ -5,11 +5,9 @@ package org.ubiquity.util;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Type;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -82,7 +80,7 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
                     bytecodeProperty.setTypeGetter(parseReturnTypeFromDesc(desc));
                 }
 			}
-			return new MethodReader(bytecodeProperty);
+			return new MethodParser(bytecodeProperty);
 		}
 		return super.visitMethod(access, name, desc, signature, exceptions);
 	}
@@ -94,83 +92,49 @@ final class PropertyRetrieverVisitor extends ClassVisitor {
 		return this.properties.get(name);
 	}
 	
-	private final class MethodReader extends MethodVisitor {
-
-		private final BytecodeProperty bytecodeProperty;
-
-		private MethodReader(BytecodeProperty bytecodeProperty) {
-			super(Constants.ASM_LEVEL);
-			this.bytecodeProperty = bytecodeProperty;
-		}
-
-		@Override
-		public AnnotationVisitor visitAnnotation(String desc, boolean visible) {
-            if(Constants.IGNORE_ANNOTATION.equals(desc)) {
-                this.bytecodeProperty.getAnnotations().add(desc);
-            }
-            if(Constants.RENAME_ANNOTATION.equals(desc)) {
-                return new RenameAnotationVisitor(this.bytecodeProperty);
-            }
-
-            if(Constants.RENAMES_ANNOTATION.equals(desc)) {
-                return new AnnotationVisitor(Constants.ASM_LEVEL) {
-                    @Override
-                    public AnnotationVisitor visitArray(String name) {
-                        return this;
-                    }
-                    @Override
-                    public AnnotationVisitor visitAnnotation(String name, String desc) {
-                        return new RenameAnotationVisitor(bytecodeProperty);
-                    }
-                };
-            }
-			return super.visitAnnotation(desc, visible);
-		}
-
-	}
-
-    /**
-     * Visitor for the rename annotations {@link ubiquity.annotation.CopyRename}
-     */
-    static class RenameAnotationVisitor extends AnnotationVisitor {
-
-        private final BytecodeProperty bytecodeProperty;
-        private String targetClass;
-
-        private String targetName;
-        public RenameAnotationVisitor(BytecodeProperty bytecodeProperty) {
-            super(Constants.ASM_LEVEL);
-            this.bytecodeProperty = bytecodeProperty;
-        }
-
-        @Override
-        public void visit(String name, Object value) {
-            if("propertyName".equals(name)) {
-                this.targetName = (String) value;
-                if(targetName.contains(".")) {
-                    throw new IllegalArgumentException("Deep renaming not supporting yet, work in progress.");
-                }
-            }
-            else if("targetClass".equals(name)) {
-                Type t = (Type) value;
-                this.targetClass = t.getDescriptor();
-            }
-        }
-
-        @Override
-        public AnnotationVisitor visitArray(String name) {
-            return this;
-        }
-
-        @Override
-        public void visitEnd() {
-            if("Ljava/lang/Object;".equals(targetClass) || null == targetClass) {
-                targetClass = "*";
-            }
-            this.bytecodeProperty.getAnnotations().add(Constants.RENAME_ANNOTATION + ':' + this.targetName + ':' + this.targetClass);
-        }
-
-    }
+//
+//    /**
+//     * Visitor for the rename annotations {@link ubiquity.annotation.CopyRename}
+//     */
+//    static class RenameAnotationVisitor extends AnnotationVisitor {
+//
+//        private final BytecodeProperty bytecodeProperty;
+//        private String targetClass;
+//
+//        private String targetName;
+//        public RenameAnotationVisitor(BytecodeProperty bytecodeProperty) {
+//            super(Constants.ASM_LEVEL);
+//            this.bytecodeProperty = bytecodeProperty;
+//        }
+//
+//        @Override
+//        public void visit(String name, Object value) {
+//            if("propertyName".equals(name)) {
+//                this.targetName = (String) value;
+//                if(targetName.contains(".")) {
+//                    throw new IllegalArgumentException("Deep renaming not supporting yet, work in progress.");
+//                }
+//            }
+//            else if("targetClass".equals(name)) {
+//                Type t = (Type) value;
+//                this.targetClass = t.getDescriptor();
+//            }
+//        }
+//
+//        @Override
+//        public AnnotationVisitor visitArray(String name) {
+//            return this;
+//        }
+//
+//        @Override
+//        public void visitEnd() {
+//            if("Ljava/lang/Object;".equals(targetClass) || null == targetClass) {
+//                targetClass = "*";
+//            }
+//            this.bytecodeProperty.getAnnotations().add(Constants.RENAME_ANNOTATION + ':' + this.targetName + ':' + this.targetClass);
+//        }
+//
+//    }
 	@Override public String toString() {
 		StringBuilder builder = new StringBuilder();
 		builder.append("PropertyRetrieverVisitor {");

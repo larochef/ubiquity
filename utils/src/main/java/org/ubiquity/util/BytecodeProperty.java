@@ -3,6 +3,8 @@
  */
 package org.ubiquity.util;
 
+import com.google.common.collect.Lists;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -21,10 +23,10 @@ public class BytecodeProperty {
     private Map<String, String> genericGetter;
     private Map<String, String> genericSetter;
 
-	private List<String> annotations;
+	private List<Annotation> annotations;
 	
 	public BytecodeProperty(String name) {
-		this.annotations = new ArrayList<String>();
+		this.annotations = Lists.newArrayList();
         this.name = name;
 	}
 	
@@ -56,7 +58,7 @@ public class BytecodeProperty {
 		return name;
 	}
 
-	public List<String> getAnnotations() {
+	public List<Annotation> getAnnotations() {
 		return annotations;
 	}
 
