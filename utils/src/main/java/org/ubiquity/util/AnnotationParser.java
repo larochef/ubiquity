@@ -12,10 +12,12 @@ public class AnnotationParser extends AnnotationVisitor {
 
     private Annotation annotation;
     private Map<String, AnnotationParser> annotationParsers;
+    private Map<String, AnnotationArrayParser> annotationArrayParsers;
 
     public AnnotationParser (String desc, boolean visible) {
         super(Constants.ASM_LEVEL);
         this.annotationParsers = Maps.newHashMap();
+        this.annotationArrayParsers = Maps.newHashMap();
         this.annotation = new Annotation();
         this.annotation.setClazz(desc);
         this.annotation.setVisible(visible);
@@ -53,6 +55,15 @@ public class AnnotationParser extends AnnotationVisitor {
             property.setDesc(annotation.getClazz());
             this.annotation.getProperties().put(parser.getKey(), property);
         }
+
+        for(Map.Entry<String, AnnotationArrayParser> parser : this.annotationArrayParsers.entrySet()) {
+            AnnotationProperty<Object[]> property = new AnnotationProperty<Object[]>();
+            property.setName(parser.getKey());
+            AnnotationArrayParser p = parser.getValue();
+            property.setDesc(p.getDesc());
+            property.setValue(p.getValues());
+            this.annotation.getProperties().put(parser.getKey(), property);
+        }
     }
 
     @Override
@@ -64,6 +75,8 @@ public class AnnotationParser extends AnnotationVisitor {
 
     @Override
     public AnnotationVisitor visitArray(String name) {
-        return super.visitArray(name); // TODO : implement.me
+        AnnotationArrayParser arrayParser = new AnnotationArrayParser();
+        this.annotationArrayParsers.put(name, arrayParser);
+        return arrayParser;
     }
 }

@@ -1,5 +1,7 @@
 package org.ubiquity.util;
 
+import com.google.common.collect.Maps;
+
 import java.util.Map;
 
 /**
@@ -12,6 +14,10 @@ public class Annotation {
     private String clazz;
     private Map<String, AnnotationProperty> properties;
     boolean visible;
+
+    public Annotation() {
+        this.properties = Maps.newHashMap();
+    }
 
     public String getClazz() {
         return clazz;
