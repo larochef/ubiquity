@@ -9,8 +9,8 @@ package org.ubiquity.mirror;
  */
 public interface Mirror<T> {
 
-    Property<T, ?> getProperty(String name);
+    <U> Property<T, U> getProperty(String name);
 
-    Function<T, ?> getFunction(String name);
+    <U> Function<T, U> getFunction(String name);
 
 }
