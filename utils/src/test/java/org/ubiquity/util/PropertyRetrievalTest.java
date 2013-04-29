@@ -4,6 +4,10 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.objectweb.asm.ClassReader;
 import org.ubiquity.util.objects.MyObject;
+import org.ubiquity.util.visitors.Annotation;
+import org.ubiquity.util.visitors.AnnotationProperty;
+import org.ubiquity.util.visitors.BytecodeProperty;
+import org.ubiquity.util.visitors.PropertyRetrieverVisitor;
 
 import java.util.Iterator;
 import java.util.Map;
