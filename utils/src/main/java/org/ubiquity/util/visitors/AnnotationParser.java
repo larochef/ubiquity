@@ -34,7 +34,7 @@ public class AnnotationParser extends AnnotationVisitor {
         AnnotationProperty<Object> property = new AnnotationProperty<Object>();
         property.setName(name);
         property.setValue(value);
-        property.setDesc(BytecodeStringUtils.byteCodeName(value.getClass()));
+        property.setDesc(BytecodeStringUtils.byteCodeName(value.getClass().getName()));
         this.annotation.getProperties().put(name, property);
     }
 
