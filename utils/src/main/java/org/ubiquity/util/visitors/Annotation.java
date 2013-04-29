@@ -1,4 +1,4 @@
-package org.ubiquity.util;
+package org.ubiquity.util.visitors;
 
 import com.google.common.collect.Maps;
 

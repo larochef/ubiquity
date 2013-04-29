@@ -1,7 +1,9 @@
-package org.ubiquity.util;
+package org.ubiquity.util.visitors;
 
 import com.google.common.collect.Maps;
 import org.objectweb.asm.AnnotationVisitor;
+import org.ubiquity.util.BytecodeStringUtils;
+import org.ubiquity.util.Constants;
 
 import java.util.Map;
 

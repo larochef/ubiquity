@@ -1,13 +1,14 @@
 /**
  * 
  */
-package org.ubiquity.util;
+package org.ubiquity.util.visitors;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.ubiquity.util.Constants;
 
 import java.io.IOException;
 import java.util.Iterator;
@@ -18,7 +19,7 @@ import java.util.Map;
  * @author François LAROCHE
  *
  */
-final class PropertyRetrieverVisitor extends ClassVisitor {
+public final class PropertyRetrieverVisitor extends ClassVisitor {
 
     private static final List<String> LETTERS;
     private static final List<String> SINGLE_LETTER;

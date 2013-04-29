@@ -1,11 +1,10 @@
 /**
  * 
  */
-package org.ubiquity.util;
+package org.ubiquity.util.visitors;
 
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 

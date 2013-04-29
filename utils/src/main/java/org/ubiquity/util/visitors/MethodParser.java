@@ -1,8 +1,9 @@
-package org.ubiquity.util;
+package org.ubiquity.util.visitors;
 
 import com.google.common.collect.Lists;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.MethodVisitor;
+import org.ubiquity.util.Constants;
 
 import java.util.Collection;
 
