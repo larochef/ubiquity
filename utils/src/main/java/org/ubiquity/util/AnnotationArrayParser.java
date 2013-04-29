@@ -13,11 +13,13 @@ public class AnnotationArrayParser extends AnnotationVisitor {
     private List<Object> values;
     private String desc;
     private List<AnnotationParser> annotationParsers;
+    private List<AnnotationArrayParser> annotationArrayParsers;
 
     public AnnotationArrayParser() {
         super(Constants.ASM_LEVEL);
         values = Lists.newArrayList();
         annotationParsers = Lists.newArrayList();
+        annotationArrayParsers = Lists.newArrayList();
     }
 
     @Override
@@ -40,14 +42,18 @@ public class AnnotationArrayParser extends AnnotationVisitor {
 
     @Override
     public AnnotationVisitor visitArray(String name) {
-        // This case will not be handled (matrix inside annotation)
-        return null;
+        AnnotationArrayParser parser = new AnnotationArrayParser();
+        this.annotationArrayParsers.add(parser);
+        return parser;
     }
 
     @Override
     public void visitEnd() {
         for(AnnotationParser parser : annotationParsers) {
             this.values.add(parser.getAnnotation());
+        }
+        for(AnnotationArrayParser parser : annotationArrayParsers) {
+            this.values.add(parser.getValues());
         }
     }
 
