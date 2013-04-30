@@ -1,6 +1,8 @@
 package org.ubiquity.mirror;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
+import org.ubiquity.mirror.impl.AbstractMirror;
 import org.ubiquity.mirror.objects.ValueObject;
 
 import java.util.Map;
@@ -10,102 +12,98 @@ import java.util.Map;
  *
  * @author François LAROCHE
  */
-public class GeneratedMirror implements Mirror<ValueObject> {
-
-    static enum Properties implements Property<ValueObject, Object> {
-        PROPERTY1 {
-            @Override
-            public String get(ValueObject object) {
-                return object.getProperty1();
-            }
-
-            @Override
-            public void set(ValueObject object, Object value) {
-                object.setProperty1((String) value);
-            }
-
-            @Override
-            public boolean isReadable() {
-                return true;
-            }
-
-            @Override
-            public boolean isWritable() {
-                return true;
-            }
-
-            @Override
-            public Class getWrappedClass() {
-                return String.class;
-            }
-        },
-        PROPERTY2 {
-            @Override
-            public String get(ValueObject object) {
-                return object.getProperty2();
-            }
-
-            @Override
-            public void set(ValueObject object, Object value) {
-                object.setProperty2((String) value);
-            }
-
-            @Override
-            public boolean isReadable() {
-                return true;
-            }
-
-            @Override
-            public boolean isWritable() {
-                return true;
-            }
-
-            @Override
-            public Class getWrappedClass() {
-                return String.class;
-            }
-        },
-        PROPERTY3 {
-            @Override
-            public String get(ValueObject object) {
-                return object.getProperty3();
-            }
-
-            @Override
-            public void set(ValueObject object, Object value) {
-                object.setProperty3((String) value);
-            }
-
-            @Override
-            public boolean isReadable() {
-                return true;
-            }
-
-            @Override
-            public boolean isWritable() {
-                return true;
-            }
-
-            @Override
-            public Class getWrappedClass() {
-                return String.class;
-            }
-        };
-
-        static final Map<String, Properties> props = ImmutableMap.<String, Properties>builder()
-                .put("property1", PROPERTY1)
-                .put("property2", PROPERTY2)
-                .put("property3", PROPERTY3)
-                .build();
-    }
+public class GeneratedMirror extends AbstractMirror<ValueObject> {
 
     @Override
-    public <U> Function<ValueObject, U> getFunction(String name) {
-        throw new IllegalStateException("Not yet implemented");
+    protected Map<String, Property<ValueObject, ?>> buildProperties() {
+        ImmutableMap.Builder<String, Property<ValueObject, ?>> builder =
+                ImmutableMap.builder();
+
+        builder.put("property1", new Property1())
+                .put("property2", new Property2())
+                .put("property2", new Property3());
+
+        return builder.build();
     }
 
-    @Override
-    public <U> Property<ValueObject, U> getProperty(String name) {
-        return (Property<ValueObject, U>) Properties.props.get(name);
+    static class Property1 implements Property<ValueObject, String> {
+        @Override
+        public String get(ValueObject object) {
+            return object.getProperty1();
+        }
+
+        @Override
+        public void set(ValueObject object, String value) {
+            object.setProperty1(value);
+        }
+
+        @Override
+        public Class<String> getWrappedClass() {
+            return String.class;
+        }
+
+        @Override
+        public boolean isReadable() {
+            return true;
+        }
+
+        @Override
+        public boolean isWritable() {
+            return true;
+        }
+    }
+
+    static class Property2 implements Property<ValueObject, String> {
+        @Override
+        public String get(ValueObject object) {
+            return object.getProperty2();
+        }
+
+        @Override
+        public void set(ValueObject object, String value) {
+            object.setProperty2(value);
+        }
+
+        @Override
+        public Class<String> getWrappedClass() {
+            return String.class;
+        }
+
+        @Override
+        public boolean isReadable() {
+            return true;
+        }
+
+        @Override
+        public boolean isWritable() {
+            return true;
+        }
+    }
+
+    static class Property3 implements Property<ValueObject, String> {
+        @Override
+        public String get(ValueObject object) {
+            return object.getProperty3();
+        }
+
+        @Override
+        public void set(ValueObject object, String value) {
+            object.setProperty3(value);
+        }
+
+        @Override
+        public Class<String> getWrappedClass() {
+            return String.class;
+        }
+
+        @Override
+        public boolean isReadable() {
+            return true;
+        }
+
+        @Override
+        public boolean isWritable() {
+            return true;
+        }
     }
 }
