@@ -1,7 +1,6 @@
 package org.ubiquity.mirror;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
 import org.ubiquity.mirror.impl.AbstractMirror;
 import org.ubiquity.mirror.objects.ValueObject;
 
@@ -16,14 +15,9 @@ public class GeneratedMirror extends AbstractMirror<ValueObject> {
 
     @Override
     protected Map<String, Property<ValueObject, ?>> buildProperties() {
-        ImmutableMap.Builder<String, Property<ValueObject, ?>> builder =
-                ImmutableMap.builder();
-
-        builder.put("property1", new Property1())
+        return ImmutableMap.<String, Property<ValueObject, ?>>builder().put("property1", new Property1())
                 .put("property2", new Property2())
-                .put("property2", new Property3());
-
-        return builder.build();
+                .put("property3", new Property3()).build();
     }
 
     static class Property1 implements Property<ValueObject, String> {
