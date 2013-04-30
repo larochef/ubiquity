@@ -39,6 +39,7 @@ public final class Constants {
             .build();
 
     public static final int ASM_LEVEL = Opcodes.ASM4;
+    public static final int JAVA_VERSION = Opcodes.V1_6;
     public static final Pattern SEPARATOR_PATTERN = Pattern.compile(":");
     public static final Set<String> COLLECTIONS =
             ImmutableSet.of("Ljava/util/Collection;", "Ljava/util/List;", "Ljava/util/Set;", "Ljava/util/Map;");
