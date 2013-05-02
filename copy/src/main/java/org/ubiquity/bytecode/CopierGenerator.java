@@ -9,6 +9,8 @@ import org.objectweb.asm.MethodVisitor;
 import org.ubiquity.util.CopierKey;
 import org.ubiquity.util.Tuple;
 import org.ubiquity.util.Constants;
+import org.ubiquity.util.visitors.BytecodeProperty;
+import org.ubiquity.util.visitors.PropertyRetrieverVisitor;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -19,6 +21,7 @@ import java.util.Map;
 
 import static org.objectweb.asm.Opcodes.*;
 import static org.ubiquity.bytecode.GeneratorHelper.*;
+import static org.ubiquity.bytecode.BytecodeStringUtils.*;
 import static org.ubiquity.util.Constants.COLLECTIONS;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
 /**
@@ -32,7 +35,7 @@ final class CopierGenerator {
 
 	private CopierGenerator() {}
 
-    static Map<String, Property> findProperties(Class<?> clazz, Map<String, String> generics) {
+    static Map<String, BytecodeProperty> findProperties(Class<?> clazz, Map<String, String> generics) {
 		try {
 			ClassReader reader = new ClassReader(byteCodeName(clazz));
             PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
@@ -64,12 +67,12 @@ final class CopierGenerator {
             throws IllegalAccessException, InstantiationException, NoSuchMethodException, InvocationTargetException {
         Class<T> src = key.getSourceClass();
 
-        Map<String, Tuple<Property, Property>> requiredCopiers = new HashMap<String, Tuple<Property, Property>>();
+        Map<String, Tuple<BytecodeProperty, BytecodeProperty>> requiredCopiers = new HashMap<String, Tuple<BytecodeProperty, BytecodeProperty>>();
 
         Class<U> destination = key.getDestinationClass();
         Map<String, String> srcGenerics = key.getDestinationAnnotations();
         Map<String, String> destinationGenerics = key.getDestinationAnnotations();
-        List<Tuple<Property, Property>> properties = listCompatibelProperties(src, destination, srcGenerics, destinationGenerics);
+        List<Tuple<BytecodeProperty, BytecodeProperty>> properties = listCompatibelProperties(src, destination, srcGenerics, destinationGenerics);
         String srcName = byteCodeName(src);
         String destinationName = byteCodeName(destination);
         String srcSafeName = srcName;
@@ -92,7 +95,7 @@ final class CopierGenerator {
         createNewArray(writer, className, destinationSafeName);
 
         MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC + ACC_FINAL, "copy", '(' + getDescription(srcSafeName) + getDescription(destinationSafeName) + ")V", null, null);
-        for(Tuple<Property, Property> p : properties) {
+        for(Tuple<BytecodeProperty, BytecodeProperty> p : properties) {
             String descriptionGetter = getDescription(p.tObject.getTypeGetter());
             String descriptionSetter = getDescription(p.uObject.getTypeSetter());
             // Handle simple properties, like String, Integer
@@ -141,27 +144,27 @@ final class CopierGenerator {
         return writer.toByteArray();
 	}
 
-    private static List<Tuple<Property, Property>> listCompatibelProperties(Class<?> source, Class<?> destination, Map<String, String> sourceGenerics, Map<String, String> destinationGenerics) {
-        List<Tuple<Property, Property>> compatibleProperties = new ArrayList<Tuple<Property, Property>>();
-        Map<String, Property> srcProperties = findProperties(source, sourceGenerics);
-        Map<String, Property> targetProperties = findProperties(destination, destinationGenerics);
+    private static List<Tuple<BytecodeProperty, BytecodeProperty>> listCompatibelProperties(Class<?> source, Class<?> destination, Map<String, String> sourceGenerics, Map<String, String> destinationGenerics) {
+        List<Tuple<BytecodeProperty, BytecodeProperty>> compatibleProperties = new ArrayList<Tuple<BytecodeProperty, BytecodeProperty>>();
+        Map<String, BytecodeProperty> srcProperties = findProperties(source, sourceGenerics);
+        Map<String, BytecodeProperty> targetProperties = findProperties(destination, destinationGenerics);
 
         for(String name : srcProperties.keySet()) {
-            Property property = srcProperties.get(name);
+            BytecodeProperty property = srcProperties.get(name);
             if(!property.isReadable()) {
                 continue;
             }
-            Property dest = resolveTargetProperty(property, targetProperties,
+            BytecodeProperty dest = resolveTargetProperty(property, targetProperties,
                     getDescription(byteCodeName(source)), getDescription(byteCodeName(destination)));
             if(dest != null && dest.isWritable()) {
-                compatibleProperties.add(new Tuple<Property, Property>(property, dest));
+                compatibleProperties.add(new Tuple<BytecodeProperty, BytecodeProperty>(property, dest));
             }
         }
 
         return compatibleProperties;
     }
 
-    private static Property resolveTargetProperty(Property src, Map<String, Property> targetProperties, String srcDescription, String destinationDescription) {
+    private static BytecodeProperty resolveTargetProperty(BytecodeProperty src, Map<String, BytecodeProperty> targetProperties, String srcDescription, String destinationDescription) {
         String sourceName = src.getName();
         String matchingAnnotation = null;
         for(String annotation : src.getAnnotations()) {
@@ -176,7 +179,7 @@ final class CopierGenerator {
         }
 
         for(String key : targetProperties.keySet()) {
-            Property p = targetProperties.get(key);
+            BytecodeProperty p = targetProperties.get(key);
             if(sourceName.equals(key)) {
                 return p;
             }
