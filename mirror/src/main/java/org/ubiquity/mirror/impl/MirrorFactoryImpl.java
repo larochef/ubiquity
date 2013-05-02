@@ -5,8 +5,10 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import org.ubiquity.mirror.Mirror;
 import org.ubiquity.mirror.MirrorFactory;
+import org.ubiquity.util.ClassDefinition;
 import org.ubiquity.util.SimpleClassLoader;
 
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -18,14 +20,21 @@ public class MirrorFactoryImpl implements MirrorFactory {
 
     LoadingCache<Class<?>, Mirror<?>> mirrorCache;
 
-    private final SimpleClassLoader loader;
+    final SimpleClassLoader loader;
 
-    public MirrorFactoryImpl(SimpleClassLoader loader) {
+    public MirrorFactoryImpl(final SimpleClassLoader loader) {
         this.loader = loader;
         this.mirrorCache = CacheBuilder.newBuilder().build(new CacheLoader<Class<?>, Mirror<?>>() {
             @Override
             public Mirror<?> load(Class<?> aClass) throws Exception {
-                // TODO : implement.me
+                Collection<ClassDefinition> definitions = MirrorGenerator.generateMirror(aClass);
+                Class<?> c = null;
+                for(ClassDefinition def : definitions) {
+                    c = loader.defineClass(def.getClassName(), def.getClassContent());
+                }
+                if(c != null) {
+                    return (Mirror) c.newInstance();
+                }
                 return null;
             }
         });
