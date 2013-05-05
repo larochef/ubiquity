@@ -102,4 +102,11 @@ public final class MirrorGenerator {
     private static String generateMirrorName(Class<?> c) {
         return MIRROR_PREFIX + c.getSimpleName() + "$" + SEQUENCE.incrementAndGet();
     }
+
+    private static byte[] createInnerClass(String name, String innerName, BytecodeProperty property) {
+        ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+        writer.visit(Constants.JAVA_VERSION, ACC_PUBLIC, name, "", "", null);
+
+        return writer.toByteArray();
+    }
 }

@@ -19,4 +19,6 @@ public interface Property<T, U> {
 
     boolean isWritable();
 
+    String getName();
+
 }

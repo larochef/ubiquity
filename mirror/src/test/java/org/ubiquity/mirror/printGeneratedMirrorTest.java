@@ -16,7 +16,7 @@ public class PrintGeneratedMirrorTest {
 
     @Test
     public void printGeneratedMirror() throws Exception {
-        ClassReader reader = new ClassReader(GeneratedMirror.class.getName()); // + "$1");
+        ClassReader reader = new ClassReader(GeneratedMirror.class.getName() + "$Property1");
         ClassVisitor visitor = new TraceClassVisitor(new PrintWriter(System.out));
         reader.accept(visitor, 0);
     }
