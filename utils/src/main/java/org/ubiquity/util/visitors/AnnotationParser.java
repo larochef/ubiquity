@@ -10,7 +10,7 @@ import java.util.Map;
 /**
  *
  */
-public class AnnotationParser extends AnnotationVisitor {
+final class AnnotationParser extends AnnotationVisitor {
 
     private Annotation annotation;
     private Map<String, AnnotationParser> annotationParsers;

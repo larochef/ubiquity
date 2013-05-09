@@ -10,7 +10,7 @@ import java.util.Collection;
 /**
  *
  */
-public class MethodParser extends MethodVisitor {
+final class MethodParser extends MethodVisitor {
 
     private Collection<AnnotationParser> parsers;
     private final BytecodeProperty bytecodeProperty;

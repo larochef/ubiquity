@@ -3,7 +3,7 @@ package org.ubiquity.util.visitors;
 /**
  *
  */
-public class AnnotationProperty<T> {
+public final class AnnotationProperty<T> {
     private String name;
     private String desc;
     private T value;

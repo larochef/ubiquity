@@ -5,7 +5,7 @@ package org.ubiquity.util;
  *
  * @author François LAROCHE
  */
-public class SimpleClassLoader extends ClassLoader {
+public final class SimpleClassLoader extends ClassLoader {
 
     public <T> Class<T> defineClass(String name, byte[] content) {
         return (Class<T>) this.defineClass(name, content, 0, content.length);

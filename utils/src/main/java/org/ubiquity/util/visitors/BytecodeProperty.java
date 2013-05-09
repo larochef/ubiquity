@@ -12,7 +12,7 @@ import java.util.Map;
  * @author François LAROCHE
  *
  */
-public class BytecodeProperty {
+public final class BytecodeProperty {
 
 	final private String name;
 	private String getter;

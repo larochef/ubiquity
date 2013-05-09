@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 /**
  *
  */
-public class ClassDefinition {
+public final class ClassDefinition {
 
     private final String className;
     private final byte [] classContent;

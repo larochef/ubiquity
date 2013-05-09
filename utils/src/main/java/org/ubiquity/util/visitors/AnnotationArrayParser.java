@@ -9,7 +9,7 @@ import java.util.List;
 /**
  *
  */
-public class AnnotationArrayParser extends AnnotationVisitor {
+final class AnnotationArrayParser extends AnnotationVisitor {
 
     private List<Object> values;
     private String desc;

@@ -9,7 +9,7 @@ import java.util.Map;
  *
  * @author François LAROCHE
  */
-public class Annotation {
+public final class Annotation {
 
     private String clazz;
     private Map<String, AnnotationProperty> properties;
