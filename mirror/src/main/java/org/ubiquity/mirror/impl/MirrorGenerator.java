@@ -55,7 +55,7 @@ public final class MirrorGenerator {
     }
 
     private static void generateConstructor(ClassWriter writer) {
-        MethodVisitor visitor = writer.visitMethod(ClassFileWriter.ACC_PUBLIC, "<init>", null, "()V", null);
+        MethodVisitor visitor = writer.visitMethod(ClassFileWriter.ACC_PUBLIC, "<init>", "()V", null, null);
         visitor.visitIntInsn(ALOAD, 0);
         visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/impl/AbstractMirror", "<init>", "()V");
         visitor.visitInsn(RETURN);
@@ -68,7 +68,7 @@ public final class MirrorGenerator {
         Map<String, ClassDefinition>  result = Maps.newHashMap();
         for (Map.Entry<String, BytecodeProperty> entry : properties.entrySet()) {
             BytecodeProperty property = entry.getValue();
-            String innerClassSimpleName = property.getName() + "$" + SEQUENCE.incrementAndGet();
+            String innerClassSimpleName = property.getName();
             String innerClassName = mirrorClassName + "$" + innerClassSimpleName;
             writer.visitInnerClass(innerClassName, mirrorClassName, innerClassSimpleName, ACC_PROTECTED);
             byte[] innerClass = createInnerClass(innerClassName, innerClassSimpleName, mirrorClassName, handledClass, property);
