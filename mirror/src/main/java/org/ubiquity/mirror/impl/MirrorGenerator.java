@@ -2,10 +2,7 @@ package org.ubiquity.mirror.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.*;
 import org.ubiquity.util.ClassDefinition;
 import org.ubiquity.util.Constants;
 import org.ubiquity.util.visitors.BytecodeProperty;
@@ -20,6 +17,7 @@ import java.util.concurrent.atomic.AtomicLong;
 
 import static org.objectweb.asm.Opcodes.*;
 import static org.ubiquity.util.BytecodeStringUtils.byteCodeName;
+import static org.ubiquity.util.BytecodeStringUtils.getDescription;
 
 /**
  *
@@ -41,12 +39,13 @@ public final class MirrorGenerator {
         reader.accept(visitor, 0);
         Map<String, BytecodeProperty> properties = visitor.getProperties();
         String name = generateMirrorName(aClass);
+        String handledClassName = byteCodeName(aClass.getName());
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         writer.visit(Constants.JAVA_VERSION, Opcodes.ACC_PUBLIC, name,
-                "Lorg/ubiquity/mirror/impl/AbstractMirror<L" + byteCodeName(aClass.getName()) + ";>",
+                "Lorg/ubiquity/mirror/impl/AbstractMirror<L" + handledClassName + ";>",
                 "org/ubiquity/mirror/impl/AbstractMirror", null);
         generateConstructor(writer);
-        Map<String, ClassDefinition> definitions = makeClasses(writer, properties, name);
+        Map<String, ClassDefinition> definitions = makeClasses(writer, properties, name, handledClassName);
         generateBuildProperties(writer, definitions);
         writer.visitEnd();
         List<ClassDefinition> result = Lists.newArrayList();
@@ -65,15 +64,15 @@ public final class MirrorGenerator {
     }
 
     private static Map<String, ClassDefinition> makeClasses(ClassWriter writer, Map<String, BytecodeProperty> properties,
-                                                   String mirrorClassName) {
+                                                   String mirrorClassName, String handledClass) {
         Map<String, ClassDefinition>  result = Maps.newHashMap();
         for (Map.Entry<String, BytecodeProperty> entry : properties.entrySet()) {
             BytecodeProperty property = entry.getValue();
             String innerClassSimpleName = property.getName() + "$" + SEQUENCE.incrementAndGet();
             String innerClassName = mirrorClassName + "$" + innerClassSimpleName;
             writer.visitInnerClass(innerClassName, mirrorClassName, innerClassSimpleName, ACC_PROTECTED);
-            // TODO : implement.me : create the actual inner classes
-            result.put(property.getName(), new ClassDefinition(innerClassName, new byte[0]));
+            byte[] innerClass = createInnerClass(innerClassName, innerClassSimpleName, mirrorClassName, handledClass, property);
+            result.put(property.getName(), new ClassDefinition(innerClassName, innerClass));
         }
         return result;
     }
@@ -103,10 +102,96 @@ public final class MirrorGenerator {
         return MIRROR_PREFIX + c.getSimpleName() + "$" + SEQUENCE.incrementAndGet();
     }
 
-    private static byte[] createInnerClass(String name, String innerName, BytecodeProperty property) {
+    private static byte[] createInnerClass(String name, String innerName, String mirrorClass, String handledClass,
+                                           BytecodeProperty property) {
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
-        writer.visit(Constants.JAVA_VERSION, ACC_PUBLIC, name, "", "", null);
+        writer.visit(Constants.JAVA_VERSION, ACC_PUBLIC, name,
+                "Lorg/ubiquity/mirror/impl/AbstractProperty<"
+                        + getDescription(handledClass) + getDescription(property.getTypeGetter()) + ">;",
+                "org/ubiquity/mirror/impl/AbstractProperty", null);
+
+        writer.visitInnerClass(name, mirrorClass, innerName, ACC_STATIC | ACC_PUBLIC);
+
+        createInnerClassConstructor(writer, property);
+        if(property.isReadable()) {
+            createGet(writer, property, handledClass, name);
+            createBooleanMethod(writer, "isReadable");
+        }
+        if(property.isWritable()) {
+            createSet(writer, property, handledClass, name);
+            createBooleanMethod(writer, "isWritable");
+        }
 
         return writer.toByteArray();
+    }
+
+    private static void createInnerClassConstructor(ClassWriter writer, BytecodeProperty property) {
+        MethodVisitor constructor = writer.visitMethod(ACC_PROTECTED, "<init>", "()V", null, null);
+        constructor.visitIntInsn(ALOAD, 0);
+        constructor.visitLdcInsn(property.getName());
+        constructor.visitLdcInsn(Type.getObjectType(getDescription(property.getTypeGetter())));
+        constructor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/impl/AbstractProperty", "<init>",
+                "(Ljava/lang/String;Ljava/lang/Class;)V");
+        constructor.visitMaxs(0, 0);
+        constructor.visitEnd();
+    }
+
+    private static void createGet(ClassWriter writer, BytecodeProperty property, String handledClassName,
+                                  String innerClassName) {
+        // Create actual get code
+        String description = "(" + getDescription(handledClassName) + ")" + getDescription(property.getTypeGetter());
+        MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC, "get", description, null, null);
+
+        visitor.visitIntInsn(ALOAD, 1);
+        visitor.visitMethodInsn(INVOKEVIRTUAL, handledClassName, property.getGetter(), "()"
+                + getDescription(property.getTypeGetter()));
+        visitor.visitInsn(ARETURN);
+        visitor.visitMaxs(0, 0);
+        visitor.visitEnd();
+
+        // Create bridge code
+        visitor = writer.visitMethod(ACC_PUBLIC | ACC_BRIDGE | ACC_VOLATILE | ACC_SYNTHETIC, "get",
+                "(Ljava/lang/Object;)Ljava/lang/Object;", null, null);
+        visitor.visitIntInsn(ALOAD, 0);
+        visitor.visitIntInsn(ALOAD, 1);
+        visitor.visitTypeInsn(CHECKCAST, handledClassName);
+        visitor.visitMethodInsn(INVOKEVIRTUAL, innerClassName, "get", description);
+        visitor.visitInsn(ARETURN);
+        visitor.visitMaxs(0, 0);
+        visitor.visitEnd();
+    }
+
+    private static void createSet(ClassWriter writer, BytecodeProperty property, String handledClassName,
+                                  String innerClassName) {
+        // Create actual code
+        String description = "(" + getDescription(handledClassName) + getDescription(property.getTypeSetter()) + ")V";
+        MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC, "set", description, null, null);
+        visitor.visitIntInsn(ALOAD, 1);
+        visitor.visitIntInsn(ALOAD, 2);
+        visitor.visitMethodInsn(INVOKEVIRTUAL, handledClassName, property.getSetter(), "(" + handledClassName + ")V");
+        visitor.visitInsn(RETURN);
+        visitor.visitMaxs(0, 0);
+        visitor.visitEnd();
+
+        // create bridge
+        visitor = writer.visitMethod(ACC_PUBLIC | ACC_BRIDGE | ACC_VOLATILE | ACC_SYNTHETIC, "set",
+                "(Ljava/lang/Object;Ljava/lang/Object;)V", null, null);
+        visitor.visitIntInsn(ALOAD, 0);
+        visitor.visitIntInsn(ALOAD, 1);
+        visitor.visitTypeInsn(CHECKCAST, handledClassName);
+        visitor.visitIntInsn(ALOAD, 2);
+        visitor.visitTypeInsn(CHECKCAST, byteCodeName(property.getTypeSetter()));
+        visitor.visitMethodInsn(INVOKEVIRTUAL, innerClassName, "set", description);
+        visitor.visitInsn(RETURN);
+        visitor.visitMaxs(0, 0);
+        visitor.visitEnd();
+    }
+
+    private static void createBooleanMethod(ClassWriter writer, String name) {
+        MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC, name, "()Z", null, null);
+        visitor.visitInsn(ICONST_1);
+        visitor.visitInsn(IRETURN);
+        visitor.visitMaxs(0, 0);
+        visitor.visitEnd();
     }
 }
