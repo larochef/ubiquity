@@ -30,7 +30,7 @@ public final class MirrorFactoryImpl implements MirrorFactory {
                 Collection<ClassDefinition> definitions = MirrorGenerator.generateMirror(aClass);
                 Class<?> c = null;
                 for(ClassDefinition def : definitions) {
-                    c = loader.defineClass(def.getClassName(), def.getClassContent());
+                    c = loader.defineClass(def.getClassName().replace('/', '.'), def.getClassContent());
                 }
                 if(c != null) {
                     return (Mirror) c.newInstance();
