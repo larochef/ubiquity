@@ -8,7 +8,7 @@ package org.ubiquity.util;
 public class SimpleClassLoader extends ClassLoader {
 
     public <T> Class<T> defineClass(String name, byte[] content) {
-        return this.defineClass(name, content);
+        return (Class<T>) this.defineClass(name, content, 0, content.length);
     }
 
 }
