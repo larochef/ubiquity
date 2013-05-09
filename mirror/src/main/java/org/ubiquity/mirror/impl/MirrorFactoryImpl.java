@@ -16,7 +16,7 @@ import java.util.concurrent.ExecutionException;
  *
  * @author François LAROCHE
  */
-public class MirrorFactoryImpl implements MirrorFactory {
+public final class MirrorFactoryImpl implements MirrorFactory {
 
     LoadingCache<Class<?>, Mirror<?>> mirrorCache;
 
