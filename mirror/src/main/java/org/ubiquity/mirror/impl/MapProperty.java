@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  *
  */
-public class MapProperty<T> implements Property<Map, T> {
+public final class MapProperty<T> implements Property<Map, T> {
 
     private final String propertyName;
     private final Class<T> valueClass;
