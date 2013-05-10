@@ -1,17 +1,17 @@
-/**
+/*
  * Copyright 2012 ubiquity-copy
-
- Licensed under the Apache License, Version 2.0 (the "License");
- you may not use this file except in compliance with the License.
- You may obtain a copy of the License at
-
- http://www.apache.org/licenses/LICENSE-2.0
-
- Unless required by applicable law or agreed to in writing, software
- distributed under the License is distributed on an "AS IS" BASIS,
- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- See the License for the specific language governing permissions and
- limitations under the License.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.ubiquity.util;
 
@@ -24,15 +24,16 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * Date: 13/04/13
- *
- * @author François LAROCHE
+ * Utility class containing various constants
  */
 public final class Constants {
     private Constants() {
         // Do not instanciate objects
     }
 
+    /**
+     * Map containing all the native types and their object equivalents
+     */
     public static final Map<String, String> SIMPLE_PROPERTIES = ImmutableMap.<String, String>builder()
             .put("Z", "Ljava/lang/Boolean;")
             .put("Ljava/lang/Boolean;", "Z")
@@ -50,15 +51,29 @@ public final class Constants {
             .put("Ljava/lang/Long;", "J")
             .put("D", "Ljava/lang/Double;")
             .put("Ljava/lang/Double;", "D")
-            .put("Ljava/lang/String;", "Ljava/lang/String;")
             .build();
 
+    /**
+     * Version of ASM used.
+     * Changing it here will change it everywhere needed
+     */
     public static final int ASM_LEVEL = Opcodes.ASM4;
+
+    /**
+     * Target java version used to write classes.
+     * Changing it here will change it everywhere.
+     */
     public static final int JAVA_VERSION = Opcodes.V1_6;
+
+    /**
+     * Simple splitter used to split generics signatures
+     */
     public static final Pattern SEPARATOR_PATTERN = Pattern.compile(":");
+
+    /**
+     * Collection names
+     */
     public static final Set<String> COLLECTIONS =
             ImmutableSet.of("Ljava/util/Collection;", "Ljava/util/List;", "Ljava/util/Set;", "Ljava/util/Map;");
-//    public static final String IGNORE_ANNOTATION = "Lorg/ubiquity/annotation/CopyIgnore;";
-//    public static final String RENAME_ANNOTATION = "Lorg/ubiquity/annotation/CopyRename;";
-//    public static final String RENAMES_ANNOTATION = "Lorg/ubiquity/annotation/CopyRenames;";
+
 }
