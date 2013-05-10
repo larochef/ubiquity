@@ -120,9 +120,14 @@ public final class MirrorGenerator {
     private static byte[] createInnerClass(String name, String innerName, String mirrorClass, String handledClass,
                                            BytecodeProperty property) {
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
+
+        String resolvedType = getDescription(property.getType());
+        if(property.isPrimitive()) {
+            resolvedType = Constants.SIMPLE_PROPERTIES.get(resolvedType);
+        }
         writer.visit(Constants.JAVA_VERSION, ACC_PUBLIC, name,
                 "Lorg/ubiquity/mirror/impl/AbstractProperty<"
-                        + getDescription(handledClass) + getDescription(property.getTypeGetter()) + ">;",
+                        + getDescription(handledClass) + resolvedType + ">;",
                 "org/ubiquity/mirror/impl/AbstractProperty", null);
 
         writer.visitInnerClass(name, mirrorClass, innerName, ACC_STATIC | ACC_PUBLIC);
@@ -144,7 +149,11 @@ public final class MirrorGenerator {
         MethodVisitor constructor = writer.visitMethod(ACC_PROTECTED, "<init>", "()V", null, null);
         constructor.visitIntInsn(ALOAD, 0);
         constructor.visitLdcInsn(property.getName());
-        constructor.visitLdcInsn(Type.getObjectType(byteCodeName(property.getTypeGetter())));
+        String propertyObjectName = property.getType();
+        if(property.isPrimitive()) {
+            propertyObjectName = byteCodeName(Constants.SIMPLE_PROPERTIES.get(getDescription(propertyObjectName)));
+        }
+        constructor.visitLdcInsn(Type.getObjectType(propertyObjectName));
         constructor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/impl/AbstractProperty", "<init>",
                 "(Ljava/lang/String;Ljava/lang/Class;)V");
         constructor.visitInsn(RETURN);
@@ -155,12 +164,20 @@ public final class MirrorGenerator {
     private static void createGet(ClassWriter writer, BytecodeProperty property, String handledClassName,
                                   String innerClassName) {
         // Create actual get code
-        String description = "(" + getDescription(handledClassName) + ")" + getDescription(property.getTypeGetter());
+        String resolvedArgumentType = getDescription(property.getTypeGetter());
+        if(property.isPrimitive()) {
+            resolvedArgumentType = Constants.SIMPLE_PROPERTIES.get(resolvedArgumentType);
+        }
+        String description = "(" + getDescription(handledClassName) + ")" + resolvedArgumentType;
         MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC, "get", description, null, null);
 
         visitor.visitIntInsn(ALOAD, 1);
         visitor.visitMethodInsn(INVOKEVIRTUAL, handledClassName, property.getGetter(),
                 "()" + getDescription(property.getTypeGetter()));
+        if(property.isPrimitive()) {
+            visitor.visitMethodInsn(INVOKESTATIC, "org/ubiquity/util/NativeConverter", "convert",
+                    "(" + property.getType() + ")" + resolvedArgumentType);
+        }
         visitor.visitInsn(ARETURN);
         visitor.visitMaxs(0, 0);
         visitor.visitEnd();
@@ -180,11 +197,20 @@ public final class MirrorGenerator {
     private static void createSet(ClassWriter writer, BytecodeProperty property, String handledClassName,
                                   String innerClassName) {
         // Create actual code
-        String description = "(" + getDescription(handledClassName) + getDescription(property.getTypeSetter()) + ")V";
+        String resolvedArgumentType = getDescription(property.getTypeSetter());
+        if(property.isPrimitive()) {
+            resolvedArgumentType = Constants.SIMPLE_PROPERTIES.get(resolvedArgumentType);
+        }
+        String description = "(" + getDescription(handledClassName) + resolvedArgumentType + ")V";
         MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC, "set", description, null, null);
         visitor.visitIntInsn(ALOAD, 1);
         visitor.visitIntInsn(ALOAD, 2);
-        visitor.visitMethodInsn(INVOKEVIRTUAL, handledClassName, property.getSetter(), "(" + getDescription(property.getTypeSetter()) + ")V");
+        if(property.isPrimitive()) {
+            visitor.visitMethodInsn(INVOKESTATIC, "org/ubiquity/util/NativeConverter", "convert",
+                    "(" + resolvedArgumentType + ")" + property.getType());
+        }
+        visitor.visitMethodInsn(INVOKEVIRTUAL, handledClassName, property.getSetter(),
+                "(" + getDescription(property.getTypeSetter()) + ")V");
         visitor.visitInsn(RETURN);
         visitor.visitMaxs(0, 0);
         visitor.visitEnd();
@@ -196,7 +222,7 @@ public final class MirrorGenerator {
         visitor.visitIntInsn(ALOAD, 1);
         visitor.visitTypeInsn(CHECKCAST, handledClassName);
         visitor.visitIntInsn(ALOAD, 2);
-        visitor.visitTypeInsn(CHECKCAST, byteCodeName(property.getTypeSetter()));
+        visitor.visitTypeInsn(CHECKCAST, byteCodeName(resolvedArgumentType));
         visitor.visitMethodInsn(INVOKEVIRTUAL, innerClassName, "set", description);
         visitor.visitInsn(RETURN);
         visitor.visitMaxs(0, 0);

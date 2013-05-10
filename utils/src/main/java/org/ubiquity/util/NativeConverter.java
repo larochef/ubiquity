@@ -32,7 +32,7 @@ public final class NativeConverter {
      * @param value the java.lang.Short to convert
      * @return the converted short
      */
-    public final short convert(Short value) {
+    public static short convert(Short value) {
         if(value != null) {
             return value.shortValue();
         }
@@ -46,7 +46,7 @@ public final class NativeConverter {
      * @param value the java.lang.Integer to convert
      * @return the converted int
      */
-    public final int convert(Integer value) {
+    public static int convert(Integer value) {
         if(value != null) {
             return value.intValue();
         }
@@ -60,7 +60,7 @@ public final class NativeConverter {
      * @param value the java.lang.Boolean to convert
      * @return the converted boolean
      */
-    public final boolean convert(Boolean value) {
+    public static boolean convert(Boolean value) {
         if(value != null) {
             return value.booleanValue();
         }
@@ -74,7 +74,7 @@ public final class NativeConverter {
      * @param value the java.lang.Long to convert
      * @return the converted long
      */
-    public final long convert(Long value) {
+    public static long convert(Long value) {
         if(value != null) {
             return value.longValue();
         }
@@ -88,7 +88,7 @@ public final class NativeConverter {
      * @param value the java.lang.Double to convert
      * @return the converted double
      */
-    public final double convert(Double value) {
+    public static double convert(Double value) {
         if(value != null) {
             return value.doubleValue();
         }
@@ -102,7 +102,7 @@ public final class NativeConverter {
      * @param value the java.lang.Float to convert
      * @return the converted float
      */
-    public final float convert(Float value) {
+    public static float convert(Float value) {
         if(value != null) {
             return value.floatValue();
         }
@@ -116,7 +116,7 @@ public final class NativeConverter {
      * @param value the java.lang.Character to convert
      * @return the converted char
      */
-    public final char convert(Character value) {
+    public static char convert(Character value) {
         if(value != null) {
             return value.charValue();
         }
@@ -130,7 +130,7 @@ public final class NativeConverter {
      * @param value the java.lang.Bte to convert
      * @return the converted byte
      */
-    public final byte convert(Byte value) {
+    public static byte convert(Byte value) {
         if(value != null) {
             return value.byteValue();
         }
@@ -143,7 +143,7 @@ public final class NativeConverter {
      * @param value the short to convert
      * @return the converted java.lang.Short
      */
-    public final Short convert(short value) {
+    public static Short convert(short value) {
         return Short.valueOf(value);
     }
 
@@ -153,7 +153,7 @@ public final class NativeConverter {
      * @param value the int to convert
      * @return the converted java.lang.Integer
      */
-    public final Integer convert(int value) {
+    public static Integer convert(int value) {
         return Integer.valueOf(value);
     }
 
@@ -163,7 +163,7 @@ public final class NativeConverter {
      * @param value the boolean to convert
      * @return the converted java.lang.Boolean
      */
-    public final Boolean convert(boolean value) {
+    public static Boolean convert(boolean value) {
         return Boolean.valueOf(value);
     }
 
@@ -173,7 +173,7 @@ public final class NativeConverter {
      * @param value the long to convert
      * @return the converted java.lang.Long
      */
-    public final Long convert(long value) {
+    public static Long convert(long value) {
         return Long.valueOf(value);
     }
 
@@ -183,7 +183,7 @@ public final class NativeConverter {
      * @param value the double to convert
      * @return the converted java.lang.Double
      */
-    public final Double convert(double value) {
+    public static Double convert(double value) {
         return Double.valueOf(value);
     }
 
@@ -193,7 +193,7 @@ public final class NativeConverter {
      * @param value the float to convert
      * @return the converted java.lang.Float
      */
-    public final Float convert(float value) {
+    public static Float convert(float value) {
         return Float.valueOf(value);
     }
 
@@ -203,7 +203,7 @@ public final class NativeConverter {
      * @param value the char to convert
      * @return the converted java.lang.Character
      */
-    public final Character convert(char value) {
+    public static Character convert(char value) {
         return Character.valueOf(value);
     }
 
@@ -213,7 +213,7 @@ public final class NativeConverter {
      * @param value the byte to convert
      * @return the converted java.lang.Byte
      */
-    public final Byte convert(byte value) {
+    public static Byte convert(byte value) {
         return Byte.valueOf(value);
     }
 
@@ -224,7 +224,7 @@ public final class NativeConverter {
      * @param value the java.lang.Short to convert
      * @return the converted short
      */
-    public final short[] convert(Short[] value) {
+    public static short[] convert(Short[] value) {
         if(value == null) {
             return null;
         }
@@ -242,7 +242,7 @@ public final class NativeConverter {
      * @param value the java.lang.Integer to convert
      * @return the converted int
      */
-    public final int[] convert(Integer[] value) {
+    public static int[] convert(Integer[] value) {
         if(value == null) {
             return null;
         }
@@ -260,7 +260,7 @@ public final class NativeConverter {
      * @param value the java.lang.Boolean to convert
      * @return the converted boolean
      */
-    public final boolean[] convert(Boolean[] value) {
+    public static boolean[] convert(Boolean[] value) {
         if(value == null) {
             return null;
         }
@@ -278,7 +278,7 @@ public final class NativeConverter {
      * @param value the java.lang.Long to convert
      * @return the converted long
      */
-    public final long[] convert(Long[] value) {
+    public static long[] convert(Long[] value) {
         if(value == null) {
             return null;
         }
@@ -296,7 +296,7 @@ public final class NativeConverter {
      * @param value the java.lang.Double to convert
      * @return the converted double
      */
-    public final double[] convert(Double[] value) {
+    public static double[] convert(Double[] value) {
         if(value == null) {
             return null;
         }
@@ -314,7 +314,7 @@ public final class NativeConverter {
      * @param value the java.lang.Float to convert
      * @return the converted float
      */
-    public final float[] convert(Float[] value) {
+    public static float[] convert(Float[] value) {
         if(value == null) {
             return null;
         }
@@ -332,7 +332,7 @@ public final class NativeConverter {
      * @param value the java.lang.Character to convert
      * @return the converted char
      */
-    public final char[] convert(Character[] value) {
+    public static char[] convert(Character[] value) {
         if(value == null) {
             return null;
         }
@@ -350,7 +350,7 @@ public final class NativeConverter {
      * @param value the java.lang.Bte to convert
      * @return the converted byte
      */
-    public final byte[] convert(Byte[] value) {
+    public static byte[] convert(Byte[] value) {
         if(value == null) {
             return null;
         }
@@ -367,7 +367,7 @@ public final class NativeConverter {
      * @param value the short to convert
      * @return the converted java.lang.Short
      */
-    public final Short[] convert(short[] value) {
+    public static Short[] convert(short[] value) {
         if(value == null) {
             return null;
         }
@@ -384,7 +384,7 @@ public final class NativeConverter {
      * @param value the int to convert
      * @return the converted java.lang.Integer
      */
-    public final Integer[] convert(int[] value) {
+    public static Integer[] convert(int[] value) {
         if(value == null) {
             return null;
         }
@@ -401,7 +401,7 @@ public final class NativeConverter {
      * @param value the boolean to convert
      * @return the converted java.lang.Boolean
      */
-    public final Boolean[] convert(boolean[] value) {
+    public static Boolean[] convert(boolean[] value) {
         if(value == null) {
             return null;
         }
@@ -418,7 +418,7 @@ public final class NativeConverter {
      * @param value the long to convert
      * @return the converted java.lang.Long
      */
-    public final Long[] convert(long[] value) {
+    public static Long[] convert(long[] value) {
         if(value == null) {
             return null;
         }
@@ -435,7 +435,7 @@ public final class NativeConverter {
      * @param value the double to convert
      * @return the converted java.lang.Double
      */
-    public final Double[] convert(double[] value) {
+    public static Double[] convert(double[] value) {
         if(value == null) {
             return null;
         }
@@ -452,7 +452,7 @@ public final class NativeConverter {
      * @param value the float to convert
      * @return the converted java.lang.Float
      */
-    public final Float[] convert(float[] value) {
+    public static Float[] convert(float[] value) {
         if(value == null) {
             return null;
         }
@@ -469,7 +469,7 @@ public final class NativeConverter {
      * @param value the char to convert
      * @return the converted java.lang.Character
      */
-    public final Character[] convert(char[] value) {
+    public static Character[] convert(char[] value) {
         if(value == null) {
             return null;
         }
@@ -486,7 +486,7 @@ public final class NativeConverter {
      * @param value the byte to convert
      * @return the converted java.lang.Byte
      */
-    public final Byte[] convert(byte[] value) {
+    public static Byte[] convert(byte[] value) {
         if(value == null) {
             return null;
         }

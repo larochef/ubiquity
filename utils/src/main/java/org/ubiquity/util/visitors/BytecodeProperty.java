@@ -117,7 +117,7 @@ public final class BytecodeProperty {
     }
 
     public boolean isPrimitive() {
-        return !getType().contains("/");
+        return getType().length() == 1;
     }
 
     private String getDefaultValue(Map<String, String> genericsMap) {
