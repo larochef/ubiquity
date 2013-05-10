@@ -15,10 +15,13 @@
  */
 package org.ubiquity.mirror.impl;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.ubiquity.mirror.Function;
 import org.ubiquity.mirror.Mirror;
 import org.ubiquity.mirror.Property;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -32,7 +35,12 @@ public final class MapMirror implements Mirror<Map> {
     }
 
     @Override
-    public <U> Function<Map, U> getFunction(String name) {
-        throw new UnsupportedOperationException("Not implemented");
+    public Collection<Property<Map, ?>> listProperties() {
+        return ImmutableList.of();
     }
+
+//    @Override
+//    public <U> Function<Map, U> getFunction(String name) {
+//        throw new UnsupportedOperationException("Not implemented");
+//    }
 }

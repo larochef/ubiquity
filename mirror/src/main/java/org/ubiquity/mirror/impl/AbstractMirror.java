@@ -19,6 +19,7 @@ import org.ubiquity.mirror.Function;
 import org.ubiquity.mirror.Mirror;
 import org.ubiquity.mirror.Property;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -35,9 +36,14 @@ public abstract class AbstractMirror<T> implements Mirror<T> {
     }
 
     @Override
-    public <U> Function<T, U> getFunction(String name) {
-        throw new UnsupportedOperationException("Not implemented yet");
+    public Collection<Property<T, ?>> listProperties() {
+        return properties.values();
     }
+
+//    @Override
+//    public <U> Function<T, U> getFunction(String name) {
+//        throw new UnsupportedOperationException("Not implemented yet");
+//    }
 
     protected abstract Map<String, Property<T, ?>> buildProperties();
 
