@@ -9,6 +9,7 @@ import org.ubiquity.util.ClassDefinition;
 import org.ubiquity.util.SimpleClassLoader;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -38,12 +39,17 @@ public final class MirrorFactoryImpl implements MirrorFactory {
                 return null;
             }
         });
+        this.mirrorCache.put(Map.class, new MapMirror());
     }
 
     @Override
     public <T> Mirror<T> getMirror(Class<T> requestedClass) {
         try {
-            return (Mirror<T>) mirrorCache.get(requestedClass);
+            Class<?> resolvedClass = requestedClass;
+            if(Map.class.isAssignableFrom(requestedClass)) {
+                resolvedClass = Map.class;
+            }
+            return (Mirror<T>) mirrorCache.get(resolvedClass);
         } catch (ExecutionException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
