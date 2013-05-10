@@ -20,8 +20,8 @@ package org.ubiquity.mirror;
  */
 public interface Mirror<T> {
 
-    <U extends Object> Property<T, U> getProperty(String name);
+    <U> Property<T, U> getProperty(String name);
 
-    <U extends Object> Function<T, U> getFunction(String name);
+    <U> Function<T, U> getFunction(String name);
 
 }
