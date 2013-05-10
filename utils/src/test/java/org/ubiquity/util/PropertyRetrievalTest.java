@@ -44,6 +44,7 @@ public class PropertyRetrievalTest {
         Assert.assertTrue(properties.containsKey("property3"));
 
         BytecodeProperty property1 = properties.get("property1");
+        Assert.assertFalse(property1.isPrimitive());
         Assert.assertEquals(property1.getAnnotations().size(), 2);
         Iterator<Annotation> annotationIterator = property1.getAnnotations().iterator();
         Annotation annotation1 = annotationIterator.next();

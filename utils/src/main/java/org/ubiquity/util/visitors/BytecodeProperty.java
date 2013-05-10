@@ -112,6 +112,14 @@ public final class BytecodeProperty {
         return getDefaultValue(this.genericSetter);
     }
 
+    public String getType() {
+        return typeGetter == null ? typeSetter : typeGetter;
+    }
+
+    public boolean isPrimitive() {
+        return !getType().contains("/");
+    }
+
     private String getDefaultValue(Map<String, String> genericsMap) {
         if(genericsMap == null || genericsMap.isEmpty()) {
             return null;
