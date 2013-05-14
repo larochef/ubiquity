@@ -15,9 +15,11 @@
  */
 package org.ubiquity.mirror.impl;
 
+import com.google.common.base.Objects;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableMap;
 import org.ubiquity.mirror.Mirror;
 import org.ubiquity.mirror.MirrorFactory;
 import org.ubiquity.util.ClassDefinition;
@@ -32,16 +34,17 @@ import java.util.concurrent.ExecutionException;
  */
 public final class MirrorFactoryImpl implements MirrorFactory {
 
-    private final LoadingCache<Class<?>, Mirror<?>> mirrorCache;
+    private final LoadingCache<MirrorKey, Mirror<?>> mirrorCache;
 
     final SimpleClassLoader loader;
 
     public MirrorFactoryImpl(final SimpleClassLoader loader) {
         this.loader = loader;
-        this.mirrorCache = CacheBuilder.newBuilder().build(new CacheLoader<Class<?>, Mirror<?>>() {
+        this.mirrorCache = CacheBuilder.newBuilder().build(new CacheLoader<MirrorKey, Mirror<?>>() {
             @Override
-            public Mirror<?> load(Class<?> aClass) throws Exception {
-                Collection<ClassDefinition> definitions = MirrorGenerator.generateMirror(aClass);
+            public Mirror<?> load(MirrorKey aKey) throws Exception {
+                Collection<ClassDefinition> definitions =
+                        MirrorGenerator.generateMirror(aKey.mirrorHandledClass, aKey.generics);
                 Class<?> c = null;
                 for(ClassDefinition def : definitions) {
                     c = loader.defineClass(def.getClassName().replace('/', '.'), def.getClassContent());
@@ -52,20 +55,49 @@ public final class MirrorFactoryImpl implements MirrorFactory {
                 return null;
             }
         });
-        this.mirrorCache.put(Map.class, new MapMirror());
+        this.mirrorCache.put(new MirrorKey(Map.class, null), new MapMirror());
     }
 
     @Override
     public <T> Mirror<T> getMirror(Class<T> requestedClass) {
+         return getMirror(requestedClass, null);
+    }
+
+    @Override
+    public <T> Mirror<T> getMirror(Class<T> requestedClass, Map<String, Class<?>> generics) {
         try {
             Class<?> resolvedClass = requestedClass;
             if(Map.class.isAssignableFrom(requestedClass)) {
                 resolvedClass = Map.class;
             }
-            return (Mirror<T>) mirrorCache.get(resolvedClass);
+            return (Mirror<T>) mirrorCache.get(new MirrorKey(resolvedClass, generics));
         } catch (ExecutionException e) {
             throw new IllegalStateException(e.getMessage(), e);
         }
     }
 
+    private static final class MirrorKey {
+        final Class<?> mirrorHandledClass;
+        final Map<String, Class<?>> generics;
+
+        MirrorKey(Class<?> mirrorHandledClass, Map<String, Class<?>> generics) {
+            this.generics = generics == null ? ImmutableMap.<String, Class<?>>of() : ImmutableMap.copyOf(generics);
+            this.mirrorHandledClass = mirrorHandledClass;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if(obj == null || obj.getClass() != getClass()) {
+                return false;
+            }
+            MirrorKey other = (MirrorKey) obj;
+            return this.mirrorHandledClass == other.mirrorHandledClass
+                    && this.generics.equals(other.generics);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(this.mirrorHandledClass, this.generics);
+        }
+    }
 }

@@ -21,6 +21,7 @@ import org.objectweb.asm.*;
 import org.ubiquity.util.ClassDefinition;
 import org.ubiquity.util.Constants;
 import org.ubiquity.util.visitors.BytecodeProperty;
+import org.ubiquity.util.visitors.GenericsVisitor;
 import org.ubiquity.util.visitors.PropertyRetrieverVisitor;
 import sun.org.mozilla.classfile.internal.ClassFileWriter;
 
@@ -48,10 +49,11 @@ public final class MirrorGenerator {
         // I am a utility class
     }
 
-    public static Collection<ClassDefinition> generateMirror(Class<?> aClass) throws IOException {
+    public static Collection<ClassDefinition> generateMirror(Class<?> aClass, Map<String, Class<?>> generics)
+            throws IOException {
         ClassReader reader = new ClassReader(aClass.getName());
         PropertyRetrieverVisitor visitor = new PropertyRetrieverVisitor();
-        reader.accept(visitor, 0);
+        reader.accept(new GenericsVisitor(visitor, generics), 0);
         Map<String, BytecodeProperty> properties = visitor.getProperties();
         String name = generateMirrorName(aClass);
         String handledClassName = byteCodeName(aClass.getName());

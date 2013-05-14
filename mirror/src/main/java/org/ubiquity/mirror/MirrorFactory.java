@@ -15,6 +15,8 @@
  */
 package org.ubiquity.mirror;
 
+import java.util.Map;
+
 /**
  * Interface defining mirrors retrieval, for mocking utilities
  */
@@ -28,5 +30,16 @@ public interface MirrorFactory {
      * @return a mirror able to handle the requested class
      */
     <T> Mirror<T> getMirror(Class<T> requestedClass);
+
+
+    /**
+     * Retrieve or create a mirror for a given class, applying generics with given classes
+     *
+     * @param requestedClass the class for which to request a mirror
+     * @param generics a map containing the generics, for instance {@code {"T" : com.mycompany.MyTObject.class}}
+     * @param <T> the type of the requested class
+     * @return a mirror able to handle the requested class
+     */
+    <T> Mirror<T> getMirror(Class<T> requestedClass, Map<String, Class<?>> generics);
 
 }
