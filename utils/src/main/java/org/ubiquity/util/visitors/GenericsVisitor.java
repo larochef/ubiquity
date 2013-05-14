@@ -21,10 +21,9 @@ import org.objectweb.asm.MethodVisitor;
 
 import java.util.Map;
 
-import static org.ubiquity.util.BytecodeStringUtils.byteCodeName;
-import static org.ubiquity.util.BytecodeStringUtils.getDescription;
+import static org.ubiquity.util.BytecodeStringUtils.*;
 import static org.ubiquity.util.Constants.ASM_LEVEL;
-import static org.ubiquity.util.BytecodeStringUtils.replaceAll;
+
 /**
  * Visitor used to make generics transparent, as if the class wasn't "generified".
  */
@@ -41,15 +40,17 @@ public final class GenericsVisitor extends ClassVisitor {
     public MethodVisitor visitMethod(int access, String name, String desc, String signature, String[] exceptions) {
         // if generics are matched, replace the generic by the concrete type defined.
         String newSignature = signature;
+        String newDesc = desc;
         if(signature != null) {
             for (Map.Entry<String, Class<?>> entry : generics.entrySet()) {
                 newSignature = replaceAll(newSignature,
                         "T" + entry.getKey() + ";",
                         getDescription(byteCodeName(entry.getValue().getName())));
             }
+            newDesc = signatureToDesc(newSignature);
         }
 
-        return super.visitMethod(access, name, desc, newSignature, exceptions);
+        return super.visitMethod(access, name, newDesc, newSignature, exceptions);
     }
 
 }

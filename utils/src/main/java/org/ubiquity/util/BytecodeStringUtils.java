@@ -76,4 +76,9 @@ public final class BytecodeStringUtils {
         }
         return from.substring(0, index) + replacement + replaceAll(from.substring(index + pattern.length()), pattern, replacement);
     }
+
+    public static String signatureToDesc(String signature) {
+        // TODO : code.me
+        return signature;
+    }
 }

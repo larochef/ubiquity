@@ -10,6 +10,7 @@ import org.ubiquity.util.CopierKey;
 import org.ubiquity.util.Tuple;
 import org.ubiquity.util.Constants;
 import org.ubiquity.util.visitors.BytecodeProperty;
+import org.ubiquity.util.visitors.GenericsVisitor;
 import org.ubiquity.util.visitors.PropertyRetrieverVisitor;
 
 import java.io.IOException;
@@ -21,7 +22,6 @@ import java.util.Map;
 
 import static org.objectweb.asm.Opcodes.*;
 import static org.ubiquity.bytecode.GeneratorHelper.*;
-import static org.ubiquity.bytecode.BytecodeStringUtils.*;
 import static org.ubiquity.util.Constants.COLLECTIONS;
 import static org.ubiquity.util.Constants.SIMPLE_PROPERTIES;
 /**
