@@ -15,7 +15,6 @@
  */
 package org.ubiquity.mirror.impl;
 
-import org.ubiquity.mirror.Function;
 import org.ubiquity.mirror.Mirror;
 import org.ubiquity.mirror.Property;
 
