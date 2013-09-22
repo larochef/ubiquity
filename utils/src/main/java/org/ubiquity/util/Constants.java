@@ -28,7 +28,7 @@ import java.util.regex.Pattern;
  */
 public final class Constants {
     private Constants() {
-        // Do not instanciate objects
+        // Do not instantiate objects
     }
 
     /**

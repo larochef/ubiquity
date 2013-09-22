@@ -21,7 +21,7 @@ import org.objectweb.asm.MethodVisitor;
 
 import java.util.Map;
 
-import static org.ubiquity.util.BytecodeStringUtils.*;
+import static org.ubiquity.util.ByteCodeStringUtils.*;
 import static org.ubiquity.util.Constants.ASM_LEVEL;
 
 /**

@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  *
  * @author françois LAROCHE
  */
-public final class BytecodeStringUtils {
+public final class ByteCodeStringUtils {
 
     private static final Map<String, Class<?>> PRIMITIVE_TYPES;
 
@@ -49,7 +49,9 @@ public final class BytecodeStringUtils {
                 .build();
     }
 
-    private BytecodeStringUtils() {}
+    private ByteCodeStringUtils() {
+        // Do not instantiate a utility class
+    }
 
     static final String OBJECT_CLASS = "java/lang/Object";
 

@@ -18,23 +18,23 @@ package org.ubiquity.util;
 import org.junit.Assert;
 
 /**
- * Test for the {@link BytecodeStringUtils} class
+ * Test for the {@link ByteCodeStringUtils} class
  */
-public class BytecodeStringUtilsTest {
+public class ByteCodeStringUtilsTest {
 
     @org.junit.Test
     public void testClassRetrieval() {
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("B"), Byte.class);
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("C"), Character.class);
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("D"), Double.class);
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("F"), Float.class);
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("I"), Integer.class);
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("L"), Long.class);
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("S"), Short.class);
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("Z"), Boolean.class);
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("java/lang/Object"), Object.class);
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("Ljava/lang/Object;"), Object.class);
-        Assert.assertSame(BytecodeStringUtils.toJavaClas("[Ljava/lang/Object;"), Object[].class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("B"), Byte.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("C"), Character.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("D"), Double.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("F"), Float.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("I"), Integer.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("L"), Long.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("S"), Short.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("Z"), Boolean.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("java/lang/Object"), Object.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("Ljava/lang/Object;"), Object.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClas("[Ljava/lang/Object;"), Object[].class);
 
     }
 
