@@ -32,8 +32,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.objectweb.asm.Opcodes.*;
-import static org.ubiquity.util.BytecodeStringUtils.byteCodeName;
-import static org.ubiquity.util.BytecodeStringUtils.getDescription;
+import static org.ubiquity.util.ByteCodeStringUtils.byteCodeName;
+import static org.ubiquity.util.ByteCodeStringUtils.getDescription;
 
 /**
  * Generate mirrors bytecode
