@@ -15,6 +15,9 @@
  */
 package org.ubiquity.util;
 
+import com.google.common.collect.ImmutableMap;
+
+import java.util.Map;
 import java.util.regex.Pattern;
 
 /**
@@ -29,7 +32,22 @@ import java.util.regex.Pattern;
  */
 public final class BytecodeStringUtils {
 
+    private static final Map<String, Class<?>> PRIMITIVE_TYPES;
+
     private static final Pattern NAME_CLEANER_PATTERN = Pattern.compile("[/;]");
+
+    static {
+        PRIMITIVE_TYPES = new ImmutableMap.Builder<String, Class<?>>()
+                .put("B", Byte.class)
+                .put("C", Character.class)
+                .put("D", Double.class)
+                .put("F", Float.class)
+                .put("I", Integer.class)
+                .put("L", Long.class)
+                .put("S", Short.class)
+                .put("Z", Boolean.class)
+                .build();
+    }
 
     private BytecodeStringUtils() {}
 
@@ -75,6 +93,34 @@ public final class BytecodeStringUtils {
             return from;
         }
         return from.substring(0, index) + replacement + replaceAll(from.substring(index + pattern.length()), pattern, replacement);
+    }
+
+    /**
+     * Retrieves a class from the bytecode name.
+     *
+     * Primitive types will be transformed to the boxed type.
+     * It works for classes as well as for arrays.
+     *
+     * @param byteCodeName the name describing the class.
+     * @return the name usable
+     */
+    public static Class<?> toJavaClas(String byteCodeName) {
+        if(PRIMITIVE_TYPES.containsKey(byteCodeName)) {
+            return PRIMITIVE_TYPES.get(byteCodeName);
+        }
+        // Handle arrays
+        String className;
+        if(byteCodeName.charAt(0) == '[') {
+            className = replaceAll(getDescription(byteCodeName), "/", ".");
+        }
+        else {
+            className = replaceAll(byteCodeName(byteCodeName), "/", ".");
+        }
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            throw new IllegalArgumentException("Unable to load class " + className, e);
+        }
     }
 
     public static String signatureToDesc(String signature) {
