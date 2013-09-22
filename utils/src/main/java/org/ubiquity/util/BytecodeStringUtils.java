@@ -18,7 +18,6 @@ package org.ubiquity.util;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
-import java.util.regex.Pattern;
 
 /**
  * Utility class used to manipulate Strings : create bytecode names, replacements, and so on.
@@ -33,8 +32,6 @@ import java.util.regex.Pattern;
 public final class ByteCodeStringUtils {
 
     private static final Map<String, Class<?>> PRIMITIVE_TYPES;
-
-    private static final Pattern NAME_CLEANER_PATTERN = Pattern.compile("[/;]");
 
     static {
         PRIMITIVE_TYPES = new ImmutableMap.Builder<String, Class<?>>()
@@ -53,12 +50,15 @@ public final class ByteCodeStringUtils {
         // Do not instantiate a utility class
     }
 
-    static final String OBJECT_CLASS = "java/lang/Object";
-
-    static String byteCodeName(Class<?> c) {
-        return byteCodeName(c.getName());
-    }
-
+    /**
+     * Gets the type byte code name.
+     * It is used when casting and so on.
+     *
+     * The byte code name will not contain any [ nor L....;
+     *
+     * @param c the String to ensure into a byte code type name
+     * @return the name to be used in the byte code
+     */
     public static String byteCodeName(String c) {
         String name = c.replace('.', '/');
         if(name.startsWith("[")) {
@@ -73,6 +73,14 @@ public final class ByteCodeStringUtils {
         return name;
     }
 
+    /**
+     * Transforms a String representing a class name into its representation usable in methods prototypes.
+     *
+     * String transformed by this method will typically contain L...; if needed
+     *
+     * @param className the representation of class name (it must have slashed instead of points)
+     * @return the class name, ready to be used in a prototype
+     */
     public static String getDescription(String className){
         if(className.indexOf('/') < 0) {
             return className;
@@ -86,6 +94,15 @@ public final class ByteCodeStringUtils {
         return 'L' + className + ';';
     }
 
+    /**
+     * Replace all occurrences of a String by another one.
+     * This method is null-safe
+     *
+     * @param from the source String, containing the text to handle
+     * @param pattern the STring to replace
+     * @param replacement the replacement
+     * @return the replaced String
+     */
     public static String replaceAll(String from, String pattern, String replacement) {
         if(from == null || pattern == null || replacement == null) {
             return from;
@@ -125,6 +142,12 @@ public final class ByteCodeStringUtils {
         }
     }
 
+    /**
+     * Transforms a signature name (ie potentially containing generics) into a signature name (no generics)
+     *
+     * @param signature the signature to escape
+     * @return the corresponding description
+     */
     public static String signatureToDesc(String signature) {
         // TODO : code.me
         return signature;
