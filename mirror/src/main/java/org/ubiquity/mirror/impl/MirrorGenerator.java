@@ -17,13 +17,16 @@ package org.ubiquity.mirror.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.objectweb.asm.*;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.Type;
 import org.ubiquity.util.ClassDefinition;
 import org.ubiquity.util.Constants;
 import org.ubiquity.util.visitors.BytecodeProperty;
 import org.ubiquity.util.visitors.GenericsVisitor;
 import org.ubiquity.util.visitors.PropertyRetrieverVisitor;
-import sun.org.mozilla.classfile.internal.ClassFileWriter;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -36,6 +39,8 @@ import static org.ubiquity.util.ByteCodeStringUtils.byteCodeName;
 import static org.ubiquity.util.ByteCodeStringUtils.getDescription;
 
 /**
+ * TODO : document.me properly !!
+ *
  * Generate mirrors bytecode
  */
 public final class MirrorGenerator {
@@ -72,7 +77,7 @@ public final class MirrorGenerator {
     }
 
     private static void generateConstructor(ClassWriter writer) {
-        MethodVisitor visitor = writer.visitMethod(ClassFileWriter.ACC_PUBLIC, "<init>", "()V", null, null);
+        MethodVisitor visitor = writer.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         visitor.visitIntInsn(ALOAD, 0);
         visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/impl/AbstractMirror", "<init>", "()V");
         visitor.visitInsn(RETURN);
@@ -144,7 +149,15 @@ public final class MirrorGenerator {
             createBooleanMethod(writer, "isWritable");
         }
 
+        if(!property.getAnnotations().isEmpty()) {
+            createGetAnnotations(writer, property);
+        }
+
         return writer.toByteArray();
+    }
+
+    private static void createGetAnnotations(ClassWriter writer, BytecodeProperty property) {
+        // TODO : implement.me
     }
 
     private static void createInnerClassConstructor(ClassWriter writer, BytecodeProperty property) {

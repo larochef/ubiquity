@@ -15,7 +15,11 @@
  */
 package org.ubiquity.mirror.impl;
 
+import com.google.common.collect.ImmutableList;
+import org.ubiquity.mirror.Annotation;
 import org.ubiquity.mirror.Property;
+
+import java.util.List;
 
 /**
  * Abstract property, to make bytecode generation more simple
@@ -59,5 +63,10 @@ public abstract class AbstractProperty<T, U> implements Property<T, U> {
     @Override
     public Class<U> getWrappedClass() {
         return this.wrappedClass;
+    }
+
+    @Override
+    public List<Annotation> getAnnotations() {
+        return ImmutableList.of();
     }
 }

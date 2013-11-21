@@ -15,8 +15,11 @@
  */
 package org.ubiquity.mirror.impl;
 
+import com.google.common.collect.ImmutableList;
+import org.ubiquity.mirror.Annotation;
 import org.ubiquity.mirror.Property;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,5 +63,10 @@ public final class MapProperty<T> implements Property<Map, T> {
     @Override
     public String getName() {
         return propertyName;
+    }
+
+    @Override
+    public List<Annotation> getAnnotations() {
+        return ImmutableList.of();
     }
 }

@@ -24,17 +24,17 @@ public class ByteCodeStringUtilsTest {
 
     @org.junit.Test
     public void testClassRetrieval() {
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("B"), Byte.class);
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("C"), Character.class);
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("D"), Double.class);
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("F"), Float.class);
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("I"), Integer.class);
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("L"), Long.class);
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("S"), Short.class);
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("Z"), Boolean.class);
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("java/lang/Object"), Object.class);
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("Ljava/lang/Object;"), Object.class);
-        Assert.assertSame(ByteCodeStringUtils.toJavaClas("[Ljava/lang/Object;"), Object[].class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("B"), Byte.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("C"), Character.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("D"), Double.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("F"), Float.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("I"), Integer.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("L"), Long.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("S"), Short.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("Z"), Boolean.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("java/lang/Object"), Object.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("Ljava/lang/Object;"), Object.class);
+        Assert.assertSame(ByteCodeStringUtils.toJavaClass("[Ljava/lang/Object;"), Object[].class);
 
     }
 

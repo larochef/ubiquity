@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
 import java.util.Map;
 
 /**
- * Utility class used to manipulate Strings : create bytecode names, replacements, and so on.
+ * Utility class used to manipulate Strings : create byte code names, replacements, and so on.
  * <br />
  * These methods have been moved to here to make other classes clearer.
  * <br />
@@ -123,7 +123,7 @@ public final class ByteCodeStringUtils {
      * @param byteCodeName the name describing the class.
      * @return the name usable
      */
-    public static Class<?> toJavaClas(String byteCodeName) {
+    public static Class<?> toJavaClass(String byteCodeName) {
         if(PRIMITIVE_TYPES.containsKey(byteCodeName)) {
             return PRIMITIVE_TYPES.get(byteCodeName);
         }

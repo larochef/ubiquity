@@ -15,6 +15,8 @@
  */
 package org.ubiquity.mirror;
 
+import java.util.List;
+
 /**
  * Interface used to manipulate a property.
  */
@@ -69,5 +71,12 @@ public interface Property<T, U> {
      * @return the name of this property
      */
     String getName();
+
+    /**
+     * retrieves the annotations linked to this property
+     *
+     * @return the annotations from this property
+     */
+    List<Annotation> getAnnotations();
 
 }
