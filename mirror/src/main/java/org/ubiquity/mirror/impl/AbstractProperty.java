@@ -28,10 +28,12 @@ public abstract class AbstractProperty<T, U> implements Property<T, U> {
 
     private final String name;
     private final Class<U> wrappedClass;
+    private final List<Annotation> annotations;
 
     protected AbstractProperty(String name, Class<U> wrappedClass) {
         this.name = name;
         this.wrappedClass = wrappedClass;
+        this.annotations = ImmutableList.copyOf(buildAnnotations());
     }
 
     @Override
@@ -67,6 +69,10 @@ public abstract class AbstractProperty<T, U> implements Property<T, U> {
 
     @Override
     public List<Annotation> getAnnotations() {
+        return this.annotations;
+    }
+
+    protected List<Annotation> buildAnnotations() {
         return ImmutableList.of();
     }
 }

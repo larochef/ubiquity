@@ -24,6 +24,8 @@ import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.ubiquity.util.ClassDefinition;
 import org.ubiquity.util.Constants;
+import org.ubiquity.util.visitors.Annotation;
+import org.ubiquity.util.visitors.AnnotationProperty;
 import org.ubiquity.util.visitors.BytecodeProperty;
 import org.ubiquity.util.visitors.GenericsVisitor;
 import org.ubiquity.util.visitors.PropertyRetrieverVisitor;
@@ -35,8 +37,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.objectweb.asm.Opcodes.*;
-import static org.ubiquity.util.ByteCodeStringUtils.byteCodeName;
-import static org.ubiquity.util.ByteCodeStringUtils.getDescription;
+import static org.ubiquity.util.ByteCodeStringUtils.*;
 
 /**
  * TODO : document.me properly !!
@@ -157,7 +158,30 @@ public final class MirrorGenerator {
     }
 
     private static void createGetAnnotations(ClassWriter writer, BytecodeProperty property) {
-        // TODO : implement.me
+        MethodVisitor visitor = writer.visitMethod(ACC_PROTECTED, "buildAnnotations", "()Ljava/util/List;",
+                "()Ljava/util/List<Lorg/ubiquity/mirror/Annotation;>;", null);
+        visitor.visitMethodInsn(INVOKESTATIC, "com/google/common.collect/ImmutableList", "builder",
+                "()Lcom/google/common.collect/ImmutableList$Builder;");
+        for(Annotation annotation : property.getAnnotations()) {
+            visitor.visitLdcInsn(toJavaClass(annotation.getClazz()));
+            visitor.visitLdcInsn(annotation.isVisible());
+            visitor.visitMethodInsn(INVOKESTATIC, "com/google/common.collect/ImmutableMap", "builder",
+                    "()Lcom/google/common.collect/ImmutableMap$Builder;");
+            for(Map.Entry<String, AnnotationProperty> prop : annotation.getProperties().entrySet()) {
+                // TODO : create the properties
+            }
+            visitor.visitMethodInsn(INVOKEVIRTUAL, "com/google/common.collect/ImmutableMap$Builder", "build",
+                    "()Lcom/google/common.collect/ImmutableMap;");
+            visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/Annotation", "<init>",
+                    "(Ljava/lang/Class;Z;Ljava/util/Map;)Lorg/ubiquity/mirror/Annotation;");
+            visitor.visitMethodInsn(INVOKEVIRTUAL, "com/google/common.collect/ImmutableList$Builder",
+                    "add", "(Ljava/lang/Object;)Lcom/google/common.collect/ImmutableList$Builder;");
+        }
+        visitor.visitMethodInsn(INVOKEVIRTUAL, "com/google/common.collect/ImmutableList$Builder", "build",
+                "()Lcom/google/common.collect/ImmutableList;");
+        visitor.visitInsn(ARETURN);
+        visitor.visitMaxs(0, 0);
+        visitor.visitEnd();
     }
 
     private static void createInnerClassConstructor(ClassWriter writer, BytecodeProperty property) {
