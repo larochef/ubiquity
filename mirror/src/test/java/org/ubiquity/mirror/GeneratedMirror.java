@@ -16,8 +16,10 @@
 package org.ubiquity.mirror;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import org.ubiquity.mirror.impl.AbstractMirror;
 import org.ubiquity.mirror.impl.AbstractProperty;
+import org.ubiquity.mirror.objects.BasicAnnotation;
 import org.ubiquity.mirror.objects.ValueObject;
 
 import java.util.Map;
@@ -37,6 +39,12 @@ public class GeneratedMirror extends AbstractMirror<ValueObject> {
     }
 
     static class Property1 extends AbstractProperty<ValueObject, String> {
+
+        public Object test() {
+            ImmutableMap.Builder<String, AnnotationProperty> builder = ImmutableMap.builder();
+            return new Annotation(BasicAnnotation.class, true, Maps.<String, AnnotationProperty>newHashMap());
+        }
+
         public Property1() {
             super("property1", String.class);
         }

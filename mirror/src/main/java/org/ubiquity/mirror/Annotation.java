@@ -23,6 +23,10 @@ import java.util.Map;
  */
 public final class Annotation {
 
+    static Annotation create(Class<?> annotationClass, boolean visible, java.util.Map<String, AnnotationProperty> properties) {
+        return new Annotation(annotationClass, visible, properties);
+    }
+
     private final Class<?> annotationClass;
     private final boolean visible;
     private final Map<String, AnnotationProperty> properties;
