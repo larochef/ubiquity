@@ -15,6 +15,7 @@
  */
 package org.ubiquity.mirror;
 
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
@@ -26,11 +27,13 @@ public final class Annotation {
     private final Class<?> annotationClass;
     private final boolean visible;
     private final Map<String, AnnotationProperty> properties;
+    private final int hash;
 
     public Annotation(Class<?> annotationClass, boolean visible, java.util.Map<String, AnnotationProperty> properties) {
         this.annotationClass = annotationClass;
         this.visible = visible;
         this.properties = ImmutableMap.copyOf(properties);
+        this.hash = Objects.hashCode(annotationClass, visible, this.properties);
     }
 
     public Class<?> getAnnotationClass() {
@@ -43,5 +46,25 @@ public final class Annotation {
 
     public java.util.Map<String, AnnotationProperty> getProperties() {
         return properties;
+    }
+
+
+    @Override
+    public int hashCode() {
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) {
+            return false;
+        }
+        if(obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        Annotation other = (Annotation) obj;
+        return Objects.equal(this.annotationClass, other.annotationClass)
+                && this.visible == other.visible
+                && Objects.equal(this.properties, other.properties);
     }
 }

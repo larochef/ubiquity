@@ -15,7 +15,52 @@
  */
 package org.ubiquity.mirror;
 
+import com.google.common.base.Objects;
+
 /**
  */
 public final class AnnotationProperty<T> {
+
+    private final String name;
+    private final Class<T> valueClass;
+    private final T value;
+    private final int hash;
+
+    public AnnotationProperty(String name, Class<T> valueClass, T value) {
+        this.name = name;
+        this.valueClass = valueClass;
+        this.value = value;
+        this.hash = Objects.hashCode(name, valueClass, value);
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Class<T> getValueClass() {
+        return valueClass;
+    }
+
+    public T getValue() {
+        return value;
+    }
+
+    @Override
+    public int hashCode() {
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) {
+            return true;
+        }
+        if(obj == null || getClass() != getClass()) {
+            return false;
+        }
+        AnnotationProperty other = (AnnotationProperty) obj;
+        return Objects.equal(this.name, other.name)
+                && Objects.equal(this.valueClass, other.valueClass)
+                && Objects.equal(this.value, other.value);
+    }
 }
