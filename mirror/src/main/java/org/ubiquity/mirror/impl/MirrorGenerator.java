@@ -25,6 +25,7 @@ import org.objectweb.asm.Type;
 import org.ubiquity.util.ClassDefinition;
 import org.ubiquity.util.Constants;
 import org.ubiquity.util.visitors.Annotation;
+import org.ubiquity.util.visitors.AnnotationProperty;
 import org.ubiquity.util.visitors.BytecodeProperty;
 import org.ubiquity.util.visitors.GenericsVisitor;
 import org.ubiquity.util.visitors.PropertyRetrieverVisitor;
@@ -163,26 +164,8 @@ public final class MirrorGenerator {
         visitor.visitMethodInsn(INVOKESTATIC, "com/google/common/collect/ImmutableList", "builder",
                 "()Lcom/google/common/collect/ImmutableList$Builder;");
         for(Annotation annotation : property.getAnnotations()) {
-            visitor.visitTypeInsn(NEW, "org/ubiquity/mirror/Annotation");
-            visitor.visitInsn(DUP);
-            visitor.visitLdcInsn(Type.getType(annotation.getClazz()));
-            if(annotation.isVisible()) {
-                visitor.visitInsn(ICONST_1);
-            }
-            else {
-                visitor.visitInsn(ICONST_0);
-            }
-            visitor.visitMethodInsn(INVOKESTATIC, "com/google/common/collect/ImmutableMap", "builder",
-                    "()Lcom/google/common/collect/ImmutableMap$Builder;");
 
-//            for(Map.Entry<String, AnnotationProperty> prop : annotation.getProperties().entrySet()) {
-//                // TODO : create the properties
-//            }
-            visitor.visitMethodInsn(INVOKEVIRTUAL, "com/google/common/collect/ImmutableMap$Builder", "build",
-                    "()Lcom/google/common/collect/ImmutableMap;");
-
-            visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/Annotation", "<init>",
-                    "(Ljava/lang/Class;ZLjava/util/Map;)V");
+            mapAnnotation(visitor, annotation);
 
             visitor.visitMethodInsn(INVOKEVIRTUAL, "com/google/common/collect/ImmutableList$Builder",
                     "add", "(Ljava/lang/Object;)Lcom/google/common/collect/ImmutableList$Builder;");
@@ -192,6 +175,36 @@ public final class MirrorGenerator {
         visitor.visitInsn(ARETURN);
         visitor.visitMaxs(0, 0);
         visitor.visitEnd();
+    }
+
+    private static void mapAnnotation(MethodVisitor visitor, Annotation annotation) {
+        visitor.visitTypeInsn(NEW, "org/ubiquity/mirror/Annotation");
+        visitor.visitInsn(DUP);
+        visitor.visitLdcInsn(Type.getType(annotation.getClazz()));
+        if(annotation.isVisible()) {
+            visitor.visitInsn(ICONST_1);
+        }
+        else {
+            visitor.visitInsn(ICONST_0);
+        }
+        visitor.visitMethodInsn(INVOKESTATIC, "com/google/common/collect/ImmutableMap", "builder",
+                "()Lcom/google/common/collect/ImmutableMap$Builder;");
+
+        for(Map.Entry<String, AnnotationProperty> prop : annotation.getProperties().entrySet()) {
+            visitor.visitLdcInsn(prop.getKey());
+            mapAnnotationProperty(visitor, prop.getValue());
+            visitor.visitMethodInsn(INVOKEVIRTUAL, "com/google/common/collect/ImmutableMap$Builder", "put",
+                    "(Ljava/lang/Object;Ljava/lang/Object;)Lcom/google/common/collect/ImmutableMap$Builder;");
+        }
+        visitor.visitMethodInsn(INVOKEVIRTUAL, "com/google/common/collect/ImmutableMap$Builder", "build",
+                "()Lcom/google/common/collect/ImmutableMap;");
+
+        visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/Annotation", "<init>",
+                "(Ljava/lang/Class;ZLjava/util/Map;)V");
+    }
+
+    private static void mapAnnotationProperty(MethodVisitor visitor, AnnotationProperty property) {
+
     }
 
     private static void createInnerClassConstructor(ClassWriter writer, BytecodeProperty property) {
