@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import static org.objectweb.asm.Opcodes.*;
 import static org.ubiquity.util.ByteCodeStringUtils.byteCodeName;
 import static org.ubiquity.util.ByteCodeStringUtils.getDescription;
+import static org.ubiquity.util.ByteCodeStringUtils.toJavaClass;
 
 /**
  * TODO : document.me properly !!
@@ -50,7 +51,7 @@ public final class MirrorGenerator {
     private static final String MIRROR_PREFIX = "org/ubiquity/mirror/Mirror$";
     private static final AtomicLong SEQUENCE = new AtomicLong();
     private static final String BUILD_PROPERTIES_SIGNATURE =
-            "()Ljava/util/Map<Ljava/lang/String;Lorg/ubiquity/mirror/Property<Lorg/ubiquity/mirror/objects/ValueObject;*>;>;";
+            "()Ljava/util/Map<Ljava/lang/String;Lorg/ubiquity/mirror/Property<Lorg/ubiquity/mirror/objects/ValueObject;>;>;";
 
     private MirrorGenerator() {
         // I am a utility class
@@ -207,7 +208,7 @@ public final class MirrorGenerator {
         visitor.visitTypeInsn(NEW, "org/ubiquity/mirror/AnnotationProperty");
         visitor.visitInsn(DUP);
         visitor.visitLdcInsn(property.getName());
-        visitor.visitLdcInsn(Type.getType(property.getClass()));
+        visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
         visitor.visitLdcInsn(property.getValue());
         visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/AnnotationProperty", "<init>",
                 "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)V");
