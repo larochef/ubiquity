@@ -6,7 +6,7 @@ public class SimpleAnnotatedObject {
 
     private String annotatedField;
 
-    @BasicAnnotation
+    @BasicAnnotation("testMe")
     public String getAnnotatedField() {
         return annotatedField;
     }

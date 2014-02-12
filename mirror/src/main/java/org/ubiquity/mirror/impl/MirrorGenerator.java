@@ -204,7 +204,13 @@ public final class MirrorGenerator {
     }
 
     private static void mapAnnotationProperty(MethodVisitor visitor, AnnotationProperty property) {
-
+        visitor.visitTypeInsn(NEW, "org/ubiquity/mirror/AnnotationProperty");
+        visitor.visitInsn(DUP);
+        visitor.visitLdcInsn(property.getName());
+        visitor.visitLdcInsn(Type.getType(property.getClass()));
+        visitor.visitLdcInsn(property.getValue());
+        visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/AnnotationProperty", "<init>",
+                "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)V");
     }
 
     private static void createInnerClassConstructor(ClassWriter writer, BytecodeProperty property) {

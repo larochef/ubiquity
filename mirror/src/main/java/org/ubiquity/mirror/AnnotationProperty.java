@@ -55,7 +55,7 @@ public final class AnnotationProperty<T> {
         if(this == obj) {
             return true;
         }
-        if(obj == null || getClass() != getClass()) {
+        if(obj == null || getClass() != obj.getClass()) {
             return false;
         }
         AnnotationProperty other = (AnnotationProperty) obj;
