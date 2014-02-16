@@ -17,6 +17,7 @@ package org.ubiquity.util.visitors;
 
 import com.google.common.collect.Maps;
 import org.objectweb.asm.AnnotationVisitor;
+import org.ubiquity.util.ByteCodeStringHelper;
 import org.ubiquity.util.Constants;
 
 import java.util.Map;
@@ -48,7 +49,7 @@ final class AnnotationParser extends AnnotationVisitor {
         AnnotationProperty<Object> property = new AnnotationProperty<Object>();
         property.setName(name);
         property.setValue(value);
-        property.setDesc(org.ubiquity.util.ByteCodeStringUtils.byteCodeName(value.getClass().getName()));
+        property.setDesc(ByteCodeStringHelper.byteCodeName(value.getClass().getName()));
         this.annotation.getProperties().put(name, property);
     }
 
