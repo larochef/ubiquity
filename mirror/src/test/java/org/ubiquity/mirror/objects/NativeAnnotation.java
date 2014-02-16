@@ -1,8 +1,15 @@
 package org.ubiquity.mirror.objects;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * Created by francois on 12/02/14.
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 public @interface NativeAnnotation {
 
     int intValue() default 0;
