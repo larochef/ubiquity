@@ -26,7 +26,7 @@
     <modules>
         <module>utils</module>
         <module>mirror</module>
-        <module>copy</module>
+        <!--<module>copy</module>-->
     </modules>
 
     <description>
@@ -96,25 +96,25 @@
             <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm</artifactId>
-                <version>[4.0,5)</version>
+                <version>${asm.version}</version>
             </dependency>
 
             <dependency>
                 <groupId>com.google.guava</groupId>
                 <artifactId>guava</artifactId>
-                <version>[11,]</version>
+                <version>15.0</version>
             </dependency>
             <!-- <version>[1.0,]</version> -->
             <dependency>
                 <groupId>junit</groupId>
                 <artifactId>junit</artifactId>
-                <version>[4,]</version>
+                <version>4.11</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.ow2.asm</groupId>
                 <artifactId>asm-util</artifactId>
-                <version>[4.0,5)</version>
+                <version>${asm.version}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
@@ -161,5 +161,9 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <properties>
+        <asm.version>4.2</asm.version>
+    </properties>
 
 </project>

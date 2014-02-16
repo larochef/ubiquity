@@ -37,9 +37,9 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.objectweb.asm.Opcodes.*;
-import static org.ubiquity.util.ByteCodeStringUtils.byteCodeName;
-import static org.ubiquity.util.ByteCodeStringUtils.getDescription;
-import static org.ubiquity.util.ByteCodeStringUtils.toJavaClass;
+import static org.ubiquity.util.ByteCodeStringHelper.byteCodeName;
+import static org.ubiquity.util.ByteCodeStringHelper.getDescription;
+import static org.ubiquity.util.ByteCodeStringHelper.toJavaClass;
 
 /**
  * TODO : document.me properly !!
@@ -135,7 +135,7 @@ public final class MirrorGenerator {
         if(property.isPrimitive()) {
             resolvedType = Constants.SIMPLE_PROPERTIES.get(resolvedType);
         }
-        writer.visit(Constants.JAVA_VERSION, ACC_PUBLIC, name,
+        writer.visit(Constants.JAVA_VERSION, ACC_PUBLIC | ACC_STATIC, name,
                 "Lorg/ubiquity/mirror/impl/AbstractProperty<"
                         + getDescription(handledClass) + resolvedType + ">;",
                 "org/ubiquity/mirror/impl/AbstractProperty", null);

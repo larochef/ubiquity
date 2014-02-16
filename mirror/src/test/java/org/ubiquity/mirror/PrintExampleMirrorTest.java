@@ -27,7 +27,7 @@ import java.io.PrintWriter;
  *
  * @author François LAROCHE
  */
-public class PrintGeneratedMirrorTest {
+public class PrintExampleMirrorTest {
 
     @Test
     public void printGeneratedMirror() throws Exception {
