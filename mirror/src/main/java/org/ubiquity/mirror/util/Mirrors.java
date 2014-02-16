@@ -25,7 +25,7 @@ import org.ubiquity.util.SimpleClassLoader;
  */
 public final class Mirrors {
     private Mirrors() {
-        // Do not instanciate
+        // Do not instantiate
     }
 
     /**
