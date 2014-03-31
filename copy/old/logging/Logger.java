@@ -1,4 +1,4 @@
-package org.ubiquity.logging;
+package org.ubiquity.copy.logging;
 
 /**
  * Interface defining a Logger.

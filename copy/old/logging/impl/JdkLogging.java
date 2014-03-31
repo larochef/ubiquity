@@ -1,7 +1,7 @@
-package org.ubiquity.logging.impl;
+package org.ubiquity.copy.logging.impl;
 
-import org.ubiquity.logging.Logger;
-import org.ubiquity.logging.LoggerFactory;
+import org.ubiquity.copy.logging.Logger;
+import org.ubiquity.copy.logging.LoggerFactory;
 
 import java.util.logging.Level;
 

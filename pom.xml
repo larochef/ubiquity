@@ -26,7 +26,7 @@
     <modules>
         <module>utils</module>
         <module>mirror</module>
-        <!--<module>copy</module>-->
+        <module>copy</module>
     </modules>
 
     <description>

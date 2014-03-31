@@ -1,9 +1,9 @@
-package org.ubiquity.logging.impl;
+package org.ubiquity.copy.logging.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.ubiquity.logging.Logger;
-import org.ubiquity.logging.LoggerFactory;
+import org.ubiquity.copy.logging.Logger;
+import org.ubiquity.copy.logging.LoggerFactory;
 
 /**
  * Logging configuration for commons-logging.

@@ -13,39 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ubiquity.util;
+package org.ubiquity.copy.annotation;
 
-import org.ubiquity.copy.CollectionFactory;
-
-import java.util.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Simple collection factory that should be fine for most cases.
+ * Ignores a property for copy.
+ * This annotation can be used either on getter or on setter, with same effect.
  *
- * Date: 24/04/12
+ * Date: 16/04/12
  *
  * @author François LAROCHE
  */
-public enum DefaultCollectionFactory implements CollectionFactory {
-    INSTANCE;
-
-    @Override
-    public <T> List<T> newList() {
-        return new ArrayList<T>();
-    }
-
-    @Override
-    public <T> Set<T> newSet() {
-        return new HashSet<T>();
-    }
-
-    @Override
-    public <K, T> Map<K, T> newMap() {
-        return new HashMap<K, T>();
-    }
-
-    @Override
-    public <T> Collection<T> newCollection() {
-        return new ArrayList<T>();
-    }
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.METHOD)
+public @interface CopyIgnore {
 }

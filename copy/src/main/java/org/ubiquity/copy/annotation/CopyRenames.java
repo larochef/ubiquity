@@ -13,39 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.ubiquity.util;
+package org.ubiquity.copy.annotation;
 
-import org.ubiquity.copy.CollectionFactory;
-
-import java.util.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * Simple collection factory that should be fine for most cases.
+ * Annotation allowing multiple configuration for the same property.
  *
- * Date: 24/04/12
+ * Date: 25/05/12
  *
  * @author François LAROCHE
  */
-public enum DefaultCollectionFactory implements CollectionFactory {
-    INSTANCE;
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.METHOD)
+public @interface CopyRenames {
 
-    @Override
-    public <T> List<T> newList() {
-        return new ArrayList<T>();
-    }
+    /**
+     * The different property configurations for the target property
+     *
+     * @return the different property configurations for the target property
+     */
+    public CopyRename[] configurations();
 
-    @Override
-    public <T> Set<T> newSet() {
-        return new HashSet<T>();
-    }
-
-    @Override
-    public <K, T> Map<K, T> newMap() {
-        return new HashMap<K, T>();
-    }
-
-    @Override
-    public <T> Collection<T> newCollection() {
-        return new ArrayList<T>();
-    }
 }

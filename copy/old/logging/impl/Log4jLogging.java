@@ -1,19 +1,19 @@
-package org.ubiquity.logging.impl;
+package org.ubiquity.copy.logging.impl;
 
-import org.ubiquity.logging.Logger;
-import org.ubiquity.logging.LoggerFactory;
+import org.ubiquity.copy.logging.Logger;
+import org.ubiquity.copy.logging.LoggerFactory;
 
 /**
-* Logging configuration for slf4j.
-* <br />
-* Date: 05/06/12
-* Time: 11:05
-*
-* @author françois LAROCHE
-*/
-public class Slf4jLogging {
+ * Logging configuration for Log4j.
+ * <br />
+ * Date: 05/06/12
+ * Time: 10:57
+ *
+ * @author françois LAROCHE
+ */
+public class Log4jLogging {
 
-    public static LoggerFactory getSlf4jFactory() {
+    public static LoggerFactory getLog4jFactory() {
         return Factory.INSTANCE;
     }
 
@@ -22,14 +22,14 @@ public class Slf4jLogging {
 
         @Override
         public Logger getLogger(Class<?> c) {
-            return new Slf4jLogger(org.slf4j.LoggerFactory.getLogger(c));
+            return new Log4jLogger(org.apache.log4j.Logger.getLogger(c));
         }
     }
 
-    private static class Slf4jLogger implements Logger {
-        private final org.slf4j.Logger logger;
+    private static class Log4jLogger implements Logger {
+        private final org.apache.log4j.Logger logger;
 
-        Slf4jLogger(org.slf4j.Logger logger) {
+        Log4jLogger(org.apache.log4j.Logger logger) {
             this.logger = logger;
         }
 
