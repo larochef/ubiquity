@@ -15,6 +15,16 @@
  */
 package org.ubiquity.mirror.objects;
 
-public enum TestEnum {
-    VALUE1, VALUE2
+public class ArrayAnnotatedObject {
+
+    private String property;
+
+    @ArrayAnnotation(intValue = {1, 2, 3})
+    public String getProperty() {
+        return property;
+    }
+
+    public void setProperty(String property) {
+        this.property = property;
+    }
 }
