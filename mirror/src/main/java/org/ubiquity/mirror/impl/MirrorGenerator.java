@@ -17,18 +17,10 @@ package org.ubiquity.mirror.impl;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import org.objectweb.asm.ClassReader;
-import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.MethodVisitor;
-import org.objectweb.asm.Opcodes;
-import org.objectweb.asm.Type;
+import org.objectweb.asm.*;
 import org.ubiquity.util.ClassDefinition;
 import org.ubiquity.util.Constants;
-import org.ubiquity.util.visitors.Annotation;
-import org.ubiquity.util.visitors.AnnotationProperty;
-import org.ubiquity.util.visitors.BytecodeProperty;
-import org.ubiquity.util.visitors.GenericsVisitor;
-import org.ubiquity.util.visitors.PropertyRetrieverVisitor;
+import org.ubiquity.util.visitors.*;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -37,9 +29,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import static org.objectweb.asm.Opcodes.*;
-import static org.ubiquity.util.ByteCodeStringHelper.byteCodeName;
-import static org.ubiquity.util.ByteCodeStringHelper.getDescription;
-import static org.ubiquity.util.ByteCodeStringHelper.toJavaClass;
+import static org.ubiquity.util.ByteCodeStringHelper.*;
 
 /**
  * TODO : document.me properly !!
@@ -67,7 +57,7 @@ public final class MirrorGenerator {
         String handledClassName = byteCodeName(aClass.getName());
         ClassWriter writer = new ClassWriter(ClassWriter.COMPUTE_FRAMES);
         writer.visit(Constants.JAVA_VERSION, Opcodes.ACC_PUBLIC, name,
-                "Lorg/ubiquity/mirror/impl/AbstractMirror<" + getDescription(handledClassName) + ">",
+                "Lorg/ubiquity/mirror/impl/AbstractMirror<" + getDescription(handledClassName) + ">;",
                 "org/ubiquity/mirror/impl/AbstractMirror", null);
         generateConstructor(writer);
         Map<String, ClassDefinition> definitions = makeClasses(writer, properties, name, handledClassName);
@@ -135,10 +125,11 @@ public final class MirrorGenerator {
         if(property.isPrimitive()) {
             resolvedType = Constants.SIMPLE_PROPERTIES.get(resolvedType);
         }
-        writer.visit(Constants.JAVA_VERSION, ACC_PUBLIC | ACC_STATIC, name,
+        writer.visit(Constants.JAVA_VERSION, ACC_PUBLIC, name,
                 "Lorg/ubiquity/mirror/impl/AbstractProperty<"
                         + getDescription(handledClass) + resolvedType + ">;",
-                "org/ubiquity/mirror/impl/AbstractProperty", null);
+                "org/ubiquity/mirror/impl/AbstractProperty", null
+        );
 
         writer.visitInnerClass(name, mirrorClass, innerName, ACC_STATIC | ACC_PUBLIC);
 
@@ -155,7 +146,7 @@ public final class MirrorGenerator {
         if(!property.getAnnotations().isEmpty()) {
             createGetAnnotations(writer, property);
         }
-
+        writer.visitEnd();
         return writer.toByteArray();
     }
 
@@ -209,9 +200,35 @@ public final class MirrorGenerator {
         visitor.visitInsn(DUP);
         visitor.visitLdcInsn(property.getName());
         visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
-        visitor.visitLdcInsn(property.getValue());
+        mapAnnotationValue(visitor, property.getValue());
         visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/AnnotationProperty", "<init>",
                 "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)V");
+    }
+
+    private static void mapAnnotationValue(MethodVisitor visitor, Object value) {
+        Class valueClass = value.getClass();
+        visitor.visitLdcInsn(value);
+        if(valueClass == Integer.class) {
+            visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
+        } else if(valueClass == Short.class) {
+            visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;");
+        } else if(valueClass == Long.class) {
+            visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;");
+        } else if(valueClass == Float.class) {
+            visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;");
+        } else if(valueClass == Double.class) {
+            visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;");
+        } else if(valueClass == Byte.class) {
+            visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;");
+        } else if(valueClass == Boolean.class) {
+            visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
+        } else if(valueClass == Character.class) {
+            visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Character", "valueOf", "(C)Ljava/lang/Character;");
+        } else if(valueClass == String.class) {
+            // Nothing seems to be needed
+        } else {
+            throw new IllegalArgumentException("Unable to map (yet) class of type " + valueClass.getName());
+        }
     }
 
     private static void createInnerClassConstructor(ClassWriter writer, BytecodeProperty property) {

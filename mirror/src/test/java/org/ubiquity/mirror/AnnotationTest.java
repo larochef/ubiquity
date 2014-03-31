@@ -2,12 +2,18 @@ package org.ubiquity.mirror;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.util.CheckClassAdapter;
+import org.objectweb.asm.util.TraceClassVisitor;
+import org.ubiquity.mirror.impl.MirrorGenerator;
 import org.ubiquity.mirror.objects.BasicAnnotation;
 import org.ubiquity.mirror.objects.ComplexAnnotatedObject;
 import org.ubiquity.mirror.objects.NativeAnnotation;
 import org.ubiquity.mirror.objects.SimpleAnnotatedObject;
 import org.ubiquity.mirror.util.Mirrors;
+import org.ubiquity.util.NativeConverter;
 
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -36,8 +42,9 @@ public class AnnotationTest {
         Annotation annotation1 = field1.getAnnotations().iterator().next();
         Assert.assertSame(annotation1.getAnnotationClass(), NativeAnnotation.class);
         Map<String, AnnotationProperty> properties = annotation1.getProperties();
+        Assert.assertEquals(properties.size(), 8);
         Assert.assertEquals(properties.get("byteValue").getValue(), Byte.valueOf("1"));
-        Assert.assertEquals(properties.get("charValue").getValue(), (Character) ((char) 2));
+        Assert.assertEquals(properties.get("charValue").getValue(), Character.valueOf ((char) 2));
         Assert.assertEquals(properties.get("doubleValue").getValue(), Double.valueOf(3));
         Assert.assertEquals(properties.get("floatValue").getValue(), Float.valueOf(4));
         Assert.assertEquals(properties.get("intValue").getValue(), Integer.valueOf(5));
