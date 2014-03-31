@@ -35,14 +35,15 @@ public final class ByteCodeStringHelper {
 
     static {
         PRIMITIVE_TYPES = new ImmutableMap.Builder<String, Class<?>>()
-                .put("B", Byte.class)
-                .put("C", Character.class)
-                .put("D", Double.class)
-                .put("F", Float.class)
-                .put("I", Integer.class)
-                .put("J", Long.class)
-                .put("S", Short.class)
-                .put("Z", Boolean.class)
+                .put("B", byte.class)
+                .put("C", char.class)
+                .put("D", double.class)
+                .put("F", float.class)
+                .put("I", int.class)
+                .put("J", long.class)
+                .put("L", long.class)
+                .put("S", short.class)
+                .put("Z", boolean.class)
                 .build();
     }
 

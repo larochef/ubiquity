@@ -19,7 +19,16 @@ public class ArrayAnnotatedObject {
 
     private String property;
 
-    @ArrayAnnotation(stringValue = {"1", "2", "3"})
+    @ArrayAnnotation(
+            stringValue = {"1", "2", "3"},
+            intValue = {1, 2, 3},
+            longValue = {99999, 99998, 99997},
+            charValue = {'a', 'b', 'c'},
+            booleanValue = {true, true, false},
+            byteValue = {0xa, 0xb},
+            doubleValue = {123456.789},
+            floatValue = {987.123F},
+            shortValue = {42})
     public String getProperty() {
         return property;
     }

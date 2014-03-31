@@ -95,6 +95,32 @@ public class AnnotationTest {
         final AnnotationProperty annotationProperty = annotation.getProperties().get("stringValue");
         String[] value = (String[]) annotationProperty.getValue();
         Assert.assertArrayEquals(new String[] {"1", "2", "3"}, value);
+        final AnnotationProperty annotationPropertyInt = annotation.getProperties().get("intValue");
+        int[] intValue = (int[]) annotationPropertyInt.getValue();
+        Assert.assertArrayEquals(new int[] {1, 2, 3}, intValue);
+        final AnnotationProperty annotationPropertyLong = annotation.getProperties().get("longValue");
+        long[] longValue = (long[]) annotationPropertyLong.getValue();
+        Assert.assertArrayEquals(new long[] {99999, 99998, 99997}, longValue);
+        final AnnotationProperty annotationPropertyChar = annotation.getProperties().get("charValue");
+        char[] charValue = (char[]) annotationPropertyChar.getValue();
+        Assert.assertArrayEquals(new char[] {'a', 'b', 'c'}, charValue);
+        final AnnotationProperty annotationPropertyBoolean = annotation.getProperties().get("booleanValue");
+        boolean[] booleanValue = (boolean[]) annotationPropertyBoolean.getValue();
+        Assert.assertTrue(booleanValue[0]);
+        Assert.assertTrue(booleanValue[1]);
+        Assert.assertFalse(booleanValue[2]);
+        final AnnotationProperty annotationPropertyByte = annotation.getProperties().get("byteValue");
+        byte[] byteValue = (byte[]) annotationPropertyByte.getValue();
+        Assert.assertArrayEquals(new byte[] {0xa, 0xb}, byteValue);
+        final AnnotationProperty annotationPropertyDouble = annotation.getProperties().get("doubleValue");
+        double[] doubleValue = (double[]) annotationPropertyDouble.getValue();
+        Assert.assertTrue(123456.789 == doubleValue[0]);
+        final AnnotationProperty annotationPropertyFloat = annotation.getProperties().get("floatValue");
+        float[] floatValue = (float[]) annotationPropertyFloat.getValue();
+        Assert.assertTrue(987.123F == floatValue[0]);
+        final AnnotationProperty annotationPropertyShort = annotation.getProperties().get("shortValue");
+        short[] shortValue = (short[]) annotationPropertyShort.getValue();
+        Assert.assertTrue(((short) 42) == shortValue[0]);
     }
 
     @Test

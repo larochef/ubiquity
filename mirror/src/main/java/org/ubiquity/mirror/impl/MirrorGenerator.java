@@ -15,6 +15,7 @@
  */
 package org.ubiquity.mirror.impl;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import org.objectweb.asm.*;
@@ -23,6 +24,7 @@ import org.ubiquity.util.Constants;
 import org.ubiquity.util.visitors.*;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -267,7 +269,6 @@ public final class MirrorGenerator {
         final String arrayBytecodeType = concreteClass.isAnnotation() ? "org/ubiquity/mirror/Annotation" : arrayByteCodeName;
         if(!concreteClass.isPrimitive()) {
             Object[] array = (Object[]) property.getValue();
-
             visitor.visitLdcInsn(array.length);
             visitor.visitTypeInsn(ANEWARRAY, arrayBytecodeType);
 
@@ -279,9 +280,41 @@ public final class MirrorGenerator {
             }
         }
         else {
-            // TODO : implement.me
+            final String arrayByteCodeUpperName = property.getDesc().toUpperCase();
+            final int length = Array.getLength(property.getValue());
+            visitor.visitLdcInsn(length);
+            visitor.visitIntInsn(NEWARRAY, PRIMITIVE_ARRAY_CREATION.get(arrayByteCodeUpperName));
+            for(int i = 0; i < length; i++) {
+                visitor.visitInsn(DUP);
+                visitor.visitLdcInsn(i);
+                visitor.visitLdcInsn(Array.get(property.getValue(), i));
+                visitor.visitInsn(PRIMITIVE_ARRAY_STORE.get(arrayByteCodeUpperName));
+            }
         }
     }
+
+    private static final Map<String, Integer> PRIMITIVE_ARRAY_STORE = ImmutableMap.<String, Integer>builder()
+            .put("[I", IASTORE)
+            .put("[B", BASTORE)
+            .put("[J", LASTORE)
+            .put("[L", LASTORE)
+            .put("[F", FASTORE)
+            .put("[D", DASTORE)
+            .put("[S", SASTORE)
+            .put("[C", CASTORE)
+            .put("[Z", BASTORE)
+            .build();
+
+    private static final Map<String, Integer> PRIMITIVE_ARRAY_CREATION = ImmutableMap.<String, Integer>builder()
+            .put("[I", T_INT)
+            .put("[B", T_BYTE)
+            .put("[J", T_LONG)
+            .put("[F", T_FLOAT)
+            .put("[D", T_DOUBLE)
+            .put("[S", T_SHORT)
+            .put("[C", T_CHAR)
+            .put("[Z", T_BOOLEAN)
+            .build();
 
     private static void addArrayValueInStack(MethodVisitor visitor, Object o, String description) {
         Class objectClass = toJavaClass(byteCodeName(description));
@@ -386,4 +419,9 @@ public final class MirrorGenerator {
         visitor.visitMaxs(0, 0);
         visitor.visitEnd();
     }
+
+//    public static void verifyClass(byte[] content) {
+//        ClassReader r = new ClassReader(content);
+//        r.accept(new CheckClassAdapter(new TraceClassVisitor(new PrintWriter(System.out))), 0);
+//    }
 }

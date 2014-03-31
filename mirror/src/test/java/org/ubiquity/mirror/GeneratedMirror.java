@@ -46,8 +46,11 @@ public class GeneratedMirror extends AbstractMirror<ValueObject> {
         }
 
         public void printMe() {
-            final int[] ints = {1, 2, 3};
-            final String[] strings = new String [] {"a", "Z", "e"};
+
+            final byte[] bytes = {1, 2, 3};
+//            final long[] ints = {1, 2, 3};
+//            final boolean[] booleans = {true, true, false};
+//            final String[] strings = new String [] {"a", "Z", "e"};
         }
 
         public Property1() {

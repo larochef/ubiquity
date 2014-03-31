@@ -24,14 +24,14 @@ public class ByteCodeStringHelperTest {
 
     @org.junit.Test
     public void testClassRetrieval() {
-        Assert.assertSame(ByteCodeStringHelper.toJavaClass("B"), Byte.class);
-        Assert.assertSame(ByteCodeStringHelper.toJavaClass("C"), Character.class);
-        Assert.assertSame(ByteCodeStringHelper.toJavaClass("D"), Double.class);
-        Assert.assertSame(ByteCodeStringHelper.toJavaClass("F"), Float.class);
-        Assert.assertSame(ByteCodeStringHelper.toJavaClass("I"), Integer.class);
-        Assert.assertSame(ByteCodeStringHelper.toJavaClass("J"), Long.class);
-        Assert.assertSame(ByteCodeStringHelper.toJavaClass("S"), Short.class);
-        Assert.assertSame(ByteCodeStringHelper.toJavaClass("Z"), Boolean.class);
+        Assert.assertSame(ByteCodeStringHelper.toJavaClass("B"), byte.class);
+        Assert.assertSame(ByteCodeStringHelper.toJavaClass("C"), char.class);
+        Assert.assertSame(ByteCodeStringHelper.toJavaClass("D"), double.class);
+        Assert.assertSame(ByteCodeStringHelper.toJavaClass("F"), float.class);
+        Assert.assertSame(ByteCodeStringHelper.toJavaClass("I"), int.class);
+        Assert.assertSame(ByteCodeStringHelper.toJavaClass("J"), long.class);
+        Assert.assertSame(ByteCodeStringHelper.toJavaClass("S"), short.class);
+        Assert.assertSame(ByteCodeStringHelper.toJavaClass("Z"), boolean.class);
         Assert.assertSame(ByteCodeStringHelper.toJavaClass("java/lang/Object"), Object.class);
         Assert.assertSame(ByteCodeStringHelper.toJavaClass("Ljava/lang/Object;"), Object.class);
         Assert.assertSame(ByteCodeStringHelper.toJavaClass("[Ljava/lang/Object;"), Object[].class);
