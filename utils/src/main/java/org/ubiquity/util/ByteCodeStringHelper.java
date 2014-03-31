@@ -61,9 +61,9 @@ public final class ByteCodeStringHelper {
      */
     public static String byteCodeName(String c) {
         String name = c.replace('.', '/');
-        if(name.startsWith("[")) {
-            name = name.substring(1);
-        }
+//        if(name.startsWith("[")) {
+//            name = name.substring(1);
+//        }
         if(name.startsWith("L")) {
             name = name.substring(1, name.length() - 1);
         }

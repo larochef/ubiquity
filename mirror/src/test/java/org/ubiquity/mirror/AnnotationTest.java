@@ -85,4 +85,44 @@ public class AnnotationTest {
         final Annotation annotation2 = (Annotation) annotationProperty.getValue();
         Assert.assertEquals("Annotation !", annotation2.getProperties().get("value").getValue());
     }
+
+    @Test
+    public void testArrayAnnotations() {
+        Mirror<ArrayAnnotatedObject> mirror = Mirrors.newMirrorFactory().getMirror(ArrayAnnotatedObject.class);
+        final List<Annotation> annotations = mirror.getProperty("property").getAnnotations();
+        Assert.assertEquals(1, annotations.size());
+        final Annotation annotation = annotations.iterator().next();
+        final AnnotationProperty annotationProperty = annotation.getProperties().get("stringValue");
+        String[] value = (String[]) annotationProperty.getValue();
+        Assert.assertArrayEquals(new String[] {"1", "2", "3"}, value);
+    }
+
+    @Test
+    public void testArrayOfAnnotationsAnnotations() {
+        Mirror<AnnotatedArrayObject> mirror = Mirrors.newMirrorFactory().getMirror(AnnotatedArrayObject.class);
+        final List<Annotation> annotations = mirror.getProperty("property").getAnnotations();
+        Assert.assertEquals(1, annotations.size());
+        final Annotation annotation = annotations.iterator().next();
+        final AnnotationProperty annotationProperty = annotation.getProperties().get("values");
+        final Annotation[] value = (Annotation[]) annotationProperty.getValue();
+        Assert.assertEquals(2, value.length);
+        Assert.assertSame(BasicAnnotation.class, value[0].getAnnotationClass());
+        Assert.assertSame(BasicAnnotation.class, value[1].getAnnotationClass());
+        Assert.assertEquals("Annotation 1", value[0].getProperties().get("value").getValue());
+        Assert.assertEquals("Annotation 2", value[1].getProperties().get("value").getValue());
+    }
+
+    @Test
+    public void testArrayOfEnumAnnotations() {
+        Mirror<ArrayOfEnumAnnotationObject> mirror = Mirrors.newMirrorFactory().getMirror(ArrayOfEnumAnnotationObject.class);
+        final List<Annotation> annotations = mirror.getProperty("property").getAnnotations();
+        Assert.assertEquals(1, annotations.size());
+        final Annotation annotation = annotations.iterator().next();
+        final AnnotationProperty annotationProperty = annotation.getProperties().get("values");
+        final TestEnum[] value = (TestEnum[]) annotationProperty.getValue();
+        Assert.assertEquals(2, value.length);
+        Assert.assertSame(TestEnum.VALUE1, value[0]);
+        Assert.assertSame(TestEnum.VALUE2, value[1]);
+    }
+
 }

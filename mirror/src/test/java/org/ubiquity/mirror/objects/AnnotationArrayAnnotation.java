@@ -15,16 +15,7 @@
  */
 package org.ubiquity.mirror.objects;
 
-public class ArrayAnnotatedObject {
+public @interface AnnotationArrayAnnotation {
 
-    private String property;
-
-    @ArrayAnnotation(stringValue = {"1", "2", "3"})
-    public String getProperty() {
-        return property;
-    }
-
-    public void setProperty(String property) {
-        this.property = property;
-    }
+    BasicAnnotation[] values();
 }

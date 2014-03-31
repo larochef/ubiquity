@@ -15,11 +15,11 @@
  */
 package org.ubiquity.mirror.objects;
 
-public class ArrayAnnotatedObject {
+public class ArrayOfEnumAnnotationObject {
 
     private String property;
 
-    @ArrayAnnotation(stringValue = {"1", "2", "3"})
+    @ArrayOfEnumAnnotation(values = {TestEnum.VALUE1, TestEnum.VALUE2})
     public String getProperty() {
         return property;
     }

@@ -33,6 +33,7 @@ import static org.ubiquity.util.ByteCodeStringHelper.*;
 
 /**
  * TODO : document.me properly !!
+ * TODO : this class is becoming too big for a simple helper, create a good hierarchy of objects to solve the same problems
  *
  * Generate mirrors bytecode
  */
@@ -208,7 +209,10 @@ public final class MirrorGenerator {
         Class valueClass = toJavaClass(byteCodeName(property.getDesc()));
 
         final Type destinationType = Type.getType(toJavaClass(byteCodeName(property.getDesc())));
-        if (valueClass == Integer.class) {
+        if(valueClass.isArray()) {
+            visitor.visitLdcInsn(destinationType);
+            mapArrayValue(visitor, property);
+        } else if (valueClass == Integer.class) {
             visitor.visitLdcInsn(destinationType);
             visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
@@ -252,6 +256,42 @@ public final class MirrorGenerator {
             mapAnnotation(visitor, (Annotation) property.getValue());
         } else {
             throw new IllegalArgumentException("Unable to map (yet) class of type " + valueClass.getName());
+        }
+    }
+
+    private static void mapArrayValue(MethodVisitor visitor, AnnotationProperty property) {
+        final String arrayType = property.getDesc().substring(1);
+        final String arrayByteCodeName = byteCodeName(arrayType);
+        Class concreteClass = toJavaClass(arrayByteCodeName);
+
+        final String arrayBytecodeType = concreteClass.isAnnotation() ? "org/ubiquity/mirror/Annotation" : arrayByteCodeName;
+        if(!concreteClass.isPrimitive()) {
+            Object[] array = (Object[]) property.getValue();
+
+            visitor.visitLdcInsn(array.length);
+            visitor.visitTypeInsn(ANEWARRAY, arrayBytecodeType);
+
+            for(int i = 0; i < array.length; i++) {
+                visitor.visitInsn(DUP);
+                visitor.visitLdcInsn(i);
+                addArrayValueInStack(visitor, array[i], arrayBytecodeType);
+                visitor.visitInsn(AASTORE);
+            }
+        }
+        else {
+            // TODO : implement.me
+        }
+    }
+
+    private static void addArrayValueInStack(MethodVisitor visitor, Object o, String description) {
+        Class objectClass = toJavaClass(byteCodeName(description));
+        if(objectClass.isEnum()) {
+            final String owner = byteCodeName(description);
+            visitor.visitFieldInsn(GETSTATIC, owner, o.toString(), getDescription(owner));
+        } else if(o.getClass() == Annotation.class) {
+            mapAnnotation(visitor, (Annotation) o);
+        } else {
+            visitor.visitLdcInsn(o);
         }
     }
 

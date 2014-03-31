@@ -17,6 +17,7 @@ package org.ubiquity.util.visitors;
 
 import com.google.common.collect.Lists;
 import org.objectweb.asm.AnnotationVisitor;
+import org.ubiquity.util.ByteCodeStringHelper;
 import org.ubiquity.util.Constants;
 
 import java.util.List;
@@ -40,12 +41,19 @@ final class AnnotationArrayParser extends AnnotationVisitor {
 
     @Override
     public void visit(String name, Object value) {
-        values.add(value);
+        if(value.getClass().isArray()) {
+            this.values.addAll(Lists.newArrayList((Object[]) value));
+            this.desc = ByteCodeStringHelper.byteCodeName(value.getClass().getName());
+        }
+        else {
+            values.add(value);
+            this.desc = ByteCodeStringHelper.byteCodeName("[" + value.getClass().getName());
+        }
     }
 
     @Override
     public void visitEnum(String name, String desc, String value) {
-        this.desc = desc;
+        this.desc = "[" + desc;
         values.add(value);
     }
 
@@ -53,6 +61,7 @@ final class AnnotationArrayParser extends AnnotationVisitor {
     public AnnotationVisitor visitAnnotation(String name, String desc) {
         AnnotationParser parser = new AnnotationParser(desc, true);
         this.annotationParsers.add(parser);
+        this.desc = "[" + desc;
         return parser;
     }
 
@@ -69,7 +78,7 @@ final class AnnotationArrayParser extends AnnotationVisitor {
             this.values.add(parser.getAnnotation());
         }
         for(AnnotationArrayParser parser : annotationArrayParsers) {
-            this.values.add(parser.getValues());
+            this.values.addAll(Lists.newArrayList(parser.getValues()));
         }
     }
 

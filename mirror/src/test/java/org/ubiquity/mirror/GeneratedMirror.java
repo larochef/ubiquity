@@ -45,6 +45,11 @@ public class GeneratedMirror extends AbstractMirror<ValueObject> {
             return new Annotation(BasicAnnotation.class, true, Maps.<String, AnnotationProperty>newHashMap());
         }
 
+        public void printMe() {
+            final int[] ints = {1, 2, 3};
+            final String[] strings = new String [] {"a", "Z", "e"};
+        }
+
         public Property1() {
             super("property1", String.class);
         }

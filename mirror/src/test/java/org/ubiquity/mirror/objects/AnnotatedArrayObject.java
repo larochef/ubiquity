@@ -15,11 +15,11 @@
  */
 package org.ubiquity.mirror.objects;
 
-public class ArrayAnnotatedObject {
+public class AnnotatedArrayObject {
 
     private String property;
 
-    @ArrayAnnotation(stringValue = {"1", "2", "3"})
+    @AnnotationArrayAnnotation(values = {@BasicAnnotation("Annotation 1"), @BasicAnnotation("Annotation 2")})
     public String getProperty() {
         return property;
     }
