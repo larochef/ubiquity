@@ -184,7 +184,7 @@ public final class MirrorGenerator {
 
         for(Map.Entry<String, AnnotationProperty> prop : annotation.getProperties().entrySet()) {
             visitor.visitLdcInsn(prop.getKey());
-            mapAnnotationProperty(visitor, prop.getValue());
+            mapAnnotationProperties(visitor, prop.getValue());
             visitor.visitMethodInsn(INVOKEVIRTUAL, "com/google/common/collect/ImmutableMap$Builder", "put",
                     "(Ljava/lang/Object;Ljava/lang/Object;)Lcom/google/common/collect/ImmutableMap$Builder;");
         }
@@ -195,52 +195,62 @@ public final class MirrorGenerator {
                 "(Ljava/lang/Class;ZLjava/util/Map;)V");
     }
 
-    private static void mapAnnotationProperty(MethodVisitor visitor, AnnotationProperty property) {
+    private static void mapAnnotationProperties(MethodVisitor visitor, AnnotationProperty property) {
         visitor.visitTypeInsn(NEW, "org/ubiquity/mirror/AnnotationProperty");
         visitor.visitInsn(DUP);
         visitor.visitLdcInsn(property.getName());
         visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
-        mapAnnotationValue(visitor, property);
+        mapAnnotationClassAndValue(visitor, property);
         visitor.visitMethodInsn(INVOKESPECIAL, "org/ubiquity/mirror/AnnotationProperty", "<init>",
                 "(Ljava/lang/String;Ljava/lang/Class;Ljava/lang/Object;)V");
     }
 
-    private static void mapAnnotationValue(MethodVisitor visitor, AnnotationProperty property) {
+    private static void mapAnnotationClassAndValue(MethodVisitor visitor, AnnotationProperty property) {
         Class valueClass = toJavaClass(byteCodeName(property.getDesc()));
 
         if (valueClass == Integer.class) {
+            visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
             visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
         } else if (valueClass == Short.class) {
+            visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
             visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;");
         } else if (valueClass == Long.class) {
+            visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
             visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;");
         } else if (valueClass == Float.class) {
+            visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
             visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;");
         } else if (valueClass == Double.class) {
+            visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
             visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;");
         } else if (valueClass == Byte.class) {
+            visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
             visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;");
         } else if (valueClass == Boolean.class) {
+            visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
             visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
         } else if (valueClass == Character.class) {
+            visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
             visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Character", "valueOf", "(C)Ljava/lang/Character;");
         } else if (valueClass == String.class) {
+            visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName(property.getDesc()))));
             visitor.visitLdcInsn(property.getValue());
         } else if(valueClass.isEnum()) {
             final String byteCodeName = byteCodeName(valueClass.getName());
+            visitor.visitLdcInsn(Type.getType(toJavaClass(byteCodeName)));
             visitor.visitFieldInsn(GETSTATIC, byteCodeName, property.getValue().toString(), getDescription(byteCodeName));
         } else if(valueClass.isAnnotation()) {
-            // TODO : implement.me
+            visitor.visitLdcInsn(Type.getType(org.ubiquity.mirror.Annotation.class));
+            mapAnnotation(visitor, (Annotation) property.getValue());
         } else {
-
             throw new IllegalArgumentException("Unable to map (yet) class of type " + valueClass.getName());
         }
     }
