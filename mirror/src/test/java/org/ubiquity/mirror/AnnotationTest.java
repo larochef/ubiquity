@@ -6,10 +6,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.util.CheckClassAdapter;
 import org.objectweb.asm.util.TraceClassVisitor;
 import org.ubiquity.mirror.impl.MirrorGenerator;
-import org.ubiquity.mirror.objects.BasicAnnotation;
-import org.ubiquity.mirror.objects.ComplexAnnotatedObject;
-import org.ubiquity.mirror.objects.NativeAnnotation;
-import org.ubiquity.mirror.objects.SimpleAnnotatedObject;
+import org.ubiquity.mirror.objects.*;
 import org.ubiquity.mirror.util.Mirrors;
 import org.ubiquity.util.NativeConverter;
 
@@ -56,4 +53,18 @@ public class AnnotationTest {
 
     }
 
+    @Test
+    public void testEnumAnnotations() {
+        Mirror<AnnotatedEnumObject> mirror = Mirrors.newMirrorFactory().getMirror(AnnotatedEnumObject.class);
+        final Property<AnnotatedEnumObject, Object> property1 = mirror.getProperty("property1");
+        final List<Annotation> annotations = property1.getAnnotations();
+        Assert.assertEquals(1, annotations.size());
+        final Map<String, AnnotationProperty> propertyMap = annotations.iterator().next().getProperties();
+        Assert.assertEquals(1, propertyMap.size());
+        Assert.assertTrue(propertyMap.containsKey("value"));
+        final AnnotationProperty value = propertyMap.get("value");
+        Assert.assertSame(TestEnum.VALUE1, value.getValue());
+
+
+    }
 }

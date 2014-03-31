@@ -40,7 +40,7 @@ public final class ByteCodeStringHelper {
                 .put("D", Double.class)
                 .put("F", Float.class)
                 .put("I", Integer.class)
-                .put("L", Long.class)
+                .put("J", Long.class)
                 .put("S", Short.class)
                 .put("Z", Boolean.class)
                 .build();
