@@ -64,7 +64,5 @@ public class AnnotationTest {
         Assert.assertTrue(propertyMap.containsKey("value"));
         final AnnotationProperty value = propertyMap.get("value");
         Assert.assertSame(TestEnum.VALUE1, value.getValue());
-
-
     }
 }

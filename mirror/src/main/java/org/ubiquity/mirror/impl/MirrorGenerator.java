@@ -209,31 +209,31 @@ public final class MirrorGenerator {
         Class valueClass = toJavaClass(byteCodeName(property.getDesc()));
 
         if (valueClass == Integer.class) {
-            visitor.visitLdcInsn(property);
+            visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;");
         } else if (valueClass == Short.class) {
-            visitor.visitLdcInsn(property);
+            visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;");
         } else if (valueClass == Long.class) {
-            visitor.visitLdcInsn(property);
+            visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;");
         } else if (valueClass == Float.class) {
-            visitor.visitLdcInsn(property);
+            visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;");
         } else if (valueClass == Double.class) {
-            visitor.visitLdcInsn(property);
+            visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;");
         } else if (valueClass == Byte.class) {
-            visitor.visitLdcInsn(property);
+            visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;");
         } else if (valueClass == Boolean.class) {
-            visitor.visitLdcInsn(property);
+            visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;");
         } else if (valueClass == Character.class) {
-            visitor.visitLdcInsn(property);
+            visitor.visitLdcInsn(property.getValue());
             visitor.visitMethodInsn(INVOKESTATIC, "java/lang/Character", "valueOf", "(C)Ljava/lang/Character;");
         } else if (valueClass == String.class) {
-            visitor.visitLdcInsn(property);
+            visitor.visitLdcInsn(property.getValue());
         } else if(valueClass.isEnum()) {
             final String byteCodeName = byteCodeName(valueClass.getName());
             visitor.visitFieldInsn(GETSTATIC, byteCodeName, property.getValue().toString(), getDescription(byteCodeName));
