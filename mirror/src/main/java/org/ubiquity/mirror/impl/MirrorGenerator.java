@@ -420,8 +420,4 @@ public final class MirrorGenerator {
         visitor.visitEnd();
     }
 
-//    public static void verifyClass(byte[] content) {
-//        ClassReader r = new ClassReader(content);
-//        r.accept(new CheckClassAdapter(new TraceClassVisitor(new PrintWriter(System.out))), 0);
-//    }
 }
