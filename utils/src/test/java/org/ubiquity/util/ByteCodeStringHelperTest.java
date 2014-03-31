@@ -29,7 +29,7 @@ public class ByteCodeStringHelperTest {
         Assert.assertSame(ByteCodeStringHelper.toJavaClass("D"), Double.class);
         Assert.assertSame(ByteCodeStringHelper.toJavaClass("F"), Float.class);
         Assert.assertSame(ByteCodeStringHelper.toJavaClass("I"), Integer.class);
-        Assert.assertSame(ByteCodeStringHelper.toJavaClass("L"), Long.class);
+        Assert.assertSame(ByteCodeStringHelper.toJavaClass("J"), Long.class);
         Assert.assertSame(ByteCodeStringHelper.toJavaClass("S"), Short.class);
         Assert.assertSame(ByteCodeStringHelper.toJavaClass("Z"), Boolean.class);
         Assert.assertSame(ByteCodeStringHelper.toJavaClass("java/lang/Object"), Object.class);
